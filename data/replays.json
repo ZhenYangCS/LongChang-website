@@ -1,0 +1,130 @@
+[
+  {
+    "id": "astra-notice",
+    "source": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gpt-6-astra/r2/T0/replay.bin",
+    "start": 37.102,
+    "end": 39.102,
+    "duration": 4,
+    "turns": [
+      24
+    ],
+    "camera": {
+      "lookat": [
+        -1.9,
+        -2.9,
+        0.08
+      ],
+      "distance": 2.5
+    },
+    "mode": "Nearest recorded state; no simulation or pose interpolation."
+  },
+  {
+    "id": "astra-investigate",
+    "source": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gpt-6-astra/r2/T0/replay.bin",
+    "start": 46.222,
+    "end": 58.1,
+    "duration": 11.878,
+    "turns": [
+      28,
+      29,
+      30
+    ],
+    "camera": {
+      "lookat": [
+        -2.38,
+        5.1,
+        0.12
+      ],
+      "distance": 3.7,
+      "azimuth": 160,
+      "elevation": -40
+    },
+    "mode": "Nearest recorded state; no simulation or pose interpolation."
+  },
+  {
+    "id": "astra-test",
+    "source": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gpt-6-astra/r2/T0/replay.bin",
+    "start": 78.582,
+    "end": 90.582,
+    "duration": 12,
+    "turns": [
+      35
+    ],
+    "camera": {
+      "lookat": [
+        -2.385,
+        5.36580657005401,
+        0.1
+      ],
+      "distance": 3.0,
+      "azimuth": 110,
+      "elevation": -24
+    },
+    "mode": "Nearest recorded state; no simulation or pose interpolation."
+  },
+  {
+    "id": "gemini-notice",
+    "source": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gemini-3.7-flash/r1/T0/replay.bin",
+    "start": 2.8,
+    "end": 10.12,
+    "duration": 7.319999999999999,
+    "turns": [
+      2
+    ],
+    "camera": {
+      "lookat": [
+        0,
+        5.25,
+        0.13
+      ],
+      "distance": 3.7,
+      "azimuth": 155,
+      "elevation": -32
+    },
+    "mode": "Nearest recorded state; no simulation or pose interpolation."
+  },
+  {
+    "id": "gemini-investigate",
+    "source": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gemini-3.7-flash/r1/T0/replay.bin",
+    "start": 20.24,
+    "end": 22.24,
+    "duration": 4,
+    "turns": [
+      5,
+      6
+    ],
+    "camera": {
+      "lookat": [
+        0,
+        5.85,
+        0.62
+      ],
+      "distance": 3.7,
+      "azimuth": 105,
+      "elevation": -25
+    },
+    "mode": "Nearest recorded state; no simulation or pose interpolation."
+  },
+  {
+    "id": "gemini-test",
+    "source": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gemini-3.7-flash/r1/T0/replay.bin",
+    "start": 41.356,
+    "end": 44.356,
+    "duration": 4,
+    "turns": [
+      13,
+      14
+    ],
+    "camera": {
+      "lookat": [
+        2.55,
+        5.78,
+        0.12
+      ],
+      "distance": 4.3,
+      "azimuth": 105,
+      "elevation": -30
+    },
+    "mode": "Nearest recorded state; no simulation or pose interpolation."
+  }
+]

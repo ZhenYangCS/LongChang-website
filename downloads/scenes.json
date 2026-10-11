@@ -1,0 +1,140 @@
+{
+  "units": "bricks and counts; one count corresponds to one simulated second",
+  "scenes": [
+    {
+      "id": "01",
+      "key": "01_decorative_tile_control",
+      "name": "Normal control",
+      "description": "A gray tile looks different. Does it change how objects move?",
+      "family": "Control",
+      "law": "Nothing is altered here. The grey tile is ordinary floor with a different colour: objects on it bounce, roll and rest exactly as they do anywhere else.",
+      "image": "assets/images/scene-01.webp"
+    },
+    {
+      "id": "02",
+      "key": "02_red_sphere_attraction",
+      "name": "Red attraction",
+      "description": "Red and blue spheres share a room. Which pairs move toward each other?",
+      "family": "Object properties",
+      "law": "Red balls attract each other with an inverse-square central force F = 20.0/r^2 along the line joining them. Blue balls are inert: they neither attract nor are attracted. Colour acts as a charge. This attraction applies to all free red spheres, including constructed ones; fixed or joint-constrained parts are excluded.",
+      "image": "assets/images/scene-02.webp"
+    },
+    {
+      "id": "03",
+      "key": "03_mass_dependent_fall",
+      "name": "Mass-dependent fall",
+      "description": "Two balls have different masses. How does that affect their fall?",
+      "family": "Object properties",
+      "law": "Falling acceleration depends on mass: a = g*sqrt(m0/m) with m0 = 1. The heavy blue ball (4 units) falls at half the acceleration of the light red ball (1 unit). At equal initial upward speeds it stays airborne longer and rises higher. Equal applied impulses do not give equal initial speeds: the heavier ball starts four times slower for the same impulse. This mass-dependent acceleration applies to all free bodies, including constructed ones; fixed or joint-constrained parts retain ordinary physics.",
+      "image": "assets/images/scene-03.webp"
+    },
+    {
+      "id": "04",
+      "key": "04_periodic_gravity",
+      "name": "Oscillating gravity",
+      "description": "Identical experiments can behave differently at different times.",
+      "family": "Time",
+      "law": "Gravity is not constant: g(t) = g0 * (1 + 0.3 * sin(2*pi*t/6.0)), a smooth 6.0-second cycle. Identical throws reach different heights depending on when they are made, and a pendulum's rate drifts with the same period.",
+      "image": "assets/images/scene-04.webp"
+    },
+    {
+      "id": "05",
+      "key": "05_speed_threshold_drag",
+      "name": "High-speed braking",
+      "description": "Slow motion looks ordinary. Faster motion tells a different story.",
+      "family": "Motion",
+      "law": "Each of the original red ball, blue ball and box moving faster than v_c = 2.5 bricks/s feels a braking force F = -8.0*(|v| - v_c) along its direction of travel. Below v_c motion is ordinary. The law depends only on speed, not on colour, mass or place.",
+      "image": "assets/images/scene-05.webp"
+    },
+    {
+      "id": "06",
+      "key": "06_clockwise_deflection",
+      "name": "Clockwise deflection",
+      "description": "A straight launch need not produce a straight path.",
+      "family": "Motion",
+      "law": "The red and blue experiment balls are pushed sideways to their right when moving: F = 1.2 * (v x z), perpendicular to its velocity. Straight launches curve clockwise seen from above; the deflection grows with speed and never does any work.",
+      "image": "assets/images/scene-06.webp"
+    },
+    {
+      "id": "07",
+      "key": "07_tile_restitution",
+      "name": "Tile rebounds",
+      "description": "Two colored tiles give the same ball very different rebounds.",
+      "family": "Contact",
+      "law": "Restitution is set by the colour of the surface, nothing else: the red tile returns e = 0.9 of the vertical speed, the blue tile only e = 0.15. The tiles are identical in size, height and material; only their colour differs, and the balls are identical.",
+      "image": "assets/images/scene-07.webp"
+    },
+    {
+      "id": "08",
+      "key": "08_speed_saturation",
+      "name": "Speed limit",
+      "description": "Larger impulses bring smaller and smaller gains in speed.",
+      "family": "Motion",
+      "law": "Momentum and velocity obey p = m0*v/(1 - |v|^2/v_max^2), with v_max = 2.2 bricks/s. Impulses and forces add momentum; they do not directly add the same amount of velocity at every speed. A fixed shove yields ever less speed as the object speeds up, and neither launches nor free fall can reach v_max. This momentum-velocity rule applies to all free bodies, including constructed ones; fixed or joint-constrained parts retain ordinary physics.",
+      "image": "assets/images/scene-08.webp"
+    },
+    {
+      "id": "09",
+      "key": "09_boundary_speed_change",
+      "name": "Boundary crossing",
+      "description": "Crossing the edge of a gray tile changes a ball's motion.",
+      "family": "Space",
+      "law": "When either experiment ball enters the horizontal footprint of the grey tile at (2.0, 0.0), its linear and angular velocities are multiplied by 0.4. On leaving, its remaining velocities are divided by that factor. The rule applies at any height. Ordinary gravity and friction continue between boundary crossings; this is a boundary velocity rule, not a change to all clocks or lossless recovery of the entry speed.",
+      "image": "assets/images/scene-09.webp"
+    },
+    {
+      "id": "10",
+      "key": "10_energy_input_zone",
+      "name": "Acceleration zone",
+      "description": "Motion inside the yellow region has an additional source of energy.",
+      "family": "Space",
+      "law": "Within the horizontal footprint of the yellow tile at (0.0, 0.0), at any height, the two experiment balls receive active kinetic-energy input. At low speed they receive an eastward seed; otherwise their velocity is amplified below a speed cap. Ordinary friction, gravity and collisions still act, so net speed need not rise at every instant. Outside the region there is no active driving.",
+      "image": "assets/images/scene-10.webp"
+    },
+    {
+      "id": "11",
+      "key": "11_collision_speed_gain",
+      "name": "Collision boost",
+      "description": "Ball–ball contact can change more than the direction of motion.",
+      "family": "Contact",
+      "law": "When contact between two experiment balls ends, the remaining linear velocity of each participant is multiplied by 1.8. An uninvolved third ball is unchanged by that event. This injects momentum and energy relative to the ordinary collision result; friction and contact losses still act, so the target need not exceed the original incoming speed. Floor and wall collisions have no such programmed gain.",
+      "image": "assets/images/scene-11.webp"
+    },
+    {
+      "id": "12",
+      "key": "12_contact_colour_exchange",
+      "name": "Color exchange",
+      "description": "The objects keep their identities. Their colors may not stay with them.",
+      "family": "Contact",
+      "law": "When two free spheres make contact, they exchange colours once at the start of that contact. Sustained contact does not cause repeated exchanges; separation followed by a new contact triggers another exchange. Motion follows ordinary gravity, inertia, friction and collisions, without colour-dependent attraction or repulsion. The exchange applies to original and constructed free bodies consisting of a single sphere; fixed or joint-constrained parts are excluded.",
+      "image": "assets/images/scene-12.webp"
+    },
+    {
+      "id": "13",
+      "key": "13_third_contact_kick",
+      "name": "Third-contact jump",
+      "description": "Similar collisions can have different outcomes. Does their history matter?",
+      "family": "History",
+      "law": "Each of the original red and blue experiment balls keeps a tally of separate contact events with the other experiment ball. On every third such contact, and only then, it receives an upward kick. A sustained contact counts once; contacts with the floor, walls or apparatus do not count. The rule depends on discrete events rather than force, speed, position or angle.",
+      "image": "assets/images/scene-13.webp"
+    },
+    {
+      "id": "14",
+      "key": "14_delayed_motion_echo",
+      "name": "Delayed velocity copy",
+      "description": "One ball moves long after another was launched. Are the events connected?",
+      "family": "Time",
+      "law": "Launching the red ball is echoed by the green ball 12.0 seconds later: the green ball spontaneously takes on the velocity the red ball was given, however far apart they are. The blue ball is inert. Because the red ball has usually come to rest before the echo arrives, the cause and its effect fall in different turns.",
+      "image": "assets/images/scene-14.webp"
+    },
+    {
+      "id": "15",
+      "key": "15_launch_suppressed_drift",
+      "name": "Interrupted drift",
+      "description": "A red ball starts moving by itself. Intervening can make the effect disappear.",
+      "family": "History",
+      "law": "An extra northward acceleration of 1.5 bricks/count² acts on the red ball. A nonzero push or throw on any movable object pauses this force for 10 counts. Another such action restarts the pause. Gravity, friction and collisions still act.",
+      "image": "assets/images/scene-15.webp"
+    }
+  ]
+}

@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f9f8">
+  <meta name="description" content="Can LLMs uncover the laws of their world? LongChang studies autonomous scientific inquiry in simulated worlds with altered physics.">
+  <meta property="og:title" content="LongChang — Can LLMs Uncover the Laws of Their World?">
+  <meta property="og:description" content="15 worlds. 12 language models. An open-ended test of scientific discovery.">
+  <meta property="og:image" content="assets/images/social-card.png">
+  <meta property="og:type" content="website">
+  <title>LongChang — Can LLMs Uncover the Laws of Their World?</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="stylesheet" href="assets/discovery.css">
+  <script src="data/paper.js" defer></script>
+  <script src="data/discoveries.js" defer></script>
+  <script src="assets/app.js" defer></script>
+  <script src="assets/discovery.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a class="wordmark" href="#" aria-label="LongChang home"><img src="assets/favicon.svg" alt="" width="32" height="32">LongChang<span class="wordmark-dot">.</span></a>
+      <nav aria-label="Main navigation">
+        <a href="#explore">Explore</a><a href="#framework">Framework</a><a href="#results">Results</a><a href="#evolution">Evolution</a>
+      </nav>
+      <a class="nav-paper" href="downloads/paper.pdf" target="_blank" rel="noopener">Read the paper <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero container" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="status-dot"></span> Autonomous scientific discovery</div>
+        <h1 id="hero-title">Can LLMs uncover<br>the laws of<br><em>their world?</em></h1>
+        <p class="hero-description">A room to explore. Tools to build.<br>No research question to begin with.</p>
+        <p class="hero-explanation">LongChang lets language models investigate simulated worlds with altered physics—and asks whether they can discover the laws through experiments of their own.</p>
+        <div class="hero-authors"><span class="anonymous-icon" aria-hidden="true">◌</span> Anonymous Authors <span class="small-divider"></span> Anonymous submission</div>
+        <div class="hero-actions">
+          <a class="button primary" href="#explore"><span class="play-icon" aria-hidden="true">▶</span> Explore an experiment</a>
+          <a class="button secondary" href="downloads/longchang-source.zip" download><span aria-hidden="true">&lt;/&gt;</span> Anonymous code <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <figure class="hero-art">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <span class="art-index">WORLD / 001</span>
+        <img src="assets/images/glass-world.webp" width="1250" height="1280" alt="A glass-walled physical workspace with red and blue balls, a pendulum and a balance" fetchpriority="high">
+        <figcaption><span class="tiny-cross" aria-hidden="true">+</span> A world of objects.<br><span class="caption-indent">A possibility of discovery.</span></figcaption>
+        <div class="art-note"><span class="blue-dot"></span> Observe <span>→</span> Experiment <span>→</span> Understand</div>
+      </figure>
+    </section>
+    <div class="container">
+      <div class="stats-strip" aria-label="Study at a glance">
+        <div><span class="stat-value">15</span><span class="stat-label">simulated worlds<small>14 altered + 1 ordinary control</small></span></div>
+        <div><span class="stat-value">12</span><span class="stat-label">language models<small>the same worlds and initial states</small></span></div>
+        <div><span class="stat-value">540</span><span class="stat-label">explorations<small>3 runs per model and scene</small></span></div>
+        <div class="stat-highlight"><span class="stat-value">16.7<span>%</span></span><span class="stat-label">highest discovery rate<small>free exploration · up to 100 turns</small></span></div>
+      </div>
+    </div>
+
+    <section id="explore" class="section container discovery-section">
+      <div class="section-heading">
+        <div><div class="eyebrow"><span class="section-number">01</span> Four stories of successful discovery</div><h2>Try a law.<br><em>Follow the evidence.</em></h2></div>
+        <p>How does an observation become a discovery? Explore four laws yourself, then follow the experiments from successful GPT-6-Astra runs. Each selected run passes both correctness and evidence support.</p>
+      </div>
+      <div class="success-picker" id="success-picker" role="tablist" aria-label="Choose a successful discovery"></div>
+      <div class="discovery-workbench" id="discovery-workbench" role="tabpanel">
+        <div class="discovery-title"><div><span class="eyebrow" id="discovery-index">Scene 07</span><h3 id="discovery-title">Same ball. Different bounce.</h3><p id="discovery-question"></p></div><div class="verified-run"><span>VERIFIED SUCCESS</span><strong>C ✓ <i></i> S ✓</strong><small id="discovery-run"></small></div></div>
+        <div class="discovery-columns">
+          <article class="law-lab">
+            <div class="discovery-panel-label"><span class="panel-step">A</span><h4>Try the mechanism</h4><span>Interactive illustration</span></div>
+            <div class="lab-viewport"><svg id="law-canvas" viewBox="0 0 500 340" role="img" aria-label="Interactive illustration of the selected physical law"></svg><span class="lab-live-label"><i></i> LAW ILLUSTRATION</span></div>
+            <div id="lab-controls" class="lab-controls"></div>
+            <div id="lab-readout" class="lab-readout" aria-live="polite"></div>
+            <p class="illustration-note" id="illustration-note">A simplified illustration of the law. The recorded experiment is shown alongside.</p>
+          </article>
+          <article class="successful-run">
+            <div class="discovery-panel-label"><span class="panel-step">B</span><h4>Watch Astra establish it</h4><span>Recorded experiment</span></div>
+            <div class="success-video-frame"><video id="success-video" muted playsinline preload="auto" aria-label="Experiment from a verified successful GPT-6-Astra run"></video><span id="success-clock" class="video-coordinate"></span><span id="success-turns" class="video-turn"></span></div>
+            <div class="success-chapters" id="success-chapters" role="tablist" aria-label="Evidence chapter"></div>
+            <div class="playback-controls"><button id="replay-play" class="play-button" aria-label="Play recorded experiment"><span aria-hidden="true">▶</span></button><label for="replay-progress" class="sr-only">Recorded experiment progress</label><input id="replay-progress" type="range" min="0" max="1000" value="0"><span id="replay-percent">0%</span><button id="replay-reset" class="text-button" aria-label="Restart recorded experiment">↺</button></div>
+            <div class="success-evidence"><h4 id="success-chapter-title"></h4><p id="success-description"></p><details class="note-details"><summary>Read the original note <span>↗</span></summary><blockquote id="success-note"></blockquote><span class="note-source" id="success-note-source"></span></details></div>
+          </article>
+        </div>
+        <div class="discovery-conclusion"><span>THE DISCOVERY</span><p id="discovery-conclusion"></p></div>
+        <details class="final-note"><summary>Read the complete final exploration note <span>+</span></summary><blockquote id="success-final-note"></blockquote><p class="note-source">Original final note, preserved verbatim. The full report and notes are available below.</p></details>
+        <div class="success-source"><span id="success-source-label"></span><a href="downloads/successful-runs.json" download>All four runs: notes & reports ↓</a></div>
+      </div>
+      <p class="success-selection-note">These are selected successful explorations. Across the full main evaluation, Astra succeeds in 7 of 42 altered-scene runs; all model results are reported below.</p>
+    </section>
+
+    <section id="framework" class="framework-section">
+      <div class="container section">
+        <div class="section-heading"><div><div class="eyebrow"><span class="section-number">02</span> The LongChang framework</div><h2>A complete cycle of<br><em>autonomous inquiry.</em></h2></div><p>LLMs design the worlds, choose the questions, build the apparatus and evaluate the findings. Exploration records guide what comes next.</p></div>
+        <div class="cycle" aria-label="Environment construction, autonomous exploration, discovery evaluation, and scene evolution form a cycle">
+          <article class="cycle-step"><span class="cycle-number">01 / CONSTRUCT</span><div class="cycle-icon" aria-hidden="true"><svg viewBox="0 0 80 70"><path d="M40 6 70 22 70 51 40 66 10 51 10 22Z M10 22 40 38 70 22 M40 38V66"/><circle cx="31" cy="44" r="6" class="fill-red"/><circle cx="51" cy="45" r="6" class="fill-blue"/></svg></div><h3>Build a world</h3><p>A designer changes physical laws in an executable simulation. The explorer is not told what changed.</p></article>
+          <span class="cycle-arrow" aria-hidden="true">→</span>
+          <article class="cycle-step"><span class="cycle-number">02 / EXPLORE</span><div class="cycle-icon" aria-hidden="true"><svg viewBox="0 0 80 70"><circle cx="34" cy="29" r="19"/><path d="m48 43 18 18M22 29h24M34 17v24"/><circle cx="34" cy="29" r="5" class="fill-blue"/></svg></div><h3>Choose a question</h3><p>The explorer observes, intervenes and constructs tools. Apparatus designs undergo automated review.</p></article>
+          <span class="cycle-arrow" aria-hidden="true">→</span>
+          <article class="cycle-step"><span class="cycle-number">03 / EVALUATE</span><div class="cycle-icon" aria-hidden="true"><svg viewBox="0 0 80 70"><rect x="16" y="7" width="47" height="55" rx="5"/><path d="m26 26 5 5 10-12M26 46l5 5 10-12M47 26h8M47 46h8"/></svg></div><h3>Test the claim</h3><p>A discovery needs both a correct law and supporting experiments in the exploration record.</p></article>
+          <span class="cycle-arrow" aria-hidden="true">→</span>
+          <article class="cycle-step"><span class="cycle-number">04 / EVOLVE</span><div class="cycle-icon" aria-hidden="true"><svg viewBox="0 0 80 70"><path d="M40 22v16M18 53V38h44v15"/><circle cx="40" cy="14" r="8"/><circle cx="18" cy="57" r="7" class="fill-blue"/><circle cx="40" cy="57" r="7"/><circle cx="62" cy="57" r="7" class="fill-red"/></svg></div><h3>Make the next world</h3><p>Unanswered questions and corrected errors inform generation, refinement and composition.</p></article>
+        </div>
+        <div class="cycle-return"><span>↶</span> Exploration evidence feeds the next discovery cycle</div>
+        <div class="cycle-explainer"><button id="cycle-play" class="cycle-play" aria-label="Pause framework animation">Ⅱ</button><div><span id="cycle-stage">01 / CONSTRUCT</span><p id="cycle-explanation">The scene designer specifies objects and altered laws. These laws are hidden from the explorer.</p></div><span class="cycle-diagram-label">PROCESS ILLUSTRATION</span></div>
+        <details class="abstract-details"><summary>Read the abstract <span>+</span></summary><p>Can large language models (LLMs) uncover the laws and limits of their world through autonomous exploration and experimentation? To evaluate this ability in a controlled setting, we introduce LongChang, an automated framework that creates simulated worlds with altered physics, where one or more laws differ from ordinary physics. LLMs explore freely without research tasks or hints about these laws, manipulating objects and building tools to investigate questions they choose. LLMs generate scenes, review tools, and evaluate reports for correctness and experimental support using the altered physical laws and exploration records. These records guide scene evolution for further exploration, allowing the full cycle to run without human intervention. Among 12 LLMs, GPT-6-Astra achieves a discovery rate of 16.7%, while the other 11 score 0%. The exploration records reveal uninvestigated anomalies and only partial identification of the altered physical laws.</p></details>
+      </div>
+    </section>
+
+    <section id="worlds" class="section container">
+      <div class="section-heading"><div><div class="eyebrow"><span class="section-number">03</span> A small atlas of unusual physics</div><h2>Familiar objects.<br><em>Unfamiliar laws.</em></h2></div><p>Fourteen worlds change one physical law each. An ordinary control checks whether models mistake an interesting observation for an anomaly.</p></div>
+      <div class="world-browser">
+        <div id="scene-picker" class="scene-picker" role="tablist" aria-label="Choose a simulated world"></div>
+        <div id="scene-detail" class="world-detail" role="tabpanel">
+          <div class="world-image"><img id="scene-image" src="assets/images/scene-15.webp" width="1000" height="600" alt="Initial state of Scene 15" loading="lazy"><span class="image-label">INITIAL STATE · RECORDED WORLD</span></div>
+          <div class="world-copy"><div class="world-meta"><span id="scene-number">WORLD 15 / 15</span><span id="scene-family" class="category-tag">History</span></div><h3 id="scene-name">Interrupted drift</h3><p id="scene-description"></p><details id="scene-law" class="world-law"><summary>Reveal the law <span>+</span></summary><p id="scene-law-text"></p></details><div class="world-footer"><span>Distances in bricks · time in counts</span><a href="downloads/scenes.json" download aria-label="Download descriptions of all scenes">↓</a></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="results" class="results-section">
+      <div class="container section">
+        <div class="section-heading"><div><div class="eyebrow"><span class="section-number">04</span> What the experiments reveal</div><h2>Evidence is a beginning.<br><em>Discovery asks for more.</em></h2></div><p>Only one of the twelve models makes discoveries under free exploration. Correct explanations and well-supported observations do not always arrive together.</p></div>
+        <div class="results-highlights">
+          <article class="discovery-highlight"><div class="ring" aria-label="16.7 percent discovery rate"><div><strong>16.7<span>%</span></strong><small>discovery rate</small></div></div><div><span class="eyebrow">GPT-6-Astra</span><h3>7 discoveries<br>in 42 altered-world runs.</h3><p>The other 11 models record no discoveries.</p></div></article>
+          <article class="evidence-highlight"><span class="eyebrow">The gap within GPT-6-Astra</span><div class="gap-row"><span>Evidence support</span><strong>97.6<span>%</span></strong></div><div class="gap-track"><i style="width:97.6%"></i></div><div class="gap-row"><span>Law correctness</span><strong>19.0<span>%</span></strong></div><div class="gap-track correctness"><i style="width:19%"></i></div><p>Supported findings often leave a law's conditions or scope unresolved.</p></article>
+        </div>
+        <div class="chart-card">
+          <div class="chart-heading"><div><h3>Twelve models, three views of discovery</h3><p>Rates across 14 altered scenes × 3 runs. All axes span 0–100%.</p></div><div class="segmented" role="group" aria-label="Model chart metric"><button data-metric="all" aria-pressed="true">All</button><button data-metric="D" aria-pressed="false">Discovery</button><button data-metric="C" aria-pressed="false">Correctness</button><button data-metric="S" aria-pressed="false">Evidence</button></div></div>
+          <div class="chart-legend"><span><i class="legend-dot d"></i> Discovery · C and S</span><span><i class="legend-dot c"></i> Law correctness · C</span><span><i class="legend-dot s"></i> Evidence support · S</span></div>
+          <div id="model-chart" class="model-chart" aria-live="polite"></div>
+          <div class="chart-footer"><span>Free exploration · up to 100 turns · judge: GPT-6.1-Sol</span><div class="chart-downloads"><a href="downloads/model-comparison.svg" download>Figure (SVG) ↓</a><a href="downloads/model-comparison.png" download>PNG ↓</a><a href="downloads/model-results.csv" download>Data (CSV) ↓</a></div></div>
+        </div>
+        <div class="chart-card heatmap-card">
+          <div class="chart-heading"><div><h3>Where does discovery happen?</h3><p>Each cell represents three explorations of the same scene.</p></div><div class="segmented" role="group" aria-label="Heatmap metric"><button data-heat="D" aria-pressed="true">Discovery</button><button data-heat="C" aria-pressed="false">Correctness</button><button data-heat="S" aria-pressed="false">Evidence</button></div></div>
+          <div class="heatmap-scroll"><div id="heatmap"></div></div>
+          <div class="heatmap-key"><span>Passing runs</span><i data-level="0"></i>0<i data-level="1"></i>1<i data-level="2"></i>2<i data-level="3"></i>3<span class="heatmap-key-note">Hover or focus a cell for details</span></div>
+        </div>
+        <div class="control-callout"><span class="control-mark">01</span><div><h4>The ordinary world is a test, too.</h4><p>In the normal control, <strong>36.1% of reports are rejected</strong> for false claims of altered physics or unsupported explanations.</p></div><span class="control-fraction">13 / 36<small>control reports</small></span></div>
+        <details class="full-results"><summary>Full results & exploration behavior <span>+</span></summary><p class="table-intro">D: discovery; C: correctness; S: support; R: rejected control reports; L: mean turns; ES: early stopping; CS: runs with a successful build; CF: failed build attempts; AF: failed actions. D/C/S exclude the normal control. Exploration statistics use all 45 runs per model.</p><div class="table-scroll"><table id="full-results-table"><caption>Model performance and exploration behavior</caption></table></div></details>
+        <div class="subsection-heading"><span class="eyebrow">Controlled comparisons · GPT-6-Astra</span><h3>What helps an explorer discover?</h3></div>
+        <div class="intervention-grid" id="interventions"></div>
+        <div class="figure-download"><a href="downloads/controlled-comparisons.svg" download>Comparison figure (SVG) ↓</a><a href="downloads/controlled-comparisons.png" download>PNG ↓</a></div>
+        <details class="full-results"><summary>All controlled-comparison metrics <span>+</span></summary><div class="table-scroll"><table id="controlled-table"><caption>Discovery, correctness, support, exploration length and action failures</caption></table></div><p class="table-intro">The budget comparison uses matched runs without context compaction. Its 100-turn baseline is distinct from the main evaluation. Guidance and apparatus comparisons use the main baseline.</p></details>
+      </div>
+    </section>
+
+    <section id="cases" class="section container">
+      <div class="section-heading"><div><div class="eyebrow"><span class="section-number">05</span> Inside the experiment</div><h2>How does an explanation<br><em>earn its evidence?</em></h2></div><p>A useful experiment separates explanations. A useful instrument may take more than one design.</p></div>
+      <div class="case-tabs" role="tablist" aria-label="Case study"><button id="color-tab" role="tab" aria-controls="color-case" aria-selected="true" data-case="color"><span>01</span> Test competing explanations</button><button id="tool-tab" role="tab" aria-controls="tool-case" aria-selected="false" tabindex="-1" data-case="tool"><span>02</span> Build a better instrument</button></div>
+      <div id="color-case" class="case-panel" role="tabpanel" aria-labelledby="color-tab">
+        <div class="case-intro"><span class="scene-pill">SCENE 12</span><h3>Color exchange, or independent flipping?</h3><p>Two red–blue collisions change and then restore the colors. Both explanations fit. A red–red collision makes different predictions.</p></div>
+        <div class="prediction-strip"><div><span>Hypothesis A · exchange</span><div class="ball-equation"><i class="ball red"></i><i class="ball red"></i><b>→</b><i class="ball red"></i><i class="ball red"></i></div></div><div><span>Hypothesis B · flip each color</span><div class="ball-equation"><i class="ball red"></i><i class="ball red"></i><b>→</b><i class="ball blue"></i><i class="ball blue"></i></div></div><div class="observed-prediction"><span>Observed · both stay red</span><strong>Evidence favors exchange <span>↗</span></strong></div></div>
+        <div class="case-image-pair"><figure><img src="assets/images/v_seq_3_before.webp" alt="Two red balls approaching before the diagnostic collision" width="1200" height="540" loading="lazy"><figcaption><span>BEFORE CONTACT</span> Two red balls make a discriminating test.</figcaption></figure><figure><img src="assets/images/v_seq_3_contact.webp" alt="Both balls retain their red color during the recorded collision" width="1200" height="540" loading="lazy"><figcaption><span>AT CONTACT</span> Both remain red.</figcaption></figure></div>
+        <details class="case-note"><summary>Read the model's experiment rationale <span>+</span></summary><blockquote id="color-quote"></blockquote><span class="note-source">Original note · Turn 43</span></details>
+        <p class="case-source">GPT-6-Astra · 500-turn budget · selected exploration, Turns 39–49. This comparison supports color exchange; it is not a claim that the full run satisfies every discovery criterion.</p>
+      </div>
+      <div id="tool-case" class="case-panel" role="tabpanel" aria-labelledby="tool-tab" hidden>
+        <div class="case-intro"><span class="scene-pill">SCENE 15</span><h3>When the object will not stay on the scale.</h3><p>Astra builds a spring-supported weighing pan. Red drifts away after release, so the explorer adds retaining walls and increases the available travel.</p></div>
+        <div class="tool-story"><figure><span class="tool-stage">01 / BUILD</span><img src="assets/images/weighing_flat_initial.webp" alt="The red ball is initially placed on a flat spring-supported pan" width="1000" height="720" loading="lazy"><figcaption><h4>A flat weighing pan</h4><p>A guided spring and plunger provide a load reading.</p></figcaption></figure><figure><span class="tool-stage">02 / OBSERVE</span><img src="assets/images/weighing_flat.webp" alt="The red ball has drifted off the original flat pan" width="1000" height="720" loading="lazy"><figcaption><h4>The load escapes</h4><p>Red drifts off; the reading returns to the unloaded level.</p></figcaption></figure><figure><span class="tool-stage">03 / REDESIGN</span><img src="assets/images/weighing_rimmed.webp" alt="The redesigned weighing device retains the ball with raised walls" width="1000" height="720" loading="lazy"><figcaption><h4>A rimmed pan</h4><p>Retaining walls keep the ball in place for a stable reading.</p></figcaption></figure></div>
+        <div class="scale-readings"><div><h4>The redesigned instrument</h4><p>Recorded slide-joint travel, in bricks.</p></div><div id="scale-chart"></div></div>
+        <details class="case-note"><summary>Read the model's redesign rationale <span>+</span></summary><blockquote id="tool-quote"></blockquote><span class="note-source">Original note · Turn 24</span></details>
+        <p class="case-source">GPT-6-Astra · 500-turn budget · selected exploration, Turns 18–34. Readings are shown at the resolution available to the explorer.</p>
+      </div>
+    </section>
+
+    <section id="evolution" class="evolution-section">
+      <div class="container section">
+        <div class="section-heading"><div><div class="eyebrow"><span class="section-number">06</span> From a corrected error to a new world</div><h2>Discovery opens<br><em>the next question.</em></h2></div><p>When later evidence corrects an explanation, the same error can guide three kinds of new discovery challenge.</p></div>
+        <div class="evolution-source"><div class="source-label"><span class="scene-pill">SCENE 15</span><span>THE CORRECTED ERROR</span></div><div class="correction"><p><span>Initial inference</span>“The northward effect is not persistent.”</p><span class="correction-arrow">→</span><p><span>After the delayed restart</span>The force was temporarily paused, not absent.</p></div><small>Paraphrases of the explorer's notes at Turns 30–31.</small></div>
+        <div class="branch-line" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="evolution-grid">
+          <article><div class="evolution-card-top"><span class="evolution-letter">G</span><span>GENERATION</span></div><h3>Change the interaction.</h3><div class="evolution-diagram" aria-label="Red and blue repel, with a pause after a launch"><i class="ball red"></i><span>← &nbsp; →</span><i class="ball blue"></i><small>repulsion + pause</small></div><p>Replace the fixed northward force with red–blue repulsion. The force now depends on relative position.</p><div class="evolution-score"><span>Discovery <strong>0 / 3</strong></span><span>Evidence <strong>3 / 3</strong></span></div></article>
+          <article><div class="evolution-card-top"><span class="evolution-letter">R</span><span>REFINEMENT</span></div><h3>Add a spatial condition.</h3><div class="evolution-diagram" aria-label="Blue inside a gray square blocks the northward force on red"><i class="ball red"></i><span>↑ &nbsp; ×</span><span class="tile"><i class="ball blue"></i></span><small>position + pause</small></div><p>Block red's force while blue is inside the gray square. Waiting alone may no longer restore motion.</p><div class="evolution-score"><span>Discovery <strong>0 / 3</strong></span><span>Evidence <strong>3 / 3</strong></span></div></article>
+          <article><div class="evolution-card-top"><span class="evolution-letter">C</span><span>COMPOSITION</span></div><h3>Combine two timing rules.</h3><div class="evolution-diagram" aria-label="Red's velocity is copied to green after a 12 count delay"><i class="ball red"></i><span class="delay-arrow">12 counts<br>⟶</span><i class="ball green"></i><small>velocity echo + pause</small></div><p>Combine the paused force with Scene 14's delayed velocity copy. Separate triggers produce separate delays.</p><div class="evolution-score"><span>Discovery <strong>0 / 3</strong></span><span>Evidence <strong>3 / 3</strong></span></div></article>
+        </div>
+        <div class="evolution-chart-wrap"><div><span class="eyebrow">GPT-6-Astra · Free exploration</span><h3>New conditions remain unresolved.</h3><p>Evidence support stays at 100%, while no report identifies the complete laws of the evolved scenes.</p></div><div id="evolution-chart" aria-label="Discovery rates in source and evolved scenes"></div></div>
+        <div class="evolution-eval-note"><p>This scene-evolution evaluation uses separate source-scene runs from the main comparison above. All five conditions use three runs.</p><div class="chart-downloads"><a href="downloads/scene-evolution.svg" download>Figure (SVG) ↓</a><a href="downloads/scene-evolution.png" download>PNG ↓</a></div></div>
+      </div>
+    </section>
+
+    <section id="materials" class="section container materials-section">
+      <div><div class="eyebrow"><span class="section-number">07</span> Explore further</div><h2>Follow the evidence.</h2><p>The paper, implementation and materials behind the experiments.</p></div>
+      <div class="resource-grid">
+        <a href="downloads/paper.pdf" target="_blank" rel="noopener"><span class="resource-icon">↗</span><h3>Read the paper</h3><p>Method, experiments and analysis</p><span>Anonymous PDF</span></a>
+        <a href="downloads/longchang-source.zip" download><span class="resource-icon">↓</span><h3>Explore the code</h3><p>Simulation and discovery framework</p><span>Anonymous source bundle · ZIP</span></a>
+        <a href="downloads/episodes.csv" download><span class="resource-icon">↓</span><h3>Examine the results</h3><p>540 explorations, with individual labels</p><span>CSV · current paper evaluation</span></a>
+        <a href="downloads/prompts.zip" download><span class="resource-icon">↓</span><h3>Inspect the prompts</h3><p>Exploration, reporting and evaluation</p><span>Original prompt text</span></a>
+      </div>
+      <div class="extra-resources"><a href="downloads/scenes.json" download>Scene descriptions ↓</a><a href="downloads/case-records.json" download>Case-study notes ↓</a><a href="downloads/controlled-results.json" download>Controlled & evolution results ↓</a></div>
+    </section>
+  </main>
+  <footer><div class="container footer-inner"><a class="wordmark" href="#"><img src="assets/favicon.svg" alt="" width="30" height="30">LongChang<span class="wordmark-dot">.</span></a><p>Can LLMs Uncover the Laws of Their World?</p><span>Anonymous research project</span><a href="#" aria-label="Back to top">↑</a></div></footer>
+  <div id="chart-tooltip" role="tooltip" hidden></div>
+  <noscript><div class="noscript-notice">Interactive charts and experiment controls require JavaScript. The <a href="downloads/paper.pdf">paper</a> and all downloadable materials remain available.</div></noscript>
+</body>
+</html>

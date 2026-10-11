@@ -1,0 +1,46 @@
+[
+  {
+    "scene": "07_tile_restitution",
+    "repeat": 3,
+    "episode_id": "84afdeec43364892abfe4c816bf8b8b6",
+    "source": "runs/main-15-20260930-022640-2180080/07_tile_restitution/gpt-6-astra/r3/T0",
+    "session_sha256": "bebd1d06f0e4dad12fbd31f27ecb6730951d5d2dc01d580a5ebacfa429f8c3e1",
+    "replay_sha256": "a9d93881d1bbdf3fa814bb4309bbb0c424c2eb68804975f2019704f836290d6e",
+    "eval_sha256": "906f72efaaa669263e685cd2f453bb46ac440ba613bc2d7b133e0c0b0309d73f",
+    "judgement": "C=true; S=true; D=true",
+    "judge": "GPT-6.1-Sol"
+  },
+  {
+    "scene": "06_clockwise_deflection",
+    "repeat": 1,
+    "episode_id": "14041f25e9fb40ac853d12873058413a",
+    "source": "runs/main-15-20260930-022640-2180080/06_clockwise_deflection/gpt-6-astra/r1/T0",
+    "session_sha256": "e64eb9de695e2ebfeea322207fe50c8bf900a56ee8aa634d709d675a6501c892",
+    "replay_sha256": "8b393ba4e749e2c5c6506f89500891581e3c7cfeee54e090c7aeb58218470818",
+    "eval_sha256": "3a1fb8c1163ac9f521a3335fc12172d659273cdbe16f8bd164b0ee71f3306b73",
+    "judgement": "C=true; S=true; D=true",
+    "judge": "GPT-6.1-Sol"
+  },
+  {
+    "scene": "14_delayed_motion_echo",
+    "repeat": 2,
+    "episode_id": "5e6f99e65e4a4553b1da3c456f6b2fde",
+    "source": "runs/main-15-20260930-022640-2180080/14_delayed_motion_echo/gpt-6-astra/r2/T0",
+    "session_sha256": "98038e3d788306866d75557780ec7d4264ee371d9f20f2eeedec8b1eba58a208",
+    "replay_sha256": "44ed612d49dd61784d20eb01d57bf2ca0d165fefb9ff7ad872d8cd0e03d4ad7a",
+    "eval_sha256": "d26ed0359f4e5a75ecc3d1b9a92910dcb5c3413cd92becfc6f507499fc6bd2e3",
+    "judgement": "C=true; S=true; D=true",
+    "judge": "GPT-6.1-Sol"
+  },
+  {
+    "scene": "15_launch_suppressed_drift",
+    "repeat": 3,
+    "episode_id": "104a30c435654dd6886acd151c8648a1",
+    "source": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gpt-6-astra/r3/T0",
+    "session_sha256": "db03bb6fb38c94f71bd4f187f63ef4d1395e3b37784f98532d1dd5708b25658c",
+    "replay_sha256": "977a55cc0229de6f8239b9a040aec39da82573c641127602e02b98af0fe92834",
+    "eval_sha256": "30dbd88cdeea0b14a7dac83f734d3f03e9aa8804a6542f27cd67f2024f8337f5",
+    "judgement": "C=true; S=true; D=true",
+    "judge": "GPT-6.1-Sol"
+  }
+]

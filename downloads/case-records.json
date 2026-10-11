@@ -1,0 +1,220 @@
+{
+  "description": "Selected original notes and observations used in the project page. Editorial explanations are separate from quoted notes.",
+  "question": {
+    "scene": "15",
+    "model": "GPT-6-Astra",
+    "repeat": 2,
+    "budget": 100,
+    "notes": {
+      "22": "Red’s total westward travel was about 4.0 bricks, including roughly 2.3 after landing (turns 19–21). I will now arrange a head-on collision to test motion transfer between the balls.",
+      "23": "Blue is held (turn 22); I will place it about one brick east of red, leaving room for red to accelerate toward it.",
+      "24": "Blue reached the collision lane but is labeled moving (turn 23). I will hold it stationary briefly to reduce handling-induced motion before release.",
+      "25": "Unexpectedly, red began moving north while blue was held at a displayed fixed position (turn 24). The cause is unclear, so the collision setup is not yet controlled.",
+      "27": "Red accelerated north without a commanded push, traveling 6.7 bricks during turn 26 while blue settled. This cannot be explained by ordinary slowing alone; I will follow the motion before attempting collisions.",
+      "28": "Red stopped at y=5.9, suggesting a northern boundary like the eastern one (turn 27). I will push it south to test whether the unexplained northward tendency persists.",
+      "29": "Red initially moved south normally (turn 28). A longer wait will distinguish ordinary stopping from reversal under a continuing northward influence.",
+      "30": "Red traveled the usual 1.5 bricks south and remained at rest (turns 28–29), so the earlier northward acceleration is not a persistent local effect. I will check for delayed motion in both balls.",
+      "31": "Red restarted north after 3.884 counts of turn 30, about 10 counts after the southward push, while blue stayed still. This corrects my earlier inference: the effect is delayed, not absent.",
+      "35": "Blue’s impulse was applied while red was drifting north (turn 34). Observing both for twelve counts will test blue’s delayed response and whether acting on blue changes red’s motion.",
+      "36": "Blue stayed still after stopping, but its push interrupted red’s northward acceleration; red then restarted about ten counts after that blue-targeted action (turns 34–35). This suggests an inactivity-triggered effect on red, rather than a timer tied only to red’s own impulses.",
+      "32": "I am repeating the southward trial (turn 31) to test whether northward motion reliably begins about ten counts after an impulse.",
+      "33": "Red is still 9.12 counts after the repeated push (turns 31–32). The next two counts bracket the predicted delayed onset.",
+      "34": "Northward motion restarted at 10.006 counts after the push (turns 31–33), reproducing the previous ~10.004-count delay. I will test whether blue shows the same delayed behavior after an impulse."
+    }
+  },
+  "checklist": {
+    "scene": "15",
+    "model": "Gemini-3.7-Flash",
+    "repeat": 1,
+    "budget": 100,
+    "steps": [
+      {
+        "turn": 1,
+        "action": "PUSH red_ball 90 5.0",
+        "note": "Testing motion and friction of red_ball with a northward push."
+      },
+      {
+        "turn": 2,
+        "action": "WAIT 10",
+        "note": "Waiting for red_ball to complete its motion."
+      },
+      {
+        "turn": 3,
+        "action": "PUSH blue_ball 90 5.0",
+        "note": "Testing blue_ball with a northward push of impulse 5.0 to compare with red_ball."
+      },
+      {
+        "turn": 4,
+        "action": "WAIT 10",
+        "note": "Waiting for blue_ball to complete its motion."
+      },
+      {
+        "turn": 5,
+        "action": "THROW red_ball 0 90 5.0",
+        "note": "Testing vertical throw on red_ball to measure vertical kinematics and gravity."
+      },
+      {
+        "turn": 6,
+        "action": "WAIT 10",
+        "note": "Waiting for red_ball to complete vertical trajectory."
+      },
+      {
+        "turn": 7,
+        "action": "THROW blue_ball 0 90 5.0",
+        "note": "Testing vertical throw on blue_ball with same impulse 5.0 to check mass/gravity consistency."
+      },
+      {
+        "turn": 8,
+        "action": "WAIT 10",
+        "note": "Waiting for blue_ball to complete vertical trajectory."
+      },
+      {
+        "turn": 9,
+        "action": "MOVE red_ball 2.0 5.8 0.1",
+        "note": "Moving red_ball directly facing blue_ball to prepare for an elastic/inelastic collision experiment."
+      },
+      {
+        "turn": 10,
+        "action": "GRASP red_ball",
+        "note": "Grasping red_ball first to move it."
+      },
+      {
+        "turn": 11,
+        "action": "MOVE red_ball 1.0 5.8 0.1",
+        "note": "Moving held red_ball to (1.0, 5.8, 0.1) aligned with blue_ball at (3.0, 5.8, 0.1)."
+      },
+      {
+        "turn": 12,
+        "action": "RELEASE red_ball",
+        "note": "Releasing red_ball before pushing."
+      },
+      {
+        "turn": 13,
+        "action": "PUSH red_ball 0 4.0",
+        "note": "Pushing red_ball directly towards blue_ball to observe collision dynamics."
+      },
+      {
+        "turn": 14,
+        "action": "WAIT 10",
+        "note": "Waiting for collision between red_ball and blue_ball."
+      },
+      {
+        "turn": 15,
+        "action": "DONE",
+        "note": "All planned basic physical characterizations (horizontal sliding/friction, vertical kinematics/gravity, and direct collisions) are complete. Ending exploration."
+      }
+    ],
+    "motion_events": [
+      {
+        "count": 0.0,
+        "position": [
+          0.0,
+          -2.5,
+          0.1
+        ],
+        "state": "moving"
+      },
+      {
+        "count": 4.816,
+        "position": [
+          0.0,
+          5.9,
+          0.1
+        ],
+        "state": "still"
+      },
+      {
+        "count": 9.884,
+        "position": [
+          0.0,
+          5.9,
+          0.1
+        ],
+        "state": "moving"
+      }
+    ]
+  },
+  "color": {
+    "scene": "12",
+    "model": "GPT-6-Astra",
+    "repeat": 1,
+    "budget": 500,
+    "notes": {
+      "40": "Contact produced a striking change: ball_1 is now blue and ball_2 red, while their named trajectories remain continuous; ball_2 began moving near count 0.818 of turn 39. This suggests a collision-triggered color exchange, not a pre-existing mechanical difference. I will check whether the colors persist after separation.",
+      "43": "The second encounter restored ball_1 to red and ball_2 to blue (turn 42). Two rules still fit: exchanging colors, or toggling each participant's color. A red–red collision will distinguish them, so I will bring ball_3 near red ball_1.",
+      "47": "Ball_3 drifted to y=1.3 before stopping, showing that release after MOVE can retain motion (turn 46). It is now still and red; a northward impulse of 1.5 will test its collision with red ball_1.",
+      "48": "The red–red approach has begun without a color change (turn 47). I will wait through contact and settling.",
+      "49": "The red–red collision moved ball_1 but left both participants red, while ball_2 stayed blue and stationary (turn 48). This supports exchanging colors rather than toggling both. I will test a different red–blue pair to see whether blue can transfer to ball_3.",
+      "57": "Ball_3 became blue and ball_2 red after their collision, with uninvolved ball_1 unchanged (turn 56). Blue has now occupied all three object IDs, and every observed state still has one blue and two red balls. I will test whether newly blue ball_3 retains its original impulse-2 response.",
+      "59": "Main finding: ball–ball collisions exchange colors while object IDs remain continuous. Ball_1/ball_2 exchanged red and blue, then exchanged back on another encounter (turns 39–42); a red–red collision left both red (turn 48); ball_2/ball_3 subsequently exchanged blue and red (turn 56). Uninvolved balls retained their colors. Thus color is transferable, not a fixed identity; all observed states retained two red balls and one blue. The transferred blue persisted through a 30-count wait (turn 58). No color-dependent mechanical difference was resolved: all three initially traveled about 1.5 bricks under impulse 2, and ball_3 repeated that distance and stopping time after becoming blue (turns 1–6, 57–58). Unobstructed pushes of 1, 2, and 4 produced roughly 0.4, 1.5, and 5.9 bricks of travel, approximately quadratic scaling (turns 14–16). Vertical throws were consistent with downward acceleration near 9.8 bricks/count², and oblique throws continued traveling after landing (turns 9–12, 28–30). The spring scale gave matching red/blue load readings at its coarse resolution (turns 22, 27). Important limits: positions resolve only 0.1 brick, some trajectories omit key points, counts are not calibrated seconds, and “still” can occur briefly at an apex. MOVE followed immediately by RELEASE can retain drift, so controlled trials require settling."
+    }
+  },
+  "apparatus": {
+    "scene": "15",
+    "model": "GPT-6-Astra",
+    "repeat": 2,
+    "budget": 500,
+    "notes": {
+      "18": "Both balls have matching vertical trajectories, and “still” briefly occurs at the apex rather than meaning permanently at rest (turns 15 and 17). I will build a spring-supported weighing pan to compare their gravitational loads independently of launch behavior.",
+      "19": "The first scale design was rejected because it lacked physical anchorage (turn 18). I will add a floor-supported base, guide sleeve, and moving plunger so the spring slide has a realizable support.",
+      "20": "The supported scale was installed (turn 19). I will let its one-unit moving mass settle to establish the unloaded baseline.",
+      "22": "After placement, the scale reads about −0.2 versus −0.1 unloaded, but the placement message and hand status disagree about whether red is held (turn 21). I will explicitly release before interpreting the weight.",
+      "24": "Red drifted north off the pan, and the scale returned to its unloaded reading (turn 23), so no stable weight was obtained. I will build a deeper, rimmed pan to retain the ball and increase the spring travel.",
+      "26": "Red is now held (turn 25); I will let the empty rimmed scale settle before loading it.",
+      "29": "Red has been released into the cup (turn 28); I will wait for a stable reading.",
+      "30": "Red settled against the north rim with scale travel −0.3 brick (turn 29). I will remove it with an upward southward throw, then weigh blue in the same cup.",
+      "31": "Red is rising out of the cup (turn 30); I will verify that the scale returns to its empty baseline.",
+      "32": "The empty scale returned to −0.2, and red stopped clear of it (turn 31). I will now load blue.",
+      "35": "Both balls gave the same loaded scale reading, −0.3 brick, though only red drifted north; blue remained centered (turns 29 and 34). I will push red east away from the base to test whether its northward drift persists without handling.",
+      "61": "Red restarted northward 10.004 counts after the nonzero impulse on blue (turns 58–60), confirming the predicted shared delay. The strongest finding is a red-only northward drive suppressed for about ten counts by tested nonzero impulses on either ball; zero impulses did not suppress it. Both balls otherwise matched in impulse-2 travel, vertical impulse-4 trajectories, and coarse spring-scale readings. Observed stopping limits near x=5.9 and y=5.9 suggest boundaries. Position rounding and compressed trajectories limit precision, and the physical cause of the delayed drive remains unknown."
+    },
+    "pan_readings": [
+      {
+        "turn": 26,
+        "condition": "Empty",
+        "instrument": "cupscale",
+        "travel": -0.2,
+        "order": 1,
+        "pan_drop_from_initial_empty": 0.0
+      },
+      {
+        "turn": 29,
+        "condition": "Red",
+        "instrument": "cupscale",
+        "travel": -0.3,
+        "order": 2,
+        "pan_drop_from_initial_empty": 0.1
+      },
+      {
+        "turn": 31,
+        "condition": "Empty",
+        "instrument": "cupscale",
+        "travel": -0.2,
+        "order": 3,
+        "pan_drop_from_initial_empty": 0.0
+      },
+      {
+        "turn": 34,
+        "condition": "Blue",
+        "instrument": "cupscale",
+        "travel": -0.3,
+        "order": 4,
+        "pan_drop_from_initial_empty": 0.1
+      }
+    ],
+    "flat_pan_readings": [
+      {
+        "turn": 20,
+        "travel": -0.1
+      },
+      {
+        "turn": 21,
+        "travel": -0.2
+      },
+      {
+        "turn": 23,
+        "travel": -0.1
+      }
+    ]
+  }
+}

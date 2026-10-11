@@ -1,0 +1,25 @@
+{
+  "sources": {
+    "ACL/materials/results/sources/gpt_6_1_sol_episodes.csv": "30aa9cc9b4c7324a3b9fca4553c553398941d64dded80fc291eeac267396f87b"
+  },
+  "tables": {
+    "tab:main-results": {
+      "path": "ACL/main.tex",
+      "sha256": "4de51871f6be960a5c2e6a744efcc45ab3f364cffcd6b35508ce9130ff28396b",
+      "inline": true
+    },
+    "tab:controlled-comparisons": {
+      "path": "ACL/main.tex",
+      "sha256": "a484b2c39b9b51d4db056a6113e2dad5bafd8e15d5a2a50170ce01a859b18d9f",
+      "inline": true
+    },
+    "tab:evolution-evaluation": {
+      "path": "ACL/main.tex",
+      "sha256": "7133d5ba6b4c2003ac5c5e0d8040a015b5e7a7c9b83d0050789101285a162a37",
+      "inline": true
+    }
+  },
+  "judge": "GPT-6.1-Sol",
+  "episodes": 540,
+  "policy": "Metrics follow the current paper's frozen rejudging; control runs are excluded from D/C/S. Case studies are selected illustrations, not additional aggregate results."
+}
