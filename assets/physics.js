@@ -88,7 +88,7 @@
     const sample=demo.timeline[index],description=sample.annotation;
     $('#atlas-model-note').textContent='New controlled experiment. Scene laws are preserved; the matched reference disables only the altered program. Glass enclosure and lighting follow the paper’s Figure 1.';
     $('#physics-sample-label').textContent=`MEASURED AT t = ${sample.time.toFixed(2)} COUNTS`;
-    $('#atlas-observation').textContent=description.heading;
+    $('#atlas-observation').textContent=description.heading+' '+(demo.plot.labels[1].includes('reference')?'The gray trace uses the same preparation and actions with only the altered program disabled.':'The two colored traces compare the matched objects shown in this experiment.');
     $('#physics-values').innerHTML=description.values.map(([label,value])=>`<div><span>${label}</span><strong>${value}</strong></div>`).join('');
     $('#oracle-live-state').textContent=description.heading;
     $('#oracle-overlay').dataset.active=String(description.active);
@@ -146,7 +146,8 @@
     const next=demos.find(d=>d.id===id);if(!next)return;
     if(demo?.id!==id){
       video.pause();demo=next;
-      video.poster=demo.poster;video.src=demo.video;video.load();
+      const revision=demo.video_sha256?'?v='+demo.video_sha256.slice(0,12):'';
+      video.poster=demo.poster+revision;video.src=demo.video+revision;video.load();
       video.setAttribute('aria-label',`Scene ${demo.id}: ${demo.name}. Scripted demonstration of the original physical laws.`);
       const enhanced=Boolean(demo.oracle&&demo.time_map);
       $('.physics-video-frame').classList.toggle('is-oracle',enhanced);
@@ -154,13 +155,17 @@
       $('#oracle-chapters').hidden=!enhanced;
       $('#oracle-chart-wrap').hidden=!enhanced;
       if(enhanced){
+        $('#scene-law').open=true;
         $('#oracle-chapters').innerHTML=demo.chapters.map((chapter,i)=>`<button data-oracle-chapter="${i}" aria-pressed="false"><small>0${i+1}</small>${chapter.label}</button>`).join('');
-        $('#oracle-chapters').querySelectorAll('button').forEach((button,i)=>button.addEventListener('click',()=>{pause();video.currentTime=demo.chapters[i].time;progress();}));
+        $('#oracle-chapters').querySelectorAll('button').forEach((button,i)=>button.addEventListener('click',()=>{touring=false;video.loop=true;pause();video.currentTime=demo.chapters[i].time;progress();tourLabel();}));
         $('#oracle-chart-legend').textContent=demo.plot.labels.join(' / ');
       }
       $('#physics-download').href=demo.video;$('#physics-record').href=demo.record;
+      $('#oracle-signal-download').hidden=!demo.signal_figure;
+      if(demo.signal_figure)$('#oracle-signal-download').href=demo.signal_figure;
       $('#physics-error').hidden=true;
     }
+    video.loop=!touring&&Boolean(demo.time_map);
     wantsPlay=autoplay || touring;
     progress();tourLabel();if(wantsPlay)play();
   }
@@ -169,7 +174,8 @@
   $('#physics-progress').addEventListener('input',event=>{
     if(!Number.isFinite(video.duration))return;
     const destination=Number(event.target.value)/1000*video.duration;
-    pause();video.currentTime=destination;progress();
+    touring=false;video.loop=Boolean(demo.time_map);
+    pause();video.currentTime=destination;progress();tourLabel();
   });
   $('#physics-fullscreen').addEventListener('click',async()=>{
     try {if(document.fullscreenElement)await document.exitFullscreen();else await $('.physics-video-frame').requestFullscreen();}
@@ -202,6 +208,7 @@
   reduced.addEventListener('change',event=>{if(event.matches){touring=false;pause();tourLabel();}});
   window.LongChangPhysics=Object.freeze({toggleTour(){
     touring=!touring;
+    video.loop=!touring&&Boolean(demo?.time_map);
     if(touring){changingByTour=true;window.showWorld('01');changingByTour=false;video.currentTime=0;play();}
     else pause();
     tourLabel();

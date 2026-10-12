@@ -7,6 +7,7 @@ color changes, added forces and event times are recorded for explanation.
 """
 from __future__ import annotations
 import argparse
+import os
 import copy
 import hashlib
 import json
@@ -527,7 +528,7 @@ def main():
     def render(folder):
         if not args.compose_only:
             with (folder/'blender.log').open('w') as log:
-                subprocess.run(['/root/.virtualenvs/longchang-blender/bin/python',str(SITE/'scripts/blender_oracle.py'),str(folder/'studio-job.json')],stdout=log,stderr=subprocess.STDOUT,check=True)
+                subprocess.run([os.environ.get('BLENDER_PYTHON',str(Path.home()/'.virtualenvs/longchang-blender/bin/python')),str(SITE/'scripts/blender_oracle.py'),str(folder/'studio-job.json')],stdout=log,stderr=subprocess.STDOUT,check=True)
         return finish(folder,args.ffmpeg)
     completed=[]
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:

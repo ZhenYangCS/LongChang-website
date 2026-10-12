@@ -9,6 +9,8 @@ import importlib.util
 import json
 import math
 import time
+import struct
+import shutil
 
 import bpy
 from mathutils import Vector, Matrix
@@ -111,16 +113,23 @@ def main():
     scene,spheres,mats=setup(job)
     out=Path(job['output']);out.mkdir(parents=True,exist_ok=True)
     end=min(args.end or len(job['frames']),len(job['frames']))
+    seen={}
     for index in range(args.start,end,args.step):
         target=out/f'{index:05}.png'
-        if target.exists():continue
         t=time.time();frame=job['frames'][index]
+        # Blender stores these transforms as float32. Reuse an identical render
+        # while keeping the full-precision simulation clock and annotations.
+        key=b''.join(name.encode()+struct.pack('fff',*value['position'])+struct.pack('ffff',*value['color']) for name,value in frame['objects'].items())
+        if target.exists():seen.setdefault(key,target);continue
+        if key in seen:
+            shutil.copyfile(seen[key],target)
+            continue
+        seen[key]=target
         if 'reuse' in frame:
             # Duplicate a genuinely identical frozen state, including the
             # deliberate hold on the oracle-trigger frame.
             source=out/f"{frame['reuse']:05}.png"
             if source.exists():
-                import shutil
                 shutil.copyfile(source,target)
                 continue
         for name,obj in spheres.items():

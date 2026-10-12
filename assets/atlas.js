@@ -307,7 +307,7 @@
   $('#motion-dialog').addEventListener('close', syncClock);
   reduced.addEventListener('change', event => { if (event.matches) { playing = false; touring = false; render(); syncClock(); } });
   const requested = new URLSearchParams(location.search).get('scene');
-  window.showWorld(configs[requested] ? requested : '01');
+  window.showWorld(configs[requested] ? requested : '07');
 
   window.LongChangAtlas = Object.freeze({
     duration, setView, currentScene:()=>id,

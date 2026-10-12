@@ -53,7 +53,7 @@
   $$('#scene-picker button').forEach(b=>b.addEventListener('click',()=>chooseScene(b)));
   wireTabs($('#scene-picker'),chooseScene);
   window.showWorld = id => { const button = $('#scene-tab-'+id); if(button) chooseScene(button); };
-  chooseScene($('#scene-tab-01'));
+  chooseScene($('#scene-tab-07'));
 
   // Main comparison: shared 0–100% scale across metrics and models.
   function renderModels(metric='all') {
