@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import re
 import zipfile
+from paper_scenes import paper_scene_names, paper_scene_laws
 
 SITE=Path(__file__).resolve().parents[1]
 ROOT=SITE.parent
@@ -23,6 +24,10 @@ class Links(HTMLParser):
 
 
 def main():
+    names,_=paper_scene_names()
+    assert {s['id']:s['name'] for s in data['scenes']}==names,'Scene labels must match the ACL paper'
+    laws,_=paper_scene_laws()
+    assert {s['id']:s['law'] for s in data['scenes']}==laws,'Law descriptions must match the ACL appendix'
     p=Links();p.feed((SITE/'index.html').read_text())
     assert len(p.ids)==len(set(p.ids)), 'Duplicate HTML IDs'
     for link in p.links:
@@ -86,6 +91,7 @@ def main():
     for label,source in provenance.get('tables',{}).items():
         text=(ROOT/source['path']).read_text()
         if source['inline']:
+            text=re.sub(r'(?<!\\)%[^\n]*','',text)
             text=next(block for block in re.findall(r'\\begin\{table\*?\}.*?\\end\{table\*?\}',text,re.S) if '\\label{'+label+'}' in block)
         assert hashlib.sha256(text.encode()).hexdigest()==source['sha256'],label
     with zipfile.ZipFile(SITE/'downloads/prompts.zip') as z:
@@ -102,9 +108,26 @@ def main():
             assert not re.search(r'(api_key|authorization|access_token)\s*["\']?\s*:',text,re.I),str(path)
     for filename in ['model-comparison','controlled-comparisons','scene-evolution']:
         for ext in ['svg','png']:assert (SITE/f'downloads/{filename}.{ext}').stat().st_size>1000
+    for filename in ['longchang-15-worlds.mp4','longchang-motion-atlas.mp4']:
+        assert (SITE/'downloads'/filename).stat().st_size>1000,filename
+    with zipfile.ZipFile(SITE/'downloads/longchang-15-worlds-gifs.zip') as z:
+        assert z.testzip() is None
+        assert {f'scene-{i:02}.gif' for i in range(1,16)}.issubset(z.namelist())
+    for i in range(1,16):
+        path=SITE/f'downloads/animated-scenes/scene-{i:02}.gif'
+        assert path.read_bytes().startswith(b'GIF89a'),path
+    physics=json.loads((SITE/'data/physics.js').read_text().removeprefix('window.PHYSICS_DEMOS = ').rstrip(';\n'))
+    assert {scene['id']:scene['name'] for scene in physics}==names
+    for scene in physics:
+        for key in ['video','poster','record']:assert (SITE/scene[key]).is_file(),scene[key]
+        assert scene['scene_source_sha256']==hashlib.sha256((ROOT/scene['scene_source']).read_bytes()).hexdigest()
+    for filename in ['longchang-original-physics.mp4','longchang-physics-demonstrations.zip']:
+        assert (SITE/'downloads'/filename).stat().st_size>1000,filename
     print('PASS: local links, scene assets, fonts, source hashes and anonymous data exports.')
     print('PASS: all 540 labels, all nine model metrics, 168 heatmap cells and 13/36 control rejections.')
     print('PASS: all 12 featured video chapters come from four verified C+S-successful Astra runs.')
+    print('PASS: both motion films and all 15 animated scene figures are available.')
+    print('PASS: all 15 original-physics demonstrations, source hashes and canonical ACL names match.')
 
 
 if __name__=='__main__':main()

@@ -3,21 +3,29 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#f7f9f8">
+  <meta name="theme-color" content="#f8f9f6">
   <meta name="description" content="Can LLMs uncover the laws of their world? LongChang studies autonomous scientific inquiry in simulated worlds with altered physics.">
-  <meta property="og:title" content="LongChang — Can LLMs Uncover the Laws of Their World?">
+  <meta property="og:title" content="LongChang — Can LLMs Uncover Hidden Physical Laws through Free Exploration?">
   <meta property="og:description" content="15 worlds. 12 language models. An open-ended test of scientific discovery.">
   <meta property="og:image" content="assets/images/social-card.png">
   <meta property="og:type" content="website">
-  <title>LongChang — Can LLMs Uncover the Laws of Their World?</title>
+  <title>LongChang — Can LLMs Uncover Hidden Physical Laws through Free Exploration?</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="assets/style.css">
   <link rel="stylesheet" href="assets/discovery.css">
+  <link rel="stylesheet" href="assets/motion.css">
+  <link rel="stylesheet" href="assets/atlas.css">
   <script src="data/paper.js" defer></script>
   <script src="data/discoveries.js" defer></script>
+  <script src="data/physics.js" defer></script>
+  <script src="data/oracles.js" defer></script>
   <script src="assets/app.js" defer></script>
   <script src="assets/discovery.js" defer></script>
+  <script src="assets/motion.js" defer></script>
+  <script src="assets/atlas.js" defer></script>
+  <script src="assets/physics.js" defer></script>
+  <script src="assets/oracle.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -25,7 +33,7 @@
     <div class="nav-wrap">
       <a class="wordmark" href="#" aria-label="LongChang home"><img src="assets/favicon.svg" alt="" width="32" height="32">LongChang<span class="wordmark-dot">.</span></a>
       <nav aria-label="Main navigation">
-        <a href="#explore">Explore</a><a href="#framework">Framework</a><a href="#results">Results</a><a href="#evolution">Evolution</a>
+        <a href="#worlds">15 worlds</a><a href="#explore">Experiments</a><a href="#framework">Framework</a><a href="#results">Findings</a><a href="#materials">Materials</a>
       </nav>
       <a class="nav-paper" href="downloads/paper.pdf" target="_blank" rel="noopener">Read the paper <span aria-hidden="true">↗</span></a>
     </div>
@@ -33,41 +41,68 @@
   <main id="main">
     <section class="hero container" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <div class="eyebrow"><span class="status-dot"></span> Autonomous scientific discovery</div>
-        <h1 id="hero-title">Can LLMs uncover<br>the laws of<br><em>their world?</em></h1>
-        <p class="hero-description">A room to explore. Tools to build.<br>No research question to begin with.</p>
-        <p class="hero-explanation">LongChang lets language models investigate simulated worlds with altered physics—and asks whether they can discover the laws through experiments of their own.</p>
-        <div class="hero-authors"><span class="anonymous-icon" aria-hidden="true">◌</span> Anonymous Authors <span class="small-divider"></span> Anonymous submission</div>
+        <div class="eyebrow"><span class="status-dot"></span> LongChang <span class="eyebrow-divider">/</span> A study of autonomous discovery</div>
+        <h1 id="hero-title">A world to explore.<br><em>Laws to discover.</em></h1>
+        <p class="paper-title">Can LLMs Uncover Hidden Physical Laws<br class="desktop-break"> through Free Exploration?</p>
+        <p class="hero-explanation">Give a language model a world, not a research question.<br class="desktop-break"> Can it notice the unexpected, design an experiment,<br class="desktop-break"> and discover the rules for itself?</p>
         <div class="hero-actions">
-          <a class="button primary" href="#explore"><span class="play-icon" aria-hidden="true">▶</span> Explore an experiment</a>
-          <a class="button secondary" href="downloads/longchang-source.zip" download><span aria-hidden="true">&lt;/&gt;</span> Anonymous code <span aria-hidden="true">↓</span></a>
+          <a class="button primary" href="#worlds">Explore all 15 worlds <span aria-hidden="true">↘</span></a>
+          <button class="button secondary" data-open-presentation><span aria-hidden="true">▶</span> Watch the overview</button>
         </div>
+        <div class="hero-authors">Anonymous Authors <span class="small-divider"></span> Research project & interactive companion</div>
       </div>
-      <figure class="hero-art">
-        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
-        <span class="art-index">WORLD / 001</span>
-        <img src="assets/images/glass-world.webp" width="1250" height="1280" alt="A glass-walled physical workspace with red and blue balls, a pendulum and a balance" fetchpriority="high">
-        <figcaption><span class="tiny-cross" aria-hidden="true">+</span> A world of objects.<br><span class="caption-indent">A possibility of discovery.</span></figcaption>
-        <div class="art-note"><span class="blue-dot"></span> Observe <span>→</span> Experiment <span>→</span> Understand</div>
+      <figure class="motion-hero" aria-label="Animated overview of four altered physical laws" hidden>
+        <div class="motion-overline"><span><i></i> THE PHYSICS OF DISCOVERY</span><span id="hero-scene-index">SCENE 07</span></div>
+        <div class="motion-artboard"><svg id="hero-motion" viewBox="0 0 640 440" role="img" aria-label="Two identical balls bounce differently on red and blue surfaces"></svg></div>
+        <figcaption class="motion-caption"><div><span id="hero-motion-kicker">01 / TILE REBOUNDS</span><h2 id="hero-motion-title">Tile rebounds</h2><p id="hero-motion-caption">Release two identical balls from the same height.</p></div><button id="hero-motion-toggle" class="round-control" aria-label="Pause overview animation">Ⅱ</button></figcaption>
+        <div class="motion-selector" id="hero-motion-selector" role="group" aria-label="Choose a law illustration"></div>
+        <div class="motion-footnote"><span>Law illustrations · idealized motion</span><button data-open-presentation>Open the motion atlas <span aria-hidden="true">↗</span></button></div>
       </figure>
+      <figure class="paper-hero-art"><span class="paper-figure-index">FIGURE 1 / THE LONGCHANG WORLD</span><img src="assets/images/glass-world.webp" alt="Figure 1 from the paper: a glass room with physical objects and experimental apparatus" width="1250" height="1280" fetchpriority="high"><figcaption><span>A shared physical world.</span><p>Observe its objects. Build an experiment.<br>Discover what makes it different.</p></figcaption></figure>
     </section>
     <div class="container">
       <div class="stats-strip" aria-label="Study at a glance">
         <div><span class="stat-value">15</span><span class="stat-label">simulated worlds<small>14 altered + 1 ordinary control</small></span></div>
         <div><span class="stat-value">12</span><span class="stat-label">language models<small>the same worlds and initial states</small></span></div>
         <div><span class="stat-value">540</span><span class="stat-label">explorations<small>3 runs per model and scene</small></span></div>
-        <div class="stat-highlight"><span class="stat-value">16.7<span>%</span></span><span class="stat-label">highest discovery rate<small>free exploration · up to 100 turns</small></span></div>
+        <div class="stat-highlight"><span class="stat-value">16.7<span>%</span></span><span class="stat-label">best discovery rate<small>GPT-6-Astra · 7 of 42 altered-world runs</small></span></div>
       </div>
     </div>
 
+    <section id="worlds" class="section container atlas-section">
+      <div class="section-heading"><div><div class="eyebrow"><span class="section-number">01</span> The fifteen worlds of LongChang</div><h2>Familiar objects.<br><em>Unexpected rules.</em></h2></div><p>The scene overview from the paper, brought to life. Each world hides a precise rule. Reveal the oracle, watch a controlled experiment trigger it, and compare the result with ordinary physics. Fourteen altered laws. One ordinary control.</p></div>
+      <div class="atlas-toolbar"><span><i></i> SELECT A WORLD TO EXPLORE</span><button id="atlas-tour" aria-pressed="false">▶ Play all 15 scenes</button></div>
+      <div id="scene-picker" class="scene-picker" role="tablist" aria-label="Choose one of fifteen simulated worlds"></div>
+      <div id="scene-detail" class="world-detail atlas-detail" role="tabpanel" aria-labelledby="scene-tab-01">
+        <div class="atlas-topline"><div class="world-meta"><span id="scene-number">WORLD 01 / 15</span><span id="scene-family" class="category-tag">Control</span></div><div class="atlas-view-switch" role="group" aria-label="Scene view"><button data-atlas-view="physics" aria-pressed="false" hidden>Oracle demo</button><button data-atlas-view="motion" aria-pressed="true">Try the law</button><button data-atlas-view="initial" aria-pressed="false">Original scene</button></div></div>
+        <div class="atlas-body">
+          <div class="atlas-visual">
+            <div id="atlas-motion-view"><svg id="atlas-canvas" viewBox="0 0 640 440" role="img" aria-label="Animated illustration of the selected scene"></svg><div class="atlas-scene-readout"><span id="atlas-state-label">READY TO EXPLORE</span><strong id="atlas-value"></strong></div><span class="atlas-illustration-label">INTERACTIVE LAW ILLUSTRATION</span></div>
+            <div id="atlas-physics-view" hidden>
+              <div class="physics-video-frame"><video id="physics-video" controls muted playsinline preload="metadata" aria-label="Scripted demonstration using the original scene physics"></video><div id="oracle-overlay" class="oracle-overlay" hidden><span>THE ORACLE IN ACTION</span><strong id="oracle-live-state"></strong></div><p id="physics-error" hidden>This video could not load. The interactive illustration is available in Try the law.</p></div>
+              <div class="physics-playback"><button id="physics-play" class="round-control" aria-label="Play physics demonstration">▶</button><button id="physics-reset" class="round-control" aria-label="Restart physics demonstration">↺</button><label class="sr-only" for="physics-progress">Physics demonstration progress</label><input id="physics-progress" type="range" min="0" max="1000" value="0"><span id="physics-clock">0.00 counts</span><button id="physics-fullscreen" class="round-control" aria-label="Expand physics demonstration"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button></div>
+              <div class="oracle-chapters" id="oracle-chapters" role="group" aria-label="Jump to a demonstration stage" hidden></div><div class="oracle-chart" id="oracle-chart-wrap" hidden><div><span id="oracle-signal"></span><span id="oracle-chart-legend"></span></div><svg id="oracle-chart" viewBox="0 0 640 165" role="img" aria-label="Measured effect of the oracle"></svg></div><div class="physics-readout"><span id="physics-sample-label">MEASURED IN THE SIMULATION</span><div id="physics-values"></div></div>
+              <div class="physics-downloads"><a id="physics-download" download>Scene video ↓</a><a id="physics-record" download>Setup & recorded measurements ↓</a></div>
+            </div>
+            <div class="world-image" id="atlas-initial-view" hidden><img id="scene-image" src="assets/images/scene-01.webp" width="1000" height="620" alt="Recorded initial state of Scene 01" loading="lazy"><span class="image-label">INITIAL STATE · RECORDED WORLD</span></div>
+            <div class="atlas-playback"><button id="atlas-play" class="round-control" aria-label="Play scene illustration">▶</button><button id="atlas-reset" class="round-control" aria-label="Reset scene illustration">↺</button><label class="sr-only" for="atlas-progress">Scene illustration progress</label><input id="atlas-progress" type="range" min="0" max="800" value="0"><span id="atlas-time">0.0 / 8.0 s</span></div>
+          </div>
+          <div class="world-copy atlas-copy"><h3 id="scene-name">Normal control</h3><p id="scene-description"></p><div class="oracle-panel"><div class="oracle-panel-label"><span>THE HIDDEN LAW · ORACLE</span><span id="oracle-status">Oracle revealed to the reader</span></div><p id="oracle-formula"></p><div class="oracle-rule"><span>WHEN</span><p id="oracle-condition"></p></div><div class="oracle-rule"><span>THEN</span><p id="oracle-effect"></p></div><p id="oracle-scope"></p></div><div class="atlas-trigger"><span>THE DEMONSTRATION</span><p id="atlas-trigger-text"></p></div><div class="atlas-controls" id="atlas-controls"></div><div class="atlas-observation"><span>WHAT TO WATCH</span><p id="atlas-observation" aria-live="polite"></p></div><details id="scene-law" class="world-law"><summary>Read the full physical law <span>+</span></summary><p id="scene-law-text"></p></details><a id="atlas-evidence" href="#explore" hidden>Follow a successful exploration ↗</a></div>
+        </div>
+        <div class="atlas-bottomline"><p id="atlas-model-note">Simplified law illustration. See Original scene for the recorded starting environment.</p><div><button id="atlas-prev" aria-label="Previous world">←</button><span id="atlas-position">01 / 15</span><button id="atlas-next" aria-label="Next world">→</button></div></div>
+      </div>
+      <div class="atlas-downloads"><span>Illustrations expose the laws for the reader. The exploring models were not given these explanations.</span><a href="downloads/longchang-original-physics.mp4" download>All 15 physics demos · MP4 ↓</a><a href="downloads/longchang-15-worlds.mp4" download>Illustration film ↓</a><a href="downloads/longchang-15-worlds-gifs.zip" download>Illustration GIFs ↓</a></div>
+    </section>
+
     <section id="explore" class="section container discovery-section">
+      <div class="reading-cue"><span>THE INTERACTIVE PAPER</span><span>Observe. Intervene. Follow the evidence.</span><span aria-hidden="true">↓</span></div>
       <div class="section-heading">
-        <div><div class="eyebrow"><span class="section-number">01</span> Four stories of successful discovery</div><h2>Try a law.<br><em>Follow the evidence.</em></h2></div>
-        <p>How does an observation become a discovery? Explore four laws yourself, then follow the experiments from successful GPT-6-Astra runs. Each selected run passes both correctness and evidence support.</p>
+        <div><div class="eyebrow"><span class="section-number">02</span> From an observation to a discovery</div><h2>The moment the world<br><em>stops behaving as expected.</em></h2></div>
+        <p>A strange bounce. A curved path. A response that arrives late. Try each mechanism, then see how GPT-6-Astra tested it in a successful exploration.</p>
       </div>
       <div class="success-picker" id="success-picker" role="tablist" aria-label="Choose a successful discovery"></div>
       <div class="discovery-workbench" id="discovery-workbench" role="tabpanel">
-        <div class="discovery-title"><div><span class="eyebrow" id="discovery-index">Scene 07</span><h3 id="discovery-title">Same ball. Different bounce.</h3><p id="discovery-question"></p></div><div class="verified-run"><span>VERIFIED SUCCESS</span><strong>C ✓ <i></i> S ✓</strong><small id="discovery-run"></small></div></div>
+        <div class="discovery-title"><div><span class="eyebrow" id="discovery-index">Scene 07</span><h3 id="discovery-title">Tile rebounds</h3><p id="discovery-question"></p></div><div class="verified-run"><span>SUCCESSFUL DISCOVERY</span><strong>C ✓ <i></i> S ✓</strong><small id="discovery-run"></small></div></div>
         <div class="discovery-columns">
           <article class="law-lab">
             <div class="discovery-panel-label"><span class="panel-step">A</span><h4>Try the mechanism</h4><span>Interactive illustration</span></div>
@@ -77,10 +112,10 @@
             <p class="illustration-note" id="illustration-note">A simplified illustration of the law. The recorded experiment is shown alongside.</p>
           </article>
           <article class="successful-run">
-            <div class="discovery-panel-label"><span class="panel-step">B</span><h4>Watch Astra establish it</h4><span>Recorded experiment</span></div>
+            <div class="discovery-panel-label"><span class="panel-step">B</span><h4>Follow the real experiment</h4><span>Recorded experiment</span></div>
             <div class="success-video-frame"><video id="success-video" muted playsinline preload="auto" aria-label="Experiment from a verified successful GPT-6-Astra run"></video><span id="success-clock" class="video-coordinate"></span><span id="success-turns" class="video-turn"></span></div>
             <div class="success-chapters" id="success-chapters" role="tablist" aria-label="Evidence chapter"></div>
-            <div class="playback-controls"><button id="replay-play" class="play-button" aria-label="Play recorded experiment"><span aria-hidden="true">▶</span></button><label for="replay-progress" class="sr-only">Recorded experiment progress</label><input id="replay-progress" type="range" min="0" max="1000" value="0"><span id="replay-percent">0%</span><button id="replay-reset" class="text-button" aria-label="Restart recorded experiment">↺</button></div>
+            <div class="playback-controls"><button id="replay-play" class="play-button" aria-label="Play recorded experiment"><span aria-hidden="true">▶</span></button><label for="replay-progress" class="sr-only">Recorded experiment progress</label><input id="replay-progress" type="range" min="0" max="1000" value="0"><span id="replay-percent">0%</span><button id="replay-reset" class="text-button" aria-label="Restart recorded experiment">↺</button><button id="replay-fullscreen" class="text-button" aria-label="Expand recorded experiment"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button></div>
             <div class="success-evidence"><h4 id="success-chapter-title"></h4><p id="success-description"></p><details class="note-details"><summary>Read the original note <span>↗</span></summary><blockquote id="success-note"></blockquote><span class="note-source" id="success-note-source"></span></details></div>
           </article>
         </div>
@@ -93,7 +128,7 @@
 
     <section id="framework" class="framework-section">
       <div class="container section">
-        <div class="section-heading"><div><div class="eyebrow"><span class="section-number">02</span> The LongChang framework</div><h2>A complete cycle of<br><em>autonomous inquiry.</em></h2></div><p>LLMs design the worlds, choose the questions, build the apparatus and evaluate the findings. Exploration records guide what comes next.</p></div>
+        <div class="section-heading"><div><div class="eyebrow"><span class="section-number">03</span> The LongChang framework</div><h2>A complete cycle of<br><em>autonomous inquiry.</em></h2></div><p>A complete experimental setting: one agent creates the world, another explores it, and independent evaluation checks the claim against the law and the evidence.</p></div>
         <div class="cycle" aria-label="Environment construction, autonomous exploration, discovery evaluation, and scene evolution form a cycle">
           <article class="cycle-step"><span class="cycle-number">01 / CONSTRUCT</span><div class="cycle-icon" aria-hidden="true"><svg viewBox="0 0 80 70"><path d="M40 6 70 22 70 51 40 66 10 51 10 22Z M10 22 40 38 70 22 M40 38V66"/><circle cx="31" cy="44" r="6" class="fill-red"/><circle cx="51" cy="45" r="6" class="fill-blue"/></svg></div><h3>Build a world</h3><p>A designer changes physical laws in an executable simulation. The explorer is not told what changed.</p></article>
           <span class="cycle-arrow" aria-hidden="true">→</span>
@@ -105,18 +140,7 @@
         </div>
         <div class="cycle-return"><span>↶</span> Exploration evidence feeds the next discovery cycle</div>
         <div class="cycle-explainer"><button id="cycle-play" class="cycle-play" aria-label="Pause framework animation">Ⅱ</button><div><span id="cycle-stage">01 / CONSTRUCT</span><p id="cycle-explanation">The scene designer specifies objects and altered laws. These laws are hidden from the explorer.</p></div><span class="cycle-diagram-label">PROCESS ILLUSTRATION</span></div>
-        <details class="abstract-details"><summary>Read the abstract <span>+</span></summary><p>Can large language models (LLMs) uncover the laws and limits of their world through autonomous exploration and experimentation? To evaluate this ability in a controlled setting, we introduce LongChang, an automated framework that creates simulated worlds with altered physics, where one or more laws differ from ordinary physics. LLMs explore freely without research tasks or hints about these laws, manipulating objects and building tools to investigate questions they choose. LLMs generate scenes, review tools, and evaluate reports for correctness and experimental support using the altered physical laws and exploration records. These records guide scene evolution for further exploration, allowing the full cycle to run without human intervention. Among 12 LLMs, GPT-6-Astra achieves a discovery rate of 16.7%, while the other 11 score 0%. The exploration records reveal uninvestigated anomalies and only partial identification of the altered physical laws.</p></details>
-      </div>
-    </section>
-
-    <section id="worlds" class="section container">
-      <div class="section-heading"><div><div class="eyebrow"><span class="section-number">03</span> A small atlas of unusual physics</div><h2>Familiar objects.<br><em>Unfamiliar laws.</em></h2></div><p>Fourteen worlds change one physical law each. An ordinary control checks whether models mistake an interesting observation for an anomaly.</p></div>
-      <div class="world-browser">
-        <div id="scene-picker" class="scene-picker" role="tablist" aria-label="Choose a simulated world"></div>
-        <div id="scene-detail" class="world-detail" role="tabpanel">
-          <div class="world-image"><img id="scene-image" src="assets/images/scene-15.webp" width="1000" height="600" alt="Initial state of Scene 15" loading="lazy"><span class="image-label">INITIAL STATE · RECORDED WORLD</span></div>
-          <div class="world-copy"><div class="world-meta"><span id="scene-number">WORLD 15 / 15</span><span id="scene-family" class="category-tag">History</span></div><h3 id="scene-name">Interrupted drift</h3><p id="scene-description"></p><details id="scene-law" class="world-law"><summary>Reveal the law <span>+</span></summary><p id="scene-law-text"></p></details><div class="world-footer"><span>Distances in bricks · time in counts</span><a href="downloads/scenes.json" download aria-label="Download descriptions of all scenes">↓</a></div></div>
-        </div>
+        <details class="abstract-details"><summary>Read the abstract <span>+</span></summary><p>Scientific discovery often begins with an unexpected observation that prompts a new research question. In a world with altered physical laws, can large language models (LLMs) notice unexpected behavior, such as heavier objects falling more slowly, and discover the law through experiments without being told what to investigate? To evaluate this ability, we introduce LongChang, an automated framework that creates simulated worlds with altered physics, where one or more laws differ from ordinary physics. The evaluated LLMs act as explorers, manipulating objects and building tools to investigate their own questions without research tasks or hints about these laws. Separate LLM agents generate and review scenes, review tool designs, and evaluate reports for correctness and experimental support using the altered physical laws and exploration records. These records guide scene evolution for further exploration, allowing the full cycle to run without human intervention. Among 12 LLMs, GPT-6-Astra achieves a discovery rate of 16.7%, while the other 11 score 0%. The exploration records reveal uninvestigated anomalies and only partial identification of the altered physical laws.</p></details>
       </div>
     </section>
 
@@ -148,9 +172,17 @@
     </section>
 
     <section id="cases" class="section container">
-      <div class="section-heading"><div><div class="eyebrow"><span class="section-number">05</span> Inside the experiment</div><h2>How does an explanation<br><em>earn its evidence?</em></h2></div><p>A useful experiment separates explanations. A useful instrument may take more than one design.</p></div>
-      <div class="case-tabs" role="tablist" aria-label="Case study"><button id="color-tab" role="tab" aria-controls="color-case" aria-selected="true" data-case="color"><span>01</span> Test competing explanations</button><button id="tool-tab" role="tab" aria-controls="tool-case" aria-selected="false" tabindex="-1" data-case="tool"><span>02</span> Build a better instrument</button></div>
-      <div id="color-case" class="case-panel" role="tabpanel" aria-labelledby="color-tab">
+      <div class="section-heading"><div><div class="eyebrow"><span class="section-number">05</span> Inside the experiment</div><h2>How does an explanation<br><em>earn its evidence?</em></h2></div><p>Three questions from the paper: does the explorer pursue an anomaly, distinguish competing explanations, and build the instrument it needs?</p></div>
+      <div class="case-tabs" role="tablist" aria-label="Case study"><button id="question-tab" role="tab" aria-controls="question-case" aria-selected="true" data-case="question"><span>01</span> Form a research question</button><button id="color-tab" role="tab" aria-controls="color-case" aria-selected="false" tabindex="-1" data-case="color"><span>02</span> Test competing explanations</button><button id="tool-tab" role="tab" aria-controls="tool-case" aria-selected="false" tabindex="-1" data-case="tool"><span>03</span> Build a better instrument</button></div>
+      <div id="question-case" class="case-panel" role="tabpanel" aria-labelledby="question-tab">
+        <div class="case-intro"><span class="scene-pill">SCENE 15</span><h3>The same world. Different questions.</h3><p>Both explorers encounter red’s delayed restart. Astra follows the unexpected motion; Gemini continues its planned sequence. This is the research-question case study from the paper.</p></div>
+        <div class="question-comparison">
+          <article><div class="question-model"><span>GPT-6-Astra</span><small>PURSUES THE ANOMALY</small></div><div class="question-video"><video id="question-astra-video" src="assets/videos/astra-notice.mp4" poster="assets/images/astra-notice.webp" controls muted playsinline preload="none" aria-label="Recorded Astra observation of red's unexpected restart at turn 24"></video><span>RECORDED EXPERIMENT · TURN 24</span></div><div class="question-narrative"><ol><li><strong>Notice.</strong> Red starts moving while blue is held still.</li><li><strong>Revise.</strong> Further waiting reveals a delayed return of the force.</li><li><strong>Test.</strong> Pushing blue also restarts red’s ten-count pause.</li></ol><details class="case-note"><summary>Read the original note <span>+</span></summary><blockquote id="question-astra-quote"></blockquote><span class="note-source">Original note · Turn 25</span></details></div></article>
+          <article><div class="question-model"><span>Gemini-3.7-Flash</span><small>CONTINUES PLANNED TESTS</small></div><div class="question-video"><video id="question-gemini-video" src="assets/videos/gemini-notice.mp4" poster="assets/images/gemini-notice.webp" controls muted playsinline preload="none" aria-label="Recorded Gemini observation containing red's delayed restart at turn 2"></video><span>RECORDED EXPERIMENT · TURN 2</span></div><div class="question-narrative"><ol><li><strong>Observe.</strong> Red stops, then moves again during the wait.</li><li><strong>Continue.</strong> The next action tests blue with a northward push.</li><li><strong>Finish.</strong> Throws and collisions complete the planned tests.</li></ol><details class="case-note"><summary>Read the next original note <span>+</span></summary><blockquote id="question-gemini-quote"></blockquote><span class="note-source">Original note · Turn 3</span></details></div></article>
+        </div>
+        <p class="case-source">Selected Scene 15 runs from the paper · Astra repeat 2 and Gemini repeat 1 · same initial state and free-exploration prompt · 100-turn budget. Video playback is retimed; the underlying states are recorded. Notes and observations are included in the case-study download.</p>
+      </div>
+      <div id="color-case" class="case-panel" role="tabpanel" aria-labelledby="color-tab" hidden>
         <div class="case-intro"><span class="scene-pill">SCENE 12</span><h3>Color exchange, or independent flipping?</h3><p>Two red–blue collisions change and then restore the colors. Both explanations fit. A red–red collision makes different predictions.</p></div>
         <div class="prediction-strip"><div><span>Hypothesis A · exchange</span><div class="ball-equation"><i class="ball red"></i><i class="ball red"></i><b>→</b><i class="ball red"></i><i class="ball red"></i></div></div><div><span>Hypothesis B · flip each color</span><div class="ball-equation"><i class="ball red"></i><i class="ball red"></i><b>→</b><i class="ball blue"></i><i class="ball blue"></i></div></div><div class="observed-prediction"><span>Observed · both stay red</span><strong>Evidence favors exchange <span>↗</span></strong></div></div>
         <div class="case-image-pair"><figure><img src="assets/images/v_seq_3_before.webp" alt="Two red balls approaching before the diagnostic collision" width="1200" height="540" loading="lazy"><figcaption><span>BEFORE CONTACT</span> Two red balls make a discriminating test.</figcaption></figure><figure><img src="assets/images/v_seq_3_contact.webp" alt="Both balls retain their red color during the recorded collision" width="1200" height="540" loading="lazy"><figcaption><span>AT CONTACT</span> Both remain red.</figcaption></figure></div>
@@ -183,16 +215,27 @@
 
     <section id="materials" class="section container materials-section">
       <div><div class="eyebrow"><span class="section-number">07</span> Explore further</div><h2>Follow the evidence.</h2><p>The paper, implementation and materials behind the experiments.</p></div>
+      <div class="motion-download-banner"><div><span class="eyebrow">The paper, in motion</span><h3>Fifteen scenes. Original physics.</h3><p>Prepared experiments, actual trajectories, and documented trigger conditions.</p></div><div><a class="button primary" href="downloads/longchang-original-physics.mp4" target="_blank" rel="noopener">▶ Watch the scene film</a><a class="button secondary" href="downloads/longchang-physics-demonstrations.zip" download>Videos & measurements ↓</a></div></div>
       <div class="resource-grid">
         <a href="downloads/paper.pdf" target="_blank" rel="noopener"><span class="resource-icon">↗</span><h3>Read the paper</h3><p>Method, experiments and analysis</p><span>Anonymous PDF</span></a>
         <a href="downloads/longchang-source.zip" download><span class="resource-icon">↓</span><h3>Explore the code</h3><p>Simulation and discovery framework</p><span>Anonymous source bundle · ZIP</span></a>
         <a href="downloads/episodes.csv" download><span class="resource-icon">↓</span><h3>Examine the results</h3><p>540 explorations, with individual labels</p><span>CSV · current paper evaluation</span></a>
         <a href="downloads/prompts.zip" download><span class="resource-icon">↓</span><h3>Inspect the prompts</h3><p>Exploration, reporting and evaluation</p><span>Original prompt text</span></a>
       </div>
-      <div class="extra-resources"><a href="downloads/scenes.json" download>Scene descriptions ↓</a><a href="downloads/case-records.json" download>Case-study notes ↓</a><a href="downloads/controlled-results.json" download>Controlled & evolution results ↓</a></div>
+      <div class="extra-resources"><a href="downloads/longchang-15-worlds-gifs.zip" download>15 animated figures (GIF) ↓</a><a href="downloads/longchang-motion-atlas.mp4" download>48-second illustrated overview ↓</a><a href="downloads/scenes.json" download>Scene descriptions ↓</a><a href="downloads/case-records.json" download>Case-study notes ↓</a><a href="downloads/controlled-results.json" download>Controlled & evolution results ↓</a></div>
     </section>
   </main>
-  <footer><div class="container footer-inner"><a class="wordmark" href="#"><img src="assets/favicon.svg" alt="" width="30" height="30">LongChang<span class="wordmark-dot">.</span></a><p>Can LLMs Uncover the Laws of Their World?</p><span>Anonymous research project</span><a href="#" aria-label="Back to top">↑</a></div></footer>
+  <footer><div class="container footer-inner"><a class="wordmark" href="#"><img src="assets/favicon.svg" alt="" width="30" height="30">LongChang<span class="wordmark-dot">.</span></a><p>Can LLMs Uncover Hidden Physical Laws through Free Exploration?</p><span>Anonymous research project</span><a href="#" aria-label="Back to top">↑</a></div></footer>
+  <dialog id="motion-dialog" aria-labelledby="presentation-title">
+    <div class="presentation-shell">
+      <header class="presentation-header"><a class="wordmark" href="#" tabindex="-1"><img src="assets/favicon.svg" alt="" width="28" height="28">LongChang<span class="wordmark-dot">.</span></a><span>MOTION ATLAS <i>/</i> FOUR LAWS TO DISCOVER</span><button id="presentation-close" class="round-control" aria-label="Close motion atlas" autofocus>×</button></header>
+      <div class="presentation-body">
+        <div class="presentation-visual"><div class="presentation-figure-label"><span id="presentation-scene">SCENE 07</span><span>LAW ILLUSTRATION</span></div><svg id="presentation-canvas" viewBox="0 0 640 440" role="img" aria-label="Animated illustration of an altered physical law"></svg><span class="presentation-visual-note" id="presentation-note"></span></div>
+        <div class="presentation-copy"><span class="eyebrow" id="presentation-kicker"></span><h2 id="presentation-title"></h2><p id="presentation-intro"></p><div class="presentation-insight"><span id="presentation-phase"></span><p id="presentation-caption"></p></div><div class="presentation-equation" id="presentation-equation"></div><button id="presentation-evidence">Follow the recorded evidence <span>↗</span></button></div>
+      </div>
+      <div class="presentation-bottom"><div class="presentation-chapters" id="presentation-chapters" role="group" aria-label="Select a chapter"></div><div class="presentation-controls"><button id="presentation-previous" class="round-control" aria-label="Previous chapter">←</button><button id="presentation-play" class="round-control" aria-label="Pause motion atlas">Ⅱ</button><button id="presentation-next" class="round-control" aria-label="Next chapter">→</button><label for="presentation-progress" class="sr-only">Motion atlas progress</label><input id="presentation-progress" type="range" min="0" max="480" value="0" step="1"><span id="presentation-time">00:00 / 00:48</span><button id="presentation-fullscreen" class="round-control" aria-label="Enter full screen"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button></div><div class="presentation-credit"><span>Idealized illustrations of the published laws. Recorded experiments are available on the project page.</span><span>LongChang · Anonymous research</span></div></div>
+    </div>
+  </dialog>
   <div id="chart-tooltip" role="tooltip" hidden></div>
   <noscript><div class="noscript-notice">Interactive charts and experiment controls require JavaScript. The <a href="downloads/paper.pdf">paper</a> and all downloadable materials remain available.</div></noscript>
 </body>

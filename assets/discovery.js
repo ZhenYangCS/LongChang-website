@@ -67,6 +67,10 @@
     videoProgress();
   });
   $('#replay-reset').addEventListener('click',()=>{pauseVideo();video.currentTime=0;videoProgress();});
+  $('#replay-fullscreen').addEventListener('click',async()=>{
+    try { if(document.fullscreenElement)await document.exitFullscreen();else await video.closest('.success-video-frame').requestFullscreen(); } catch(_){video.controls=true;}
+  });
+  document.addEventListener('fullscreenchange',()=>{video.controls=document.fullscreenElement===video.closest('.success-video-frame');});
   new IntersectionObserver(e=>{if(!e[0].isIntersecting)pauseVideo();}).observe(video);
 
   function chooseChapter(button) {
@@ -84,7 +88,7 @@
     selected=Number(button.dataset.discovery);setTab(button);pauseVideo();
     const c=cases[selected];
     $('#discovery-workbench').setAttribute('aria-labelledby',button.id);
-    $('#discovery-index').textContent=`Scene ${c.id} / ${c.mechanism==='bounce'?'Surface restitution':c.mechanism==='curve'?'Velocity-dependent deflection':c.mechanism==='echo'?'Delayed velocity replacement':'Launch-suppressed drift'}`;
+    $('#discovery-index').textContent=`Scene ${c.id} / Recorded exploration`;
     $('#discovery-title').textContent=c.name;$('#discovery-question').textContent=c.intro;
     $('#discovery-run').textContent=`Astra · repeat ${c.repeat} · ${c.turns} turns`;
     $('#discovery-conclusion').textContent=c.conclusion;$('#success-final-note').textContent=c.finalNote;
@@ -138,7 +142,7 @@
     if(lab.t>=duration){stopLab();renderLab();}else labAnimation=requestAnimationFrame(labTick);
   }
   function bounceHeight(height,e,t){
-    const g=9.8,fall=Math.sqrt(2*height/g);if(t<=fall)return Math.max(0,height-.5*g*t*t);
+    const g=9.81,fall=Math.sqrt(2*height/g);if(t<=fall)return Math.max(0,height-.5*g*t*t);
     let rest=t-fall,v=e*Math.sqrt(2*g*height),n=0;
     while(rest>2*v/g&&v>.005&&n++<80){rest-=2*v/g;v*=e;}
     return v>.005?Math.max(0,v*rest-.5*g*rest*rest):0;
@@ -264,5 +268,6 @@
   $('#cycle-play').addEventListener('click',()=>{cycleEnabled=!cycleEnabled;updateCycle();});
   new IntersectionObserver(e=>{cycleVisible=e[0].isIntersecting;updateCycle();},{threshold:.2}).observe($('.cycle'));
   document.addEventListener('visibilitychange',()=>{if(document.hidden){pauseVideo();stopLab();clearInterval(cycleInterval);}else updateCycle();});
+  document.addEventListener('longchang:presentation-open',()=>{pauseVideo();stopLab();clearInterval(cycleInterval);});
   chooseDiscovery($('#success-tab-07'));setPhase(0);
 })();

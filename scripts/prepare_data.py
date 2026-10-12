@@ -14,6 +14,7 @@ from pathlib import Path
 
 from PIL import Image
 from pypdf import PdfReader, PdfWriter
+from paper_scenes import paper_scene_names, paper_scene_laws
 
 SITE = Path(__file__).resolve().parents[1]
 ROOT = SITE.parent
@@ -47,13 +48,26 @@ def table_source(filename):
     path = RESULTS / filename
     if path.exists():
         return path, path.read_text()
-    # The paper can also inline its tables into main.tex. Never fall back to
-    # similarly named legacy tables: those may use an older discovery judge.
-    path = ROOT / "ACL/main.tex"
+    # Follow the paper's input graph, including its split section files.
+    # Never fall back to legacy tables, which can use an older judge.
     label = TABLE_LABELS[filename]
-    blocks = re.findall(r"\\begin\{table\*?\}.*?\\end\{table\*?\}", path.read_text(), re.S)
-    block = next(block for block in blocks if "\\label{" + label + "}" in block)
-    return path, block
+    pending = [ROOT / "ACL/main.tex"]
+    seen = set()
+    while pending:
+        path = pending.pop(0).resolve()
+        if path in seen:
+            continue
+        seen.add(path)
+        text = re.sub(r"(?<!\\)%[^\n]*", "", path.read_text())
+        blocks = re.findall(r"\\begin\{table\*?\}.*?\\end\{table\*?\}", text, re.S)
+        for block in blocks:
+            if "\\label{" + label + "}" in block:
+                return path, block
+        for source in re.findall(r"\\(?:input|include)\{([^}]+)\}", text):
+            candidate = (ROOT / "ACL" / source).with_suffix(".tex")
+            if candidate.is_file():
+                pending.append(candidate)
+    raise ValueError(f"Cannot find {label} in the current paper's included files")
 
 
 def table_rows(filename):
@@ -111,10 +125,8 @@ def main():
         w.writeheader()
         w.writerows(models)
 
-    names = ["Normal control", "Red attraction", "Mass-dependent fall", "Oscillating gravity",
-             "High-speed braking", "Clockwise deflection", "Tile rebounds", "Speed limit",
-             "Boundary crossing", "Acceleration zone", "Collision boost", "Color exchange",
-             "Third-contact jump", "Delayed velocity copy", "Interrupted drift"]
+    names, names_source = paper_scene_names()
+    laws, laws_source = paper_scene_laws()
     descriptions = [
         "A gray tile looks different. Does it change how objects move?",
         "Red and blue spheres share a room. Which pairs move toward each other?",
@@ -137,13 +149,9 @@ def main():
     raw_scenes = read_json(ROOT / "scenes/base_15.json")["scenes"]
     scenes = []
     for i, s in enumerate(raw_scenes):
-        scenes.append(dict(id=s["id"][:2], key=s["id"], name=names[i], description=descriptions[i],
-                           family=families[i], law=s["oracle"]["ground_truth"],
+        scenes.append(dict(id=s["id"][:2], key=s["id"], name=names[s["id"][:2]], description=descriptions[i],
+                           family=families[i], law=laws[s['id'][:2]],
                            image=f"assets/images/scene-{i+1:02}.webp"))
-    # Use the paper's precise current wording for the public overview of Scene 15.
-    scenes[14]["law"] = ("An extra northward acceleration of 1.5 bricks/count² acts on the red ball. "
-        "A nonzero push or throw on any movable object pauses this force for 10 counts. "
-        "Another such action restarts the pause. Gravity, friction and collisions still act.")
     write_json(SITE / "downloads/scenes.json", {"units": "bricks and counts; one count corresponds to one simulated second", "scenes": scenes})
 
     evidence = read_json(ROOT / "ACL/materials/cases/sources/evidence.json")
@@ -174,7 +182,8 @@ def main():
     writer = PdfWriter()
     for page in PdfReader(ROOT / "acl-build/0.pdf").pages:
         writer.add_page(page)
-    writer.add_metadata({"/Title": "Can LLMs Uncover the Laws of Their World?", "/Author": "Anonymous Authors"})
+    title = re.search(r"\\title\{([^}]+)\}", (ROOT / "ACL/main.tex").read_text())[1]
+    writer.add_metadata({"/Title": title, "/Author": "Anonymous Authors"})
     with (SITE / "downloads/paper.pdf").open("wb") as f:
         writer.write(f)
     with zipfile.ZipFile(SITE / "downloads/prompts.zip", "w", zipfile.ZIP_DEFLATED) as z:
@@ -192,7 +201,7 @@ def main():
     # the paper's anonymous repository requires authorization.
     bundle_readme = """# LongChang — Anonymous source bundle
 
-Implementation accompanying 'Can LLMs Uncover the Laws of Their World?'.
+Implementation accompanying 'Can LLMs Uncover Hidden Physical Laws through Free Exploration?'.
 
 This archive contains the framework's Python sources, the base scenes and
 dependency list. API credentials, machine-specific launchers and run logs
@@ -238,8 +247,10 @@ longchang/prompts/. The paper's 15 base worlds are in scenes/base_15.json.
     for filename, label in TABLE_LABELS.items():
         path, source = table_source(filename)
         table_hashes[label] = {"path": str(path.relative_to(ROOT)), "sha256": hashlib.sha256(source.encode()).hexdigest(),
-                               "inline": path.name == "main.tex"}
-    write_json(SITE / "data/provenance.json", {"sources": hashes, "tables": table_hashes, "judge": "GPT-6.1-Sol",
+                               "inline": path.parent != RESULTS}
+    write_json(SITE / "data/provenance.json", {"sources": hashes, "tables": table_hashes,
+        "scene_names": {"path":str(names_source.relative_to(ROOT)), "table":"tab:scene-overview", "names":names}, "judge": "GPT-6.1-Sol",
+        "scene_laws": {"path":str(laws_source.relative_to(ROOT)), "table":"tab:base-scenes"},
         "episodes": 540, "policy": "Metrics follow the current paper's frozen rejudging; control runs are excluded from D/C/S. Case studies are selected illustrations, not additional aggregate results."})
     print(f"Prepared {len(models)} models, {len(scenes)} scenes and {len(episodes)} verified episodes.")
 

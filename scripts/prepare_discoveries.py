@@ -15,6 +15,7 @@ from PIL import Image
 from render_replays import SITE, ROOT, RecordedRenderer
 from world import load_replay
 import mujoco
+from paper_scenes import paper_scene_names
 
 BASE = ROOT / 'runs/main-15-20260930-022640-2180080'
 CASES = [
@@ -97,6 +98,7 @@ def frame_camera(record,frames,targets,case_id,chapter):
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--ffmpeg',required=True);parser.add_argument('--force',action='store_true')
     args=parser.parse_args()
+    names,_=paper_scene_names()
     with (ROOT/'ACL/materials/results/sources/gpt_6_1_sol_episodes.csv').open() as f: evaluations=list(csv.DictReader(f))
     public=[];provenance=[];records_export=[]
     for case in CASES:
@@ -107,6 +109,7 @@ def main():
         assert row['session_sha256']==sha(directory/'session.json')
         by_turn={t['turn']:t for t in session['turns']}
         entry={k:v for k,v in case.items() if k not in ['chapters','scene']}
+        entry.update(storyTitle=entry['name'],name=names[case['id']],short=names[case['id']])
         entry.update(episode_id=session['episode_id'],model='GPT-6-Astra',budget=100,
                      verdict=dict(correct=True,supported=True,discovery=True),judge='GPT-6.1-Sol',
                      finalNote=by_turn[max(by_turn)]['note'],chapters=[])

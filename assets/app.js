@@ -48,10 +48,12 @@
     $('#scene-image').alt = `Recorded initial state of Scene ${scene.id}: ${scene.name}`;
     $('#scene-law-text').textContent = scene.law;
     $('#scene-law').open = false;
+    document.dispatchEvent(new CustomEvent('longchang:scene', {detail:scene}));
   }
   $$('#scene-picker button').forEach(b=>b.addEventListener('click',()=>chooseScene(b)));
   wireTabs($('#scene-picker'),chooseScene);
-  chooseScene($('#scene-tab-15'));
+  window.showWorld = id => { const button = $('#scene-tab-'+id); if(button) chooseScene(button); };
+  chooseScene($('#scene-tab-01'));
 
   // Main comparison: shared 0–100% scale across metrics and models.
   function renderModels(metric='all') {
@@ -101,13 +103,20 @@
   // Case studies keep the original notes distinct from editorial explanations.
   $('#color-quote').textContent=notes.color.notes['43'];
   $('#tool-quote').textContent=notes.apparatus.notes['24'];
+  $('#question-astra-quote').textContent=notes.question.notes['25'];
+  $('#question-gemini-quote').textContent=notes.checklist.steps.find(s=>s.turn===3).note;
   function chooseCase(button) {
     selectTab(button);
-    $('#color-case').hidden=button.dataset.case!=='color';
-    $('#tool-case').hidden=button.dataset.case!=='tool';
+    $$('.case-panel').forEach(panel=>{
+      panel.hidden=panel.id!==button.dataset.case+'-case';
+      if(panel.hidden)$$('video',panel).forEach(video=>video.pause());
+    });
   }
   $$('.case-tabs button').forEach(b=>b.addEventListener('click',()=>chooseCase(b)));
   wireTabs($('.case-tabs'),chooseCase);
+  document.addEventListener('longchang:presentation-open',()=>$$('.question-comparison video').forEach(v=>v.pause()));
+  new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)entry.target.pause();})).observe($('#question-astra-video'));
+  new IntersectionObserver(entries=>entries.forEach(entry=>{if(!entry.isIntersecting)entry.target.pause();})).observe($('#question-gemini-video'));
   $('#scale-chart').innerHTML=notes.apparatus.pan_readings.map(v=>`<div class="scale-value"><span>${esc(v.condition)}</span><strong>${fmt(v.travel).replace('-','−')}</strong><small>Turn ${v.turn}</small></div>`).join('');
   $('#evolution-chart').innerHTML=`<p style="font-size:9px;margin-bottom:12px">Discovery rate (%) · 3 runs per scene · scale 0–100%</p>${data.evolution.map((e,i)=>`<div class="evolution-bar-row ${i>1?'evolved':''}"><span>${esc(e.name)}</span><div class="evolution-bar-track"><i style="width:${e.D}%"></i></div><strong>${fmt(e.D)}%</strong></div>`).join('')}`;
 
@@ -120,7 +129,7 @@
       if(current)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');
     }));
   },{rootMargin:'-15% 0px -65% 0px'}).observe($('#explore'));
-  for(const id of ['framework','results','evolution']){
+  for(const id of ['worlds','framework','results','materials']){
     new IntersectionObserver(entries=>{
       if(entries[0].isIntersecting)navLinks.forEach(a=>{
         const current=a.hash===`#${id}`;

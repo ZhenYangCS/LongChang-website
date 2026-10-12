@@ -45,7 +45,7 @@ def main():
             page.wait_for_function('document.querySelector("#scene-image").complete && document.querySelector("#scene-image").naturalWidth>0')
             assert f'{number:02}' in page.locator('#scene-number').inner_text()
         page.locator('#scene-law summary').click()
-        assert '10 counts' in page.locator('#scene-law-text').inner_text()
+        assert '10 seconds' in page.locator('#scene-law-text').inner_text()
         page.locator('#scene-law summary').click()
         for scene in ['07','06','14','15']:
             page.locator('#success-tab-'+scene).click()

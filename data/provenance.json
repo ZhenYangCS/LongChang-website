@@ -4,22 +4,47 @@
   },
   "tables": {
     "tab:main-results": {
-      "path": "ACL/main.tex",
+      "path": "ACL/secs/04_method.tex",
       "sha256": "4de51871f6be960a5c2e6a744efcc45ab3f364cffcd6b35508ce9130ff28396b",
       "inline": true
     },
     "tab:controlled-comparisons": {
-      "path": "ACL/main.tex",
+      "path": "ACL/secs/05_results.tex",
       "sha256": "a484b2c39b9b51d4db056a6113e2dad5bafd8e15d5a2a50170ce01a859b18d9f",
       "inline": true
     },
     "tab:evolution-evaluation": {
-      "path": "ACL/main.tex",
+      "path": "ACL/secs/05_results.tex",
       "sha256": "7133d5ba6b4c2003ac5c5e0d8040a015b5e7a7c9b83d0050789101285a162a37",
       "inline": true
     }
   },
+  "scene_names": {
+    "path": "ACL/secs/02_introduction.tex",
+    "table": "tab:scene-overview",
+    "names": {
+      "01": "Normal control",
+      "02": "Red attraction",
+      "03": "Mass-dependent fall",
+      "04": "Oscillating gravity",
+      "05": "High-speed braking",
+      "06": "Automatic side force",
+      "07": "Tile rebounds",
+      "08": "Speed has a limit",
+      "09": "Slows in, speeds out",
+      "10": "Acceleration zone",
+      "11": "Collision boost",
+      "12": "Contact color swap",
+      "13": "Third-contact jump",
+      "14": "Velocity copy",
+      "15": "Northward force"
+    }
+  },
   "judge": "GPT-6.1-Sol",
+  "scene_laws": {
+    "path": "ACL/secs/08_appendix.tex",
+    "table": "tab:base-scenes"
+  },
   "episodes": 540,
   "policy": "Metrics follow the current paper's frozen rejudging; control runs are excluded from D/C/S. Case studies are selected illustrations, not additional aggregate results."
 }
