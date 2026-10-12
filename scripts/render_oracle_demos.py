@@ -60,7 +60,7 @@ class Probe:
     def __init__(self,world,number,focus):
         self.world=world;self.number=int(number);self.focus=focus
         self.events=[];self.energy=0.;self.forces={};self.last_force=None
-        self.modes={};self.last_update=None
+        self.modes={};self.last_update=None;self.initial_frame=None
         callback=world.scene.hook
         def observe(model,data):
             before={name:data.qvel[world.bodies[name][1]:world.bodies[name][1]+3].copy() for name in focus}
@@ -100,6 +100,11 @@ class Probe:
                 if active!=self.last_force:
                     self.events.append(dict(time=now,kind='force_on' if active else 'force_off',force=self.forces['red_ball'][1]))
                     self.last_force=active
+            if abs(now)<1e-9:
+                # Observe the actual first callback at t=0, before integration.
+                # This avoids displaying the temporary cleared-force buffer as
+                # if a force-based oracle were initially inactive.
+                self.initial_frame=snapshot(world,focus,0,self)
         world.scene.hook=observe
 
     def snapshot(self):
@@ -145,6 +150,7 @@ def record(number):
             refs.append(snapshot(reference,spec['focus'],epoch))
         if tick<ticks:
             world.step();reference.step()
+    if probe.initial_frame is not None:frames[0]=probe.initial_frame
     peaks={name:max(f['objects'][name]['position'][2] for f in frames) for name in spec['focus']}
     initial_speeds={name:float(np.linalg.norm(frames[0]['objects'][name]['velocity'])) for name in spec['focus']}
     return world,xml,frames,refs,{**spec,'events':events,'oracle_events':probe.events,
