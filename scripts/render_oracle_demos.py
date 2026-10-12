@@ -340,7 +340,7 @@ def wrap(draw,text,font,width):
 
 def draw_text(draw,xy,text,font,width,fill,leading):
     if any(c in text for c in '←→↔↑↓≠≤≥₀₁₂ₓᵧπ√²³×'):
-        font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',font.size)
+        font=ImageFont.truetype(str(SITE/'assets/fonts/DejaVuSans.ttf'),font.size)
     x,y=xy
     for line in wrap(draw,text,font,width):draw.text((x,y),line,font=font,fill=fill);y+=leading
     return y
@@ -394,7 +394,7 @@ def compose_frame(image_path,frame,oracle,spec,plot,job,video_time):
     # The oracle is always on screen, independent of whether playback has begun.
     x=954;w=500
     draw.text((x,109),'THE HIDDEN LAW / ORACLE',font=font(13),fill=green)
-    y=draw_text(draw,(x,140),oracle['formula'],ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',27),w,ink,36)+21
+    y=draw_text(draw,(x,140),oracle['formula'],ImageFont.truetype(str(SITE/'assets/fonts/DejaVuSans.ttf'),27),w,ink,36)+21
     draw.text((x,y),'WHEN',font=font(12),fill=green);y+=24
     y=draw_text(draw,(x,y),oracle['condition'],font(20),w,ink,29)+18
     draw.text((x,y),'THEN',font=font(12),fill=green);y+=24
