@@ -34,7 +34,18 @@ def main():
     entries=records['09']['oracle_events']
     np.testing.assert_allclose([e['changes'][0]['ratio'] for e in entries],[.4,2.5,.4],rtol=1e-9)
     assert entries[-1]['changes'][0]['position'][2]>.5
-    assert records['10']['samples'][-1]['oracle']['energy_added']>5
+    zone=records['10'];assert zone['samples'][-1]['oracle']['energy_added']>5
+    if zone['simulation_duration']==.7:
+        assert {s['epoch'] for s in zone['samples']}=={0}
+        assert all(e['kind']=='launch' for e in zone['events'])
+        for name in ['red_ball','blue_ball']:
+            np.testing.assert_allclose(zone['samples'][0]['objects'][name]['velocity'],[3,0,2.5],atol=1e-8)
+            assert all(s['objects'][name]['position'][2]>.1 for s in zone['samples'])
+        assert zone['samples'][0]['objects']['red_ball']['position'][0]<-2
+        assert any(abs(s['objects']['red_ball']['position'][0])<2 for s in zone['samples'])
+        assert all(s['objects']['blue_ball']['position'][1]>2 for s in zone['samples'])
+        assert 4.5<zone['samples'][-1]['objects']['red_ball']['velocity'][0]<4.7
+        np.testing.assert_allclose([s['objects']['blue_ball']['velocity'][0] for s in zone['samples']],3,atol=1e-8)
     boosts=records['11']['oracle_events']
     assert len(boosts)==1 and boosts[0]['kind']=='separation_boost'
     assert {c['object'] for c in boosts[0]['changes']}=={'red_ball','blue_ball'}

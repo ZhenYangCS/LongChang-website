@@ -6,6 +6,7 @@
   function show(id){
     const oracle=entries[id];if(!oracle)return;
     $('#oracle-plain').textContent=oracle.plain;
+    $('#scene-law-text').textContent=oracle.law;
     $('#oracle-kind').textContent=id==='01'?'Control scene':'The hidden rule';
     $('#oracle-formula').textContent=oracle.formula;
     $('#oracle-signal').textContent=oracle.measure;

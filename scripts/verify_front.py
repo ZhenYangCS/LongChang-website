@@ -28,11 +28,13 @@ def main():
             assert not page.locator('#oracle-chapters').is_visible()
             assert not page.locator('#atlas-model-note').is_visible()
             assert not page.locator('#scene-law').evaluate('(e)=>e.open')
+            assert page.locator('.full-rule').is_visible() and page.locator('#scene-law-text').inner_text()
             assert len(page.locator('#oracle-plain').inner_text().split())<20
             page.locator('.physics-video-frame').scroll_into_view_if_needed()
             rule=page.locator('#oracle-plain').bounding_box();art=page.locator('.physics-video-frame').bounding_box()
             assert rule['y']+rule['height']<=art['y']
             if args.require_hd:assert page.locator('#physics-video').evaluate('(v)=>v.videoWidth')==1440
+            assert page.locator('.physics-video-frame').get_attribute('data-framing')=='room'
             for rate in ['0.5','1','2','4']:
                 page.locator('#physics-speed').select_option(rate)
                 assert page.locator('#physics-video').evaluate('(v)=>v.playbackRate')==float(rate)
@@ -41,17 +43,56 @@ def main():
             page.locator('#physics-play').click();assert page.locator('#physics-video').evaluate('(v)=>v.paused')
             page.locator('#physics-progress').evaluate('e=>{e.value=650;e.dispatchEvent(new Event("input",{bubbles:true}));}')
             page.wait_for_function('()=>{const v=document.querySelector("#physics-video");return !v.seeking&&Math.abs(v.currentTime/v.duration-.65)<.02;}')
+        # Changing framing preserves time and pause state; one video is decoded.
+        page.locator('#physics-speed').select_option('1')
+        t=page.locator('#physics-video').evaluate('(v)=>v.currentTime')
+        source=page.locator('#physics-video').evaluate('(v)=>v.currentSrc')
+        for mode in ['detail','room']:
+            page.locator('#physics-view').click()
+            assert page.locator('.physics-video-frame').get_attribute('data-framing')==mode
+            assert page.locator('#physics-video').evaluate('(v)=>v.currentSrc')==source
+            assert page.locator('#physics-video').evaluate('(v)=>v.paused')
+            assert abs(page.locator('#physics-video').evaluate('(v)=>v.currentTime')-t)<.07
+        page.locator('#physics-play').click()
+        page.locator('#physics-view').click()
+        page.wait_for_function('!document.querySelector("#physics-video").paused')
+        page.locator('#physics-play').click()
         page.locator('#physics-fullscreen').click();page.wait_for_function('Boolean(document.fullscreenElement)');page.evaluate('document.exitFullscreen()')
-        page.locator('#scene-law > summary').click();page.locator('#oracle-measurements summary').click()
+        page.locator('#scene-law > summary').click()
         page.wait_for_function('document.querySelector("#oracle-chart path")!==null')
         assert page.locator('#physics-values').inner_text()
         page.locator('#atlas-tour').click();page.wait_for_function('!document.querySelector("#physics-video").paused')
         page.locator('#physics-video').evaluate('(v)=>v.currentTime=v.duration-.03');page.wait_for_function('LongChangAtlas.currentScene()==="02"')
         page.locator('#atlas-tour').click()
-        print('PASS: 15 names, rule-above-image layout, playback rates, seek, fullscreen, details and tour.',flush=True)
+        print('PASS: 15 names, always-visible full rules, framing switch, playback rates, seek, fullscreen, measurements and tour.',flush=True)
+        # All three views reserve the same space, including their bottom controls.
+        for mode in ['physics','motion','initial']:
+            page.locator('[data-atlas-view='+mode+']').click()
+            for i in range(1,16):
+                page.evaluate('(id)=>showWorld(id)',f'{i:02}')
+                panel=page.locator('#scene-detail').bounding_box();art=page.locator('#atlas-'+mode+'-view').bounding_box();dock=page.locator('.scene-foot').bounding_box()
+                assert art['height']>180 and art['y']+art['height']<=dock['y']+.5,(mode,i,art,dock)
+                assert abs(dock['y']+dock['height']-(panel['y']+panel['height']-1))<1,(mode,i)
+                if mode=='motion':assert page.locator('#atlas-parameter').is_visible()
+                if mode=='initial':assert page.locator('.original-download').is_visible()
+        page.locator('[data-atlas-view=physics]').click()
         page.locator('#replay-play').click();page.wait_for_function('!document.querySelector("#success-video").paused')
         page.locator('#replay-speed').select_option('2');assert page.locator('#success-video').evaluate('(v)=>v.playbackRate')==2
         page.locator('#replay-play').click()
+        for width,height in [(1366,768),(1280,720),(1440,900)]:
+            page.set_viewport_size({'width':width,'height':height})
+            page.evaluate('document.querySelector("#worlds").scrollIntoView({behavior:"instant",block:"start"})')
+            box=page.locator('.scene-workspace').bounding_box()
+            assert box['y']>70 and box['y']+box['height']<=height,(width,height,box)
+            tabs=page.locator('#scene-picker button').all()
+            positions=[tab.bounding_box() for tab in tabs]
+            assert len({round(b['x']) for b in positions})==5
+            assert len({round(b['y']) for b in positions})==3
+            assert all(page.locator('#scene-tab-'+f'{i:02}').is_visible() for i in range(1,16))
+            for i in range(1,16):
+                page.evaluate('(id)=>showWorld(id)',f'{i:02}')
+                assert page.locator('.full-rule').evaluate('(e)=>e.scrollHeight<=e.clientHeight+1')
+                assert page.locator('.physics-video-frame').bounding_box()['height']>=170
         for width in [1440,1024,768,390,360,320]:
             page.set_viewport_size({'width':width,'height':900})
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),width

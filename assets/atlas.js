@@ -271,7 +271,7 @@
       if (touring) { window.showWorld(String(Number(id) % 15 + 1).padStart(2, '0')); playing = true; time = 0; }
       else { time = duration; playing = false; }
     }
-    if (now - lastDraw > 32 || !playing) { render(); lastDraw = now; }
+    render(); lastDraw = now;
     if (running() && !frame) frame = requestAnimationFrame(tick);
   }
   function syncClock() { cancelAnimationFrame(frame); frame = 0; if (running()) { previous = performance.now(); frame = requestAnimationFrame(tick); } }

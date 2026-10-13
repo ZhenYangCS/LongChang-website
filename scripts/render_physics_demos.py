@@ -113,9 +113,11 @@ def demonstration(number):
         push(0, 'PUSH red_ball 0 10', 'Red approaches the entry boundary at x = 0.5.')
         push(0, 'PUSH blue_ball 0 10', 'Blue is outside the footprint. Ordinary friction remains active.')
     elif n == 10:
-        positions = {'red_ball':[.5,.5,.1], 'blue_ball':[-.5,2.7,.1]}
-        focus = list(positions); duration = 8; film_duration = 12
-        intro = 'Start both balls at rest: red inside the yellow region, blue outside.'
+        positions = {'red_ball':[-2.15,1.3,.8], 'blue_ball':[-2.15,2.3,.8]}
+        focus = list(positions); duration = .7; film_duration = 6
+        intro = 'Matched throws: red crosses above the yellow footprint, while blue travels outside it. Compare forward speed before either ball lands.'
+        for name in positions:
+            push(0,f'THROW {name} 0 39.805571092 3.905124838','Same launch: forward speed 3 and upward speed 2.5.')
     elif n == 11:
         positions = {'red_ball':[-.6,0,.1], 'blue_ball':[0,0,.1], 'green_ball':[.15,1,.1]}
         focus = list(positions); duration = 2

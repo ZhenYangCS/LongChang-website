@@ -21,7 +21,7 @@ def main():
         for i in range(1,16):
             target=out/f'scene-{i:02}.svg'
             subprocess.run(['pdftocairo','-svg','-f',str(i),'-l',str(i),str(path/'symbols.pdf'),str(target)],check=True)
-    (out/'source.json').write_text(json.dumps(dict(source='ACL/secs/02_introduction.tex',table='tab:scene-overview',source_sha256=hashlib.sha256(SOURCE.read_bytes()).hexdigest(),description='Exact mechanism drawings from Table 1; titles are populated from the same paper scene catalogue.'),indent=2)+'\n')
+    (out/'source.json').write_text(json.dumps(dict(source='ACL/secs/02_introduction.tex',table='tab:scene-overview',source_sha256=hashlib.sha256(SOURCE.read_bytes()).hexdigest(),symbols_sha256=hashlib.sha256(definitions.encode()).hexdigest(),description='Exact mechanism drawings from Table 1; titles are populated from the same paper scene catalogue.'),indent=2)+'\n')
     print('Exported all 15 original Table 1 mechanism symbols as SVG.')
 
 if __name__=='__main__':main()

@@ -36,7 +36,12 @@ JSON files contain 500 Hz samples, interventions, rule events and source
 hashes. Videos use nearest recorded simulation samples without pose
 interpolation. Camera, lighting and trajectory overlays are presentation.
 
-Render using project_page/scripts/build_smooth_demos.py, then
+Close-ups use a crop of the same fixed room, cached Cycles spherical lighting
+and projected soft shadows. Display contrast is enhanced; native RGBA values
+remain in the records. No physical objects are enlarged for presentation.
+
+Render using project_page/scripts/build_smooth_demos.py, followed by
+project_page/scripts/build_detail_views.py and
 project_page/scripts/publish_clear_media.py. The project-page README
 documents the rendering workflow.
 ''')

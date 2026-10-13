@@ -36,11 +36,7 @@ def plan(number):
             dict(time=1.32,kind='launch',command='PUSH red_ball 0 4',caption='The boundary rule also acts in the air.')]
         spec['setup']='Three new trials: enter, leave, then enter above the tile. The same ball is repositioned between trials.'
     if number=='10':
-        spec['simulation_duration']=5.0
-        spec['events']=[
-            dict(time=2.5,kind='arrange',positions={'red_ball':[-.8,0,1.8]},caption='Second trial: start above the active region.'),
-            dict(time=2.52,kind='launch',command='PUSH red_ball 0 1',caption='Now watch the velocity amplification, not only the resting seed.')]
-        spec['setup']='First release from rest inside the region; then launch above it to expose the amplification update.'
+        spec['simulation_duration']=.7
     if number=='15':
         spec['simulation_duration']=20.0
         spec['events']=[
@@ -49,6 +45,7 @@ def plan(number):
             dict(time=6,kind='launch',command='PUSH blue_ball 0 1',caption='Push again: the ten-count pause now ends at count 16.')]
         spec['setup']='Compare a zero push, a nonzero push on blue, and a second push that restarts the shared timer.'
     spec['duration']=14 if number in ['09','10','12','13','14','15'] else 12
+    if number=='10':spec['duration']=6
     if number=='15':spec['duration']=16
     definition=copy.deepcopy(SPECS[int(number)-1]);definition['program']={}
     reference=World(load_scene(definition));reference._motion=None
