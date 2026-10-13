@@ -219,7 +219,16 @@
         }
       ],
       "duration": 32,
-      "video_sha256": "63003fd5e010637ac99f6ffde2911b08825b627ca5810eda643624dc9b54c211"
+      "video_sha256": "6dde5d4b9c32c9dc7c3894c3d086ec5d48184ba17a9932c1d992ea17ce9105b5",
+      "poster_sha256": "5b30ad5c0a3da6befeb38a9797b7b8ba29cdfdaf8ac34ae6a80c1bc25d0080c4",
+      "render": {
+        "revision": "figure1-studio-v2",
+        "engine": "Blender Cycles",
+        "samples": 64,
+        "reference": "ACL/materials/teaser/blender_scene.py",
+        "reference_sha256": "bee6692648e3c9fbcafcba9093a48f6eff62f09d674317121d404fc85d2e2f8c",
+        "method": "Exact archived geometry and poses; Figure 1 enamel, porcelain and metal materials, studio area lighting and AgX. Static backgrounds with rendered moving regions; no physics stepping or pose interpolation."
+      }
     },
     {
       "id": "color",
@@ -335,7 +344,16 @@
         }
       ],
       "duration": 18,
-      "video_sha256": "b7cf8eca279b31c58b62cdbb85594e6f73208c6a83563e343b14cf4e69ea2050"
+      "video_sha256": "bf0f28dce7878aae06d7f504da5474bd368543bddf1fa48a4d9fb166c61c1bf4",
+      "poster_sha256": "92b71546b848f7583c059d235c0945245a717f098242e4cddd0b5d35650dff48",
+      "render": {
+        "revision": "figure1-studio-v2",
+        "engine": "Blender Cycles",
+        "samples": 64,
+        "reference": "ACL/materials/teaser/blender_scene.py",
+        "reference_sha256": "bee6692648e3c9fbcafcba9093a48f6eff62f09d674317121d404fc85d2e2f8c",
+        "method": "Exact archived geometry and poses; Figure 1 enamel, porcelain and metal materials, studio area lighting and AgX. Static backgrounds with rendered moving regions; no physics stepping or pose interpolation."
+      }
     },
     {
       "id": "tool",
@@ -438,7 +456,16 @@
         }
       ],
       "duration": 21,
-      "video_sha256": "12f34848f9572fc5a9a0bd99b2cb596f0eec1c60e9cb68e693c9ef1779234f65"
+      "video_sha256": "b7f2e3484a2f8231116b380eb43d24dbdbbe46bf547dde11e61c3a23a67c86c2",
+      "poster_sha256": "e12ffa36701ba9ba0cde97a0a516c0b9baf1c3b7891f7f735831c827da3818d7",
+      "render": {
+        "revision": "figure1-studio-v2",
+        "engine": "Blender Cycles",
+        "samples": 64,
+        "reference": "ACL/materials/teaser/blender_scene.py",
+        "reference_sha256": "bee6692648e3c9fbcafcba9093a48f6eff62f09d674317121d404fc85d2e2f8c",
+        "method": "Exact archived geometry and poses; Figure 1 enamel, porcelain and metal materials, studio area lighting and AgX. Static backgrounds with rendered moving regions; no physics stepping or pose interpolation."
+      }
     }
   ]
 }

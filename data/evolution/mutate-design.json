@@ -1,0 +1,114 @@
+{
+  "source": "runs/acl-weakness-evolution-20261006-122456-2aa1c1/frozen_designs.json",
+  "source_sha256": "7d0a7c1d64bd2adb355d23e4bcf42ec9eb33f54dd662c5c79b868ebe895a0dd5",
+  "reference_sources": [
+    {
+      "id": "S6",
+      "scene": "15_launch_suppressed_drift",
+      "repeat": 2,
+      "episode_id": "e4b54cf941bb4fd5bfa231aae0af3c28",
+      "session_path": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gpt-6-astra/r2/T0/session.json",
+      "session_sha256": "4432d8094cfb2707ac60a01ea3f0834b5c89a096e5be6af6c4ae49b01bff6fdc",
+      "eval_path": "runs/eval-fixed-20261004/eval-770.json",
+      "eval_sha256": "a161feecab815779a4457536beaf0aeca6de191965ce2c04ebbc6e61da218732"
+    },
+    {
+      "id": "S4",
+      "scene": "14_delayed_motion_echo",
+      "repeat": 2,
+      "episode_id": "5e6f99e65e4a4553b1da3c456f6b2fde",
+      "session_path": "runs/main-15-20260930-022640-2180080/14_delayed_motion_echo/gpt-6-astra/r2/T0/session.json",
+      "session_sha256": "98038e3d788306866d75557780ec7d4264ee371d9f20f2eeedec8b1eba58a208",
+      "eval_path": "runs/eval-fixed-20261004/eval-734.json",
+      "eval_sha256": "b733c0cfd1196c9219a409088135b880faa3a711e04b4b8e4da00c61e1f4de8d"
+    }
+  ],
+  "weakness": {
+    "id": "S6-W1",
+    "weakness": "Mistook the temporary absence of an effect after intervention for evidence against a persistent underlying tendency.",
+    "mistaken_inference": "After pushing red south and observing it stop normally, the explorer concluded that the earlier northward acceleration was not a persistent local effect. The push had actually suppressed the drift temporarily.",
+    "evidence": [
+      {
+        "session_id": "S6",
+        "turn": 30,
+        "field": "note",
+        "quote": "Red traveled the usual 1.5 bricks south and remained at rest (turns 28–29), so the earlier northward acceleration is not a persistent local effect."
+      }
+    ],
+    "contradiction": [
+      {
+        "session_id": "S6",
+        "turn": 31,
+        "field": "note",
+        "quote": "Red restarted north after 3.884 counts of turn 30, about 10 counts after the southward push, while blue stayed still. This corrects my earlier inference: the effect is delayed, not absent."
+      }
+    ],
+    "oracle_quote": "The red ball drifts north of its own accord at 1.5 bricks/s^2, but the drift is shy: any launch of any object in the room silences it for 10.0 seconds, after which it resumes.",
+    "status": "corrected_during_exploration",
+    "correction_turn": 31,
+    "consequence": "An observation confined to the post-launch suppression interval could lead the explorer to dismiss a real spontaneous drift law because the diagnostic intervention temporarily disables it. The explorer corrected this inference after waiting longer; it was not an error in the successful final report."
+  },
+  "case": {
+    "operation": "mutate",
+    "source_ids": [
+      "S6"
+    ],
+    "weakness_id": "S6-W1",
+    "source_error_status": "corrected_during_exploration",
+    "weakness_link": "The recorded error inferred absence of persistent drift from a temporarily negative intervention test. Preserve that drift and its ten-second suppression, but make blue's observable position an additional enabling condition. A routine relocation can then keep drift absent even after ten seconds, making the old inference harder to reject until a matched inside–outside comparison is made. The original error remains labelled corrected.",
+    "design_idea": "Gate the original shy drift by blue's position, so harmless-looking relocation can prolong negative observations without increasing the suppression interval.",
+    "public_description": "A red ball and a blue ball rest on a level floor. A thin gray square marks an open area nearby.",
+    "oracle": {
+      "control": false,
+      "rule_count": 1,
+      "initial_conditions": "Preserve red and blue as stationary spheres of radius 0.1 bricks and mass 1.0 at (0, -3, 0.1) and (3, 1, 0.1). Add one fixed, noncolliding gray box marker centred at (3, 3, 0.005), with half-sizes (0.5, 0.5, 0.005). It is wholly within the existing room, whose horizontal bounds are [-6, 6] and vertical bounds are [0, 12]. North is positive y.",
+      "rules": [
+        {
+          "id": "L1",
+          "claim": "Only the original red ball receives an additional northward acceleration of 1.5 bricks/s², precisely when both conditions hold: at least 10.0 seconds have elapsed since the latest nonzero push or throw of any movable object in the room, and the original blue ball's horizontal centre is outside the closed square defined by 2.5 ≤ x ≤ 3.5 and 2.5 ≤ y ≤ 3.5. The square boundary counts as inside. Blue's height and whether it is held do not change this position condition. Red's position, velocity and contact state do not change the acceleration."
+        }
+      ],
+      "reset_and_scope": "Every nonzero push or throw of any movable object, including introduced objects, starts a fresh 10.0-second suppression interval; intervals do not accumulate. Initialization clears temporal suppression and starts with blue outside the square, so red's drive is initially active. Blue entering or leaving the square does not restart the interval. Leaving restores the drive immediately if the ten seconds have already elapsed; otherwise the remaining interval still applies. Zero-strength interventions and actions without a nonzero push or throw do not restart temporal suppression. Only the original blue ball controls the position gate, regardless of later colour changes. Blue, added bodies and constrained apparatus receive no exceptional acceleration. Ordinary physics remains unchanged.",
+      "ground_truth": "There is one exceptional law: red's original 1.5 bricks/s² northward drive retains global ten-second intervention suppression and additionally requires blue to be outside the gray square. The position gate is the sole mutation.",
+      "rubric": [
+        "Observe red's spontaneous northward motion and its absence immediately after intervention.",
+        "Retain the original ten-second suppression constant and identify its global trigger.",
+        "Compare blue inside and outside the square after equal quiet periods.",
+        "Identify immediate restoration on blue's exit after temporal suppression has ended."
+      ]
+    },
+    "oracle_summary": "Red accelerates north unless blue is inside the gray square or a nonzero push or throw occurred within ten seconds. Moving blue outside restores the drive once those ten seconds have passed.",
+    "trace_summary": "The explorer denied persistent drift after red stopped; red later restarted north without intervention, and the inference was later corrected.",
+    "original_oracle_summary": [
+      "Red accelerates north at 1.5 bricks/s² except during the ten seconds after the latest nonzero push or throw of any object."
+    ],
+    "counterfactual_test": {
+      "setup": "Use matched trials beginning with red at (0, -3, 0.1) and blue at (3, 1, 0.1). Keep red's north–south path unobstructed.",
+      "actions": "In both trials, give red the same modest southward push or throw at t = 0. During the first eight seconds, relocate blue using GRASP, MOVE and RELEASE: to (1, 1, 0.1) in the outside control and to (3, 3, 0.1) in the inside trial. These destinations are equally far from blue's starting point. Observe around t = 10. After t = 12, return blue to (3, 1, 0.1) in both trials without a push or throw, observing red immediately around blue's departure.",
+      "prediction_from_weakness": "Reusing the old reasoning could treat red's continued rest in the inside trial, even after ten seconds, as evidence that no persistent northward tendency exists.",
+      "correct_prediction": "Red's drive returns at t = 10 in the outside control. In the inside trial it stays absent until blue leaves the square, then returns immediately because the ten-second suppression has already ended. Returning blue in the outside control does not interrupt red's drive.",
+      "what_discriminates": "Matched relocations separate blue's location from intervention timing. Immediate recovery on exit rules out permanent loss of drift and a new ten-second pause caused by ordinary relocation."
+    },
+    "feasibility": "The mutation uses position and a supported box fixture, not inaccessible release events. The matched trials, a quiet entry–exit repetition and short onset observations require fewer than 65 actions. Observe recovery promptly and reposition between trials rather than relying on long unobstructed travel. The inside and outside controls expose the signal instead of merely extending a wait.",
+    "zh": {
+      "design_idea": "让蓝球的位置控制原有的易受干预漂移，使看似无害的移位延长阴性观察，而不增加抑制时长。",
+      "oracle_summary": "红球向北加速，但蓝球位于灰色方块内，或最近十秒内有非零力度的推动或投掷时除外。十秒已过后，把蓝球移出方块便恢复驱动。",
+      "trace_summary": "探索者在红球停下后否认持续漂移；红球随后在无干预时重新向北运动，该判断后来已被纠正。",
+      "original_oracle_summary": [
+        "红球以每秒平方1.5砖的加速度向北运动，但任何物体最近一次受到非零力度推动或投掷后的十秒内除外。"
+      ]
+    }
+  },
+  "review": {
+    "approved": true,
+    "operation": "mutate",
+    "reason": "The proposal directly targets S6-W1: mistaking intervention-dependent absence for absence of an underlying drift. It preserves S6's 1.5 bricks/s² northward drive and global, resetting 10-second suppression after nonzero PUSH/THROW, adding only an observable blue-position gate. The oracle faithfully specifies that gate, including boundaries, original-object scope and restoration without restarting suppression. Matched inside–outside trials and exit after suppression expires distinguish gated drift from permanent absence without merely lengthening the delay. GRASP/MOVE/RELEASE do not invoke the launch callback, making the comparison feasible under the stated runtime. The recorded inference remains explicitly labelled corrected, and the proposed failure is hypothetical, not claimed as observed. This is a mutation of S6, not a composition with S4.",
+    "chain_checks": {
+      "weakness_grounded": true,
+      "design_targets_weakness": true,
+      "oracle_implements_idea": true,
+      "feasible_discriminating_test": true
+    }
+  },
+  "revision": 3
+}

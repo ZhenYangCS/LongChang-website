@@ -21,14 +21,6 @@
   vertical-align:middle;
   color:var(--teal);
 }
-#main .chapter-heading > p {
-  display:block;
-  max-width:820px;
-  margin:12px auto 0;
-  font:400 16px/1.6 var(--sans);
-  color:#536b61;
-  text-wrap:balance;
-}
 #main .chapter-heading > button { margin-top:18px; font-size:14px; }
 #main > #worlds.chapter { padding-block:40px; }
 #worlds .chapter-heading { margin-bottom:24px; }
@@ -36,11 +28,9 @@
 
 
 .main-results-figure > figcaption { font-size:14px; }
-.results-metrics button { font-size:13px; }
 .results-sort,.results-axis { font-size:12px; }
 .result-model-name { font-size:13px; }
-.results-chart:not([data-view=all]) .result-row-value { font-size:12px; }
-.result-inspector-label { font-size:10px; }
+.result-row-value { font-size:12px; }
 .result-score dt,.result-behavior-heading,.result-behavior > div,.result-scene-heading,.result-control { font-size:12px; }
 .result-score dd > span,.result-control > span:last-child { font-size:11px; }
 .controlled-label { font-size:11px; }
@@ -72,7 +62,6 @@
   #main .chapter-heading { margin-bottom:26px; }
   #main .chapter-heading h2 { font-size:30px; line-height:1.25; }
   #main .chapter-heading .section-number { font-size:14px; margin-right:10px; }
-  #main .chapter-heading > p { font-size:15px; line-height:1.6; }
 }
 @media(max-width:560px) {
   #main .chapter-heading h2 { font-size:28px; }

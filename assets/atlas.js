@@ -35,7 +35,10 @@
   let initialPreview = false;
   const duration = 8;
   const playbackRate = 2;
-  const modelNote=document.createElement('p');modelNote.id='analysis-model-note';modelNote.className='model-note';$('#analysis-formula').prepend(modelNote);
+  const modelNote=document.createElement('p');modelNote.id='analysis-model-note';modelNote.className='model-note';$('#model-heading').after(modelNote);
+  $('#model-diagram').append($('#atlas-canvas'));
+  $('#model-controls').append($('.atlas-playback'));
+  $('#model-diagram').after($('.atlas-scene-readout'));
 
   const sphere = (x, y, z, color, label = '') => {
     const actualZ=Math.max(0,z),p=point(x,y,actualZ),floor=point(x,y,.06),kind=configs[id].gesture;
@@ -212,7 +215,7 @@
     $('#atlas-canvas').innerHTML = result.svg;
     updateText('#atlas-state-label', result.state);
     updateText('#atlas-value', result.reading);
-    if(view === 'analysis') updateText('#atlas-observation', result.observation);
+    updateText('#atlas-observation', result.observation);
     $('#atlas-play').textContent = playing ? 'II' : '▶';
     $('#atlas-play').setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} scene illustration`);
     $('#atlas-progress').value = Math.round(time * 100);
@@ -220,14 +223,17 @@
 
   }
   function setView(next) {
-    view = next;
-    $('#atlas-motion-view').hidden = !['motion','analysis'].includes(view);
-    $('#analysis-formula').hidden=view!=='analysis';
-    if(view==='analysis'){window.LongChangMath.render($('#analysis-formula'),id);$('#analysis-formula').prepend(modelNote);}
+    // Older links and the offline exporter can still request the model by name.
+    view = next==='analysis'?'physics':next;
+    $('#atlas-motion-view').hidden = view!=='motion';
+    $('#demo-explanation').hidden=view!=='physics';
+    $('#analysis-formula').hidden=view!=='physics';
+    if(view==='physics')window.LongChangMath.render($('#analysis-formula'),id);
     $('#atlas-initial-view').hidden = view !== 'initial';
     $('#atlas-physics-view').hidden = view !== 'physics';
     $('.atlas-detail').dataset.view = view;
-    $('.atlas-playback').hidden = view !== 'analysis';
+    $('.scene-workspace').dataset.view = view;
+    $('.atlas-playback').hidden = view !== 'physics';
     $('#atlas-trigger-text').textContent = configs[id].trigger;
     $('#atlas-model-note').textContent = configs[id].note;
     render();
@@ -242,11 +248,12 @@
     value=next;$('#atlas-parameter').value=value;
     if(config.range)$('#atlas-parameter-value').textContent=`${Number(value).toFixed(1)} ${config.unit}`;
     time=0;playing=!preview;touring=false;
-    if(view!=='analysis'&&activate)setView('analysis');else{render();syncClock();}
+    if(view!=='physics'&&activate)setView('physics');else{render();syncClock();}
   }
   function replay(){time=0;playing=true;touring=false;render();syncClock();}
   function setup(scene, autoplay = true) {
     id = scene.id; value = configs[id].initial; time = 0;
+    $('#demo-explanation').scrollTop=0;
     const config = configs[id];
     $('#atlas-trigger-text').textContent = config.trigger;
     $('#atlas-model-note').textContent = config.note;
@@ -254,14 +261,14 @@
     $('#atlas-canvas').setAttribute('aria-label', `${scene.name}. Idealized interactive illustration of the published law.`);
     const options = config.options?.map(([v, label]) => `<option value="${v}">${label}</option>`).join('');
     $('#atlas-controls').innerHTML = `<label for="atlas-parameter">${config.label}</label>` + (options ? `<select id="atlas-parameter">${options}</select>` : `<div class="atlas-range"><input id="atlas-parameter" type="range" min="${config.range[0]}" max="${config.range[1]}" step="${config.range[2]}" value="${value}"><output for="atlas-parameter" id="atlas-parameter-value">${Number(value).toFixed(1)} ${config.unit}</output></div>`);
-    modelNote.textContent='Interactive model · '+(window.ORACLE_CATALOG?.[id]?.model_note||config.note);
+    modelNote.textContent=window.ORACLE_CATALOG?.[id]?.model_note||config.note;
     $('#atlas-parameter').value = value;
     $('#atlas-parameter').addEventListener(config.options ? 'change' : 'input', event => setParameter(event.target.value));
     $('#atlas-evidence').hidden = !['06','07','14','15'].includes(id);
     playing = autoplay && !reduced.matches;
     setView(view); render(); syncClock();
   }
-  function running() { return !exportMode && !document.hidden && !$('#motion-dialog').open && visible && playing && view === 'analysis'; }
+  function running() { return !exportMode && !document.hidden && !$('#motion-dialog').open && visible && playing && view === 'physics'; }
   function tick(now) {
     frame = 0;
     if (!running()) return;
@@ -287,10 +294,9 @@
   document.addEventListener('longchang:scene',event=>{mobilePicker.value=event.detail.id;});
   $('#atlas-play').addEventListener('click', () => { if (time >= duration) time = 0; playing = !playing; if (!playing) touring = false; render(); syncClock(); });
 
-  $('.atlas-playback').before($('.atlas-scene-readout'));
   $('.atlas-illustration-label').remove();
   $('#atlas-canvas').setAttribute('viewBox','0 0 640 410');
-  $('#analysis-fullscreen').addEventListener('click',async()=>{if(document.fullscreenElement)await document.exitFullscreen();else await $('.atlas-visual').requestFullscreen();});
+  $('#analysis-fullscreen').addEventListener('click',async()=>{if(document.fullscreenElement)await document.exitFullscreen();else await $('#demo-explanation').requestFullscreen();});
   $('#atlas-reset').addEventListener('click', () => { time = 0; playing = false; touring = false; render(); syncClock(); });
   $('#atlas-progress').addEventListener('input', event => { time = Number(event.target.value) / 100; playing = false; touring = false; render(); syncClock(); });
 
@@ -303,7 +309,7 @@
     visible = entries[0].isIntersecting;
     if (visible && !initialPreview && !reduced.matches) { initialPreview = true; playing = true; render(); }
     syncClock();
-  }, {threshold:.05}).observe($('.atlas-detail'));
+  }, {threshold:.05}).observe($('#model-diagram'));
   document.addEventListener('visibilitychange', syncClock);
   document.addEventListener('longchang:presentation-open', syncClock);
   $('#motion-dialog').addEventListener('close', syncClock);

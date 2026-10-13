@@ -32,11 +32,27 @@ def main():
         before = packet_positions(page)
         page.wait_for_timeout(180)
         assert packet_positions(page) != before, 'Active paths must carry moving packets'
+        page.locator('[data-node="explorer"]').click()
+        expect(flow).to_have_attribute('data-mode', 'focus')
+        expect(flow).to_have_attribute('data-selection', 'explorer')
+        expect(flow).to_have_attribute('data-playing', 'true')
+        assert page.locator('[data-edge="record"]').get_attribute('data-from') == 'explorer'
+        assert 'is-active' in page.locator('[data-edge="record"]').get_attribute('class')
+        before = packet_positions(page)
+        page.wait_for_timeout(180)
+        assert packet_positions(page) != before, 'Inspecting a node must keep its data flowing'
+        page.wait_for_timeout(4100)
+        expect(flow).to_have_attribute('data-phase', '1')
+        expect(flow).to_have_attribute('data-selection', 'explorer')
         page.locator('#fw-play').click()
         expect(flow).to_have_attribute('data-playing', 'false')
         before = packet_positions(page)
         page.wait_for_timeout(180)
         assert packet_positions(page) == before, 'Pause must freeze packets'
+        page.locator('#fw-play').click()
+        expect(flow).to_have_attribute('data-selection', 'explorer')
+        expect(flow).to_have_attribute('data-playing', 'true')
+        page.locator('#fw-play').click()
 
         # The judge receives all three inputs; the hidden law never enters the explorer.
         law = page.locator('[data-edge="law"]')
@@ -65,6 +81,7 @@ def main():
         # Autoplay advances, and resumes from its frozen position after leaving the viewport.
         page.locator('#fw-reset').click()
         expect(flow).to_have_attribute('data-phase', '0')
+        expect(flow).to_have_attribute('data-mode', 'cycle')
         page.locator('#fw-play').click()
         expect(flow).to_have_attribute('data-phase', '1', timeout=8500)
         page.evaluate('window.scrollTo({top: 0, behavior: "instant"})')
@@ -77,6 +94,10 @@ def main():
         page.evaluate('document.querySelector("#motion-dialog").showModal()')
         expect(flow).to_have_attribute('data-playing', 'false')
         page.evaluate('document.querySelector("#motion-dialog").close()')
+        expect(flow).to_have_attribute('data-playing', 'true')
+        page.evaluate('document.querySelector("#result-evidence-dialog").showModal()')
+        expect(flow).to_have_attribute('data-playing', 'false')
+        page.evaluate('document.querySelector("#result-evidence-dialog").close()')
         expect(flow).to_have_attribute('data-playing', 'true')
         page.locator('[data-fw-stage="3"]').click()
 
@@ -152,6 +173,7 @@ def main():
         browser.close()
     assert not errors, errors
     print('PASS: actual packet motion, pause/resume, automatic stages, offscreen and modal lifecycle.')
+    print('PASS: selected flows keep moving without changing stage; all turns record directly from exploration.')
     print('PASS: judge input routing, keyboard controls, reduced motion.')
     print('PASS: 320–1440 px text layout, paths within the map, every arrow attached to its target.')
     print('PASS: all flow paths clear labels, node text and headings, including particle clearance.')

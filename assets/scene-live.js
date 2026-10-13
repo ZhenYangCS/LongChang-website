@@ -3,9 +3,6 @@
   const $=s=>document.querySelector(s),host=$('#atlas-motion-view');
   const stage=document.createElement('div');stage.id='scene-live-stage';
   const poster=document.createElement('img');poster.className='scene-live-poster';poster.alt='Scene preview';stage.append(poster);host.prepend(stage);
-  const interactionHelp=document.createElement('p');interactionHelp.id='scene-interaction-help';
-  const instructions={push:'Drag an object, then release to push.',drag:'Drag an object upward to lift it; release to drop.',view:'Drag the scene to rotate the view.'};
-  interactionHelp.textContent=instructions.push;stage.append(interactionHelp);
   const playback=document.createElement('div');playback.className='scene-live-playback';playback.hidden=true;
   playback.innerHTML='<button id="scene-live-play" class="round-control" aria-label="Pause live physics">Ⅱ</button><span id="scene-live-hint" role="status"></span><span id="scene-live-clock">0.0 s</span><select id="scene-live-speed" aria-label="Live physics speed"><option value="0.5">0.5×</option><option value="1">1×</option><option value="2">2×</option><option value="4" selected>4×</option></select><button id="scene-live-fullscreen" class="round-control" aria-label="Expand live physics">⛶</button>';
   host.after(playback);
@@ -13,7 +10,7 @@
   controls.innerHTML='<div class="room-tools" role="group" aria-label="Interact with the scene"><button data-scene-mode="push" aria-pressed="true" title="Launch an object">Push</button><button data-scene-mode="drag" aria-pressed="false" title="Lift and move an object">Drag</button><button data-scene-mode="view" aria-pressed="false" title="Change the viewing angle">Rotate</button><button id="scene-live-reset" aria-label="Reset the scene">↺</button></div>';
   playback.insertBefore(controls,$('#scene-live-hint'));
   let world=null,worldId=null,mode='push',version=0,loading=false,visible=false,lastClock=-1;
-  const status=text=>{const hint=$('#scene-live-hint');if(hint.textContent!==text)hint.textContent=text;};
+  const status=text=>{const hint=$('#scene-live-hint');if(hint.textContent!==text)hint.textContent=text;stage.dataset.loadLabel=text;};
   function clock(time){const now=Math.floor(time*10);if(now!==lastClock){lastClock=now;$('#scene-live-clock').textContent=(now/10).toFixed(1)+' s';}}
   function playLabel(){const playing=world?.isRunning();$('#scene-live-play').textContent=playing?'Ⅱ':'▶';$('#scene-live-play').setAttribute('aria-label',playing?'Pause live physics':'Run live physics');}
   function destroy(){version++;loading=false;world?.destroy();world=null;worldId=null;window.SceneRoom=null;stage.setAttribute('aria-busy','false');}
@@ -30,7 +27,7 @@
       if(token!==version){simulation.destroy();return;}
       const next=await createRoom(stage,status,{simulation,speed:Number($('#scene-live-speed').value),onFrame:time=>{clock(time);if(world)playLabel();}});
       if(token!==version){next.destroy();return;}
-      stage.querySelector('.room-canvas')?.setAttribute('aria-describedby',interactionHelp.id);
+      stage.querySelector('.room-canvas')?.setAttribute('aria-describedby','scene-live-hint');
       world=next;worldId=id;window.SceneRoom=world;poster.hidden=true;world.setMode(mode);if(visible)world.play();playLabel();
     }catch(error){if(token===version){status('Could not load. Tap Push to retry.');console.warn('Live scene:',error.message);}}
     finally{if(token===version){loading=false;stage.setAttribute('aria-busy','false');}}
@@ -41,7 +38,6 @@
   }
   controls.querySelectorAll('[data-scene-mode]').forEach(button=>button.addEventListener('click',()=>{
     mode=button.dataset.sceneMode;controls.querySelectorAll('[data-scene-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));
-    interactionHelp.textContent=instructions[mode];
     if(world)world.setMode(mode);else open();
   }));
   $('#scene-live-play').addEventListener('click',()=>{if(!world){open();return;}if(world.isRunning())world.pause();else world.play();playLabel();});

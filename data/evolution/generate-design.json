@@ -1,0 +1,114 @@
+{
+  "source": "runs/acl-weakness-evolution-20261006-122456-2aa1c1/frozen_designs.json",
+  "source_sha256": "7d0a7c1d64bd2adb355d23e4bcf42ec9eb33f54dd662c5c79b868ebe895a0dd5",
+  "reference_sources": [
+    {
+      "id": "S6",
+      "scene": "15_launch_suppressed_drift",
+      "repeat": 2,
+      "episode_id": "e4b54cf941bb4fd5bfa231aae0af3c28",
+      "session_path": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gpt-6-astra/r2/T0/session.json",
+      "session_sha256": "4432d8094cfb2707ac60a01ea3f0834b5c89a096e5be6af6c4ae49b01bff6fdc",
+      "eval_path": "runs/eval-fixed-20261004/eval-770.json",
+      "eval_sha256": "a161feecab815779a4457536beaf0aeca6de191965ce2c04ebbc6e61da218732"
+    },
+    {
+      "id": "S4",
+      "scene": "14_delayed_motion_echo",
+      "repeat": 2,
+      "episode_id": "5e6f99e65e4a4553b1da3c456f6b2fde",
+      "session_path": "runs/main-15-20260930-022640-2180080/14_delayed_motion_echo/gpt-6-astra/r2/T0/session.json",
+      "session_sha256": "98038e3d788306866d75557780ec7d4264ee371d9f20f2eeedec8b1eba58a208",
+      "eval_path": "runs/eval-fixed-20261004/eval-734.json",
+      "eval_sha256": "b733c0cfd1196c9219a409088135b880faa3a711e04b4b8e4da00c61e1f4de8d"
+    }
+  ],
+  "weakness": {
+    "id": "S6-W1",
+    "weakness": "Mistook the temporary absence of an effect after intervention for evidence against a persistent underlying tendency.",
+    "mistaken_inference": "After pushing red south and observing it stop normally, the explorer concluded that the earlier northward acceleration was not a persistent local effect. The push had actually suppressed the drift temporarily.",
+    "evidence": [
+      {
+        "session_id": "S6",
+        "turn": 30,
+        "field": "note",
+        "quote": "Red traveled the usual 1.5 bricks south and remained at rest (turns 28–29), so the earlier northward acceleration is not a persistent local effect."
+      }
+    ],
+    "contradiction": [
+      {
+        "session_id": "S6",
+        "turn": 31,
+        "field": "note",
+        "quote": "Red restarted north after 3.884 counts of turn 30, about 10 counts after the southward push, while blue stayed still. This corrects my earlier inference: the effect is delayed, not absent."
+      }
+    ],
+    "oracle_quote": "The red ball drifts north of its own accord at 1.5 bricks/s^2, but the drift is shy: any launch of any object in the room silences it for 10.0 seconds, after which it resumes.",
+    "status": "corrected_during_exploration",
+    "correction_turn": 31,
+    "consequence": "An observation confined to the post-launch suppression interval could lead the explorer to dismiss a real spontaneous drift law because the diagnostic intervention temporarily disables it. The explorer corrected this inference after waiting longer; it was not an error in the successful final report."
+  },
+  "case": {
+    "operation": "generate",
+    "source_ids": [
+      "S6"
+    ],
+    "weakness_id": "S6-W1",
+    "source_error_status": "corrected_during_exploration",
+    "weakness_link": "The recorded error treated ordinary stopping during intervention-induced suppression as evidence against a persistent tendency. This design derives a new, paired separation law from that mechanism: probing either ball temporarily removes both balls' spontaneous acceleration. Matched quiet observations can distinguish suppression from absence. The source inference was corrected; the counterfactual below predicts only what reusing it could produce.",
+    "design_idea": "Replace solitary drift with paired repulsion that pauses after intervention, making an apparently ordinary separation test temporarily disable the tendency.",
+    "public_description": "A red ball and a blue ball rest apart on a level floor, with open space around them.",
+    "oracle": {
+      "control": false,
+      "rule_count": 1,
+      "initial_conditions": "Use the S6 balls: red at (0, -3, 0.1) and blue at (3, 1, 0.1), both stationary spheres of radius 0.1 bricks and mass 1.0. The room has horizontal bounds [-6, 6] and vertical bounds [0, 12].",
+      "rules": [
+        {
+          "id": "L1",
+          "claim": "Only the original red and blue balls receive an additional horizontal acceleration of magnitude 1.5 bricks/s² directly away from each other's current horizontal centre. Both accelerations operate whenever at least 10.0 seconds have elapsed since the most recent nonzero push or throw of any movable object in the room, including introduced objects. Each qualifying intervention immediately suppresses both accelerations for a fresh 10.0 seconds; repeated interventions replace, rather than add to, the remaining suppression time. At exactly 10.0 seconds after the latest intervention, both accelerations resume. If the balls' horizontal centres coincide exactly, both exceptional accelerations are zero until their horizontal centres differ. Height, contact and velocity do not otherwise affect the law."
+        }
+      ],
+      "reset_and_scope": "Initialization starts unsuppressed and clears all earlier suppression history. A zero-strength push or throw does not suppress the effect. Other actions do not directly change suppression, although moving a ball changes the repulsion direction. Colour changes do not transfer the law to another object. Added bodies and constrained apparatus receive no exceptional acceleration, but a nonzero push or throw of an added movable object suppresses the original pair. Ordinary gravity, friction and collisions remain unchanged.",
+      "ground_truth": "There is one exceptional law: the original red and blue balls accelerate horizontally apart at 1.5 bricks/s² each, except during the 10.0 seconds after any object's latest nonzero push or throw. This replaces, rather than supplements, S6's northward drift.",
+      "rubric": [
+        "Observe both balls separating without contact during a quiet interval.",
+        "Identify acceleration away from the other ball rather than a fixed compass direction.",
+        "Observe temporary suppression after intervention and recovery after 10.0 seconds.",
+        "Use a matched change of relative position to distinguish pairwise repulsion from two fixed directional drives."
+      ]
+    },
+    "oracle_summary": "Red and blue accelerate horizontally away from each other. Any nonzero push or throw pauses this separation drive for ten seconds, after which it resumes.",
+    "trace_summary": "The explorer denied persistent drift after red stopped; red later restarted north without intervention, and the inference was later corrected.",
+    "original_oracle_summary": [
+      "Red accelerates north at 1.5 bricks/s² except during the ten seconds after the latest nonzero push or throw of any object."
+    ],
+    "counterfactual_test": {
+      "setup": "First observe the original layout briefly without intervention. For matched trials, use GRASP, MOVE and RELEASE to place red at (-1, -2, 0.1) and blue at (1, -2, 0.1), leaving two clear east–west paths.",
+      "actions": "In both trials, give blue the same modest northward push or throw and call its observed intervention time t = 0. Restore both balls to the stated positions without another push or throw before t = 8. In the comparison trial only, give blue another modest northward push or throw at t = 8 and restore it before t = 10. Observe shortly before and after t = 10 in both trials, and around t = 18 in the comparison trial. Repeat one quiet recovery with the red and blue positions exchanged.",
+      "prediction_from_weakness": "Reusing the corrected reasoning could turn normal stopping and temporary rest of both balls into a conclusion that their earlier separation was not persistent.",
+      "correct_prediction": "In the first trial, the separation drive resumes at t = 10. In the comparison trial, it remains absent at t = 10 and resumes at t = 18. With red on the left it accelerates west and blue east; exchanging their positions reverses those directions.",
+      "what_discriminates": "A second intervention changes recovery time without changing the final arrangement. Exchanging positions changes the recovered directions, distinguishing a persistent relational tendency from fixed drift or an initial impulse."
+    },
+    "feasibility": "All triggers and conditions use observable interventions, positions and time. PUSH or THROW, GRASP, MOVE, RELEASE and short WAIT intervals suffice; inspect within about half a second of each recovery to avoid wall interference. The two timing trials and exchanged-position control fit within 70 actions, allowing repeated observations and setup. No new exploration result is asserted.",
+    "zh": {
+      "design_idea": "把单球漂移替换为受干预后暂停的双球排斥，使看似普通的分离测试暂时关闭被测趋势。",
+      "oracle_summary": "红球和蓝球在水平方向上相互远离并加速。任何非零力度的推动或投掷都会使这种驱动暂停十秒，随后恢复。",
+      "trace_summary": "探索者在红球停下后否认持续漂移；红球随后在无干预时重新向北运动，该判断后来已被纠正。",
+      "original_oracle_summary": [
+        "红球以每秒平方1.5砖的加速度向北运动，但任何物体最近一次受到非零力度推动或投掷后的十秒内除外。"
+      ]
+    }
+  },
+  "review": {
+    "approved": true,
+    "operation": "generate",
+    "reason": "The design directly targets S6-W1: a diagnostic intervention temporarily suppresses a persistent effect, making ordinary stopping misleading. The source mistake remains explicitly labelled as corrected during exploration, and the predicted recurrence is hypothetical. The oracle implements paired repulsion while retaining the source's 10-second, latest-nonzero-launch suppression mechanism; it clearly replaces northward drift rather than adding another law. Matched trials isolate timer reset from final arrangement, and exchanging positions distinguishes relational repulsion from fixed directional drives. The conditions are observable and implementable with the available callbacks and actions, with sufficient space for brief recovery observations. This is generation, not composition, so preserving S4's law is not required.",
+    "chain_checks": {
+      "weakness_grounded": true,
+      "design_targets_weakness": true,
+      "oracle_implements_idea": true,
+      "feasible_discriminating_test": true
+    }
+  },
+  "revision": 3
+}

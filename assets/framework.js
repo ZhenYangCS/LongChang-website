@@ -13,7 +13,7 @@
   const nodeElements = new Map($$('[data-node]').map(node => [node.dataset.node, node]));
   const phases = [
     {kicker:'01 / CONSTRUCT', title:'Build the world.', description:'Define altered physics, then test and review the scene.', input:'Scene design', output:'Validated world + hidden law', nodes:['designer','scenes'], edges:['design']},
-    {kicker:'02 / EXPLORE', title:'Explore freely.', description:'Choose questions and experiments, without tasks or hints.', input:'Observations', output:'Questions + experiments', nodes:['scenes','world','explorer'], edges:['enter','observe','act']},
+    {kicker:'02 / EXPLORE', title:'Explore freely.', description:'Choose questions and experiments, without tasks or hints.', input:'Observations', output:'Questions + experiments', nodes:['scenes','world','explorer','traces'], edges:['enter','observe','act','record']},
     {kicker:'03 / BUILD', title:'Build an instrument.', description:'Review apparatus designs; install tools or return feedback.', input:'Apparatus design', output:'Instrument or feedback', nodes:['explorer','world','tools','traces'], edges:['act','build','install','record']},
     {kicker:'04 / EVALUATE', title:'Check the discovery.', description:'Check claims against hidden laws and recorded evidence.', input:'Report + law + traces', output:'Correctness + support', nodes:['report','judge','assessment','traces','scenes'], edges:['report','claims','law','evidence','assess']},
     {kicker:'05 / EVOLVE', title:'Shape the next world.', description:'Generate, refine or combine scenes using exploration evidence.', input:'Scenes + evidence', output:'New scene designs', nodes:['traces','evolution','designer'], edges:['feedback','evolve']}
@@ -37,7 +37,7 @@
     {id:'act',from:'explorer',to:'world',label:'Actions'},
     {id:'build',from:'explorer',to:'tools'},
     {id:'install',from:'tools',to:'world',label:'Install'},
-    {id:'record',from:'tools',to:'traces',label:'Record'},
+    {id:'record',from:'explorer',to:'traces',label:'All turns'},
     {id:'report',from:'explorer',to:'report',kind:'evaluation'},
     {id:'claims',from:'report',to:'judge',kind:'evaluation',label:'Claims'},
     {id:'law',from:'scenes',to:'judge',kind:'law',label:'Hidden law · evaluation only'},
@@ -106,8 +106,8 @@
       });
     }
     const box = edge.labelText.getBBox(), gap = 11;
-    const x = anchor.side==='right' ? anchor.x+gap-box.x : anchor.x-box.x-box.width/2;
-    const y = anchor.side==='right' ? anchor.y-box.y-box.height/2 : anchor.y-gap-box.y-box.height;
+    const x = anchor.side==='right' ? anchor.x+gap-box.x : anchor.side==='left' ? anchor.x-gap-box.x-box.width : anchor.x-box.x-box.width/2;
+    const y = anchor.side ? anchor.y-box.y-box.height/2 : anchor.y-gap-box.y-box.height;
     edge.labelGroup.setAttribute('transform',`translate(${x},${y})`);
   }
   let geometryReady = false;
@@ -127,7 +127,7 @@
       act:{points:[[b.explorer.x,b.explorer.b],[b.explorer.x,actY],[b.world.x,actY],[b.world.x,b.world.b]],label:{x:middle,y:actY}},
       build:{points:[[middle,actY],[middle,b.tools.t]]},
       install:{points:[[b.tools.l,b.tools.y],[b.world.l+16,b.tools.y],[b.world.l+16,b.world.b]],label:{x:b.world.l+16,y:(actY+b.tools.t)/2,side:'right'}},
-      record:{points:[[b.tools.x,b.tools.b],[b.traces.x,b.traces.t]],label:{x:b.tools.x,y:(b.tools.b+b.traces.t)/2,side:'right'}},
+      record:{points:[[b.explorer.r-10,b.explorer.b],[b.explorer.r-10,b.traces.t-12],[b.traces.x,b.traces.t-12],[b.traces.x,b.traces.t]],label:{x:b.explorer.r-10,y:(actY+b.tools.t)/2,side:'left'}},
       claims:{points:[[b.report.x,b.report.b],[b.judge.x,b.judge.t]],label:{x:b.report.x,y:(b.report.b+b.judge.t)/2,side:'right'}},
       assess:{points:[[b.judge.x,b.judge.b],[b.assessment.x,b.assessment.t]],label:{x:b.judge.x,y:(b.judge.b+b.assessment.t)/2,side:'right'}}
     };
@@ -167,8 +167,9 @@
     drawPackets();
   }
 
-  let phase = 0, selectedNode = null, elapsed = 0, lastTime = null, frame = null;
+  let phase = 0, selectedNode = null, elapsed = 0, phaseElapsed = 0, pinned = false, lastTime = null, frame = null;
   let enabled = !reducedMotion.matches, visible = false, modalOpen = false;
+  const playbackRate = 1.6;
   const phaseDuration = 6400;
   function displayDetail(detail, userInitiated) {
     $('#fw-detail').setAttribute('aria-live',userInitiated ? 'polite' : 'off');
@@ -193,6 +194,7 @@
     $$('[data-fw-stage]').forEach(button => button.setAttribute('aria-pressed',String(Number(button.dataset.fwStage)===phase)));
     root.dataset.phase = String(phase);
     root.dataset.selection = selectedNode || '';
+    root.dataset.mode = pinned ? 'focus' : 'cycle';
     displayDetail(selectedNode ? details[selectedNode] : current,userInitiated);
     drawPackets();
   }
@@ -201,7 +203,7 @@
     edges.forEach((edge,index) => {
       if (!edge.active) return;
 
-      const duration = Math.max(1700,edge.length*4.5);
+      const duration = Math.max(850,edge.length*2.25);
       const progress = (elapsed/duration+index*.13)%1;
       const point = edge.path.getPointAtLength(progress*edge.length);
       [edge.dot,edge.halo].forEach(node => {
@@ -211,10 +213,14 @@
     });
   }
   function tick(time) {
-    if (lastTime !== null) elapsed += Math.min(time-lastTime,100);
+    if (lastTime !== null) {
+      const delta = Math.min(time-lastTime,100)*playbackRate;
+      elapsed += delta;
+      if (!pinned) phaseElapsed += delta;
+    }
     lastTime = time;
-    if (elapsed >= phaseDuration) {
-      elapsed %= phaseDuration;
+    if (!pinned && phaseElapsed >= phaseDuration) {
+      phaseElapsed %= phaseDuration;
       phase = (phase+1)%phases.length;
       selectedNode = null;
       renderSelection();
@@ -233,8 +239,8 @@
     if (running) frame = requestAnimationFrame(tick);
   }
   function select(phaseIndex,node = null) {
-    enabled = false;
-    phase = phaseIndex; selectedNode = node; elapsed = 0;
+    pinned = true;
+    phase = phaseIndex; selectedNode = node; phaseElapsed = 0;
     renderSelection(true); updatePlayback();
   }
   nodeElements.forEach((node,id) => node.addEventListener('click',() => select(details[id].phase,id)));
@@ -249,11 +255,10 @@
   });
   $('#fw-play').addEventListener('click',() => {
     enabled = !enabled;
-    if (enabled && selectedNode) {selectedNode = null; renderSelection();}
     updatePlayback();
   });
   $('#fw-reset').addEventListener('click',() => {
-    phase = 0; selectedNode = null; elapsed = 0;
+    phase = 0; selectedNode = null; elapsed = 0; phaseElapsed = 0; pinned = false;
     renderSelection(true); updatePlayback();
   });
   new IntersectionObserver(entries => {
@@ -264,11 +269,12 @@
   document.fonts.ready.then(layout);
   document.addEventListener('visibilitychange',updatePlayback);
 
-  const presentation = document.getElementById('motion-dialog');
-  if (presentation) new MutationObserver(() => {
-    modalOpen = presentation.open;
+  const dialogs = [...document.querySelectorAll('dialog')];
+  const dialogObserver = new MutationObserver(() => {
+    modalOpen = dialogs.some(dialog => dialog.open);
     updatePlayback();
-  }).observe(presentation,{attributes:true,attributeFilter:['open']});
+  });
+  dialogs.forEach(dialog => dialogObserver.observe(dialog,{attributes:true,attributeFilter:['open']}));
   reducedMotion.addEventListener('change',() => {
     if (reducedMotion.matches) enabled = false;
     updatePlayback();

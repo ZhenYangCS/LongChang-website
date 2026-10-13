@@ -31,30 +31,32 @@ def main():
         assert page.locator('#result-details').count()==0
         assert page.locator('.result-control strong').inner_text()=='0 / 3'
         assert page.locator('#scene-picker button').count()==15
-        assert page.locator('#benchmark-table tbody tr').count()==4
         assert page.locator('.controlled-card td').count()==30
         assert page.locator('#evolution-results tbody tr').count()==5
         assert not page.locator('#controlled-comparisons').evaluate('(e)=>!!e.closest("details")')
         assert not page.locator('#evolution-results').evaluate('(e)=>!!e.closest("details")')
         assert page.locator('[data-behavior="L"]').inner_text()=='39.3'
         assert page.locator('[data-behavior="CS"]').inner_text()=='11 / 45'
-        assert page.locator('#model-chart [data-result-metric]').count()==36
-        page.locator('[data-result-view="S"]').click()
+        assert page.locator('#model-chart [data-result-metric]').count()==12
+        assert page.locator('#model-chart [data-result-metric="D"]').count()==12
+        assert page.locator('.result-score.result-C dd > span').inner_text()=='8 / 42 runs'
+        assert page.locator('.result-score.result-S dd > span').inner_text()=='41 / 42 runs'
         page.locator('#results-sort').select_option('score')
         assert page.locator('.result-lane:visible').count()==12
-        assert page.locator('.result-model-name').nth(1).inner_text()=='GPT-5.6-Luna'
+        assert page.locator('.result-model-name').nth(1).inner_text()=='Claude-Opus-5'
         page.locator('[data-model="Claude-Opus-5"]').click()
         assert page.locator('#result-model-title').inner_text()=='Claude-Opus-5'
         assert page.locator('.result-score.result-C dd > span').inner_text()=='7 / 42 runs'
         assert page.locator('.result-score.result-S dd > span').inner_text()=='0 / 42 runs'
         page.locator('[data-model="Claude-Opus-5"]').press('Home')
         assert page.locator('#result-model-title').inner_text()=='GPT-6-Astra'
-        page.locator('[data-result-view="D"]').click()
         page.locator('[data-result-scene="07"]').click()
+        page.locator('#evidence-run-3').click()
+        page.locator('#evidence-film').click()
         assert page.locator('#exploration-dialog').evaluate('e=>e.open')
         assert page.locator('#discovery-title').inner_text()=='Tile rebounds'
         page.locator('#exploration-close').click()
-        page.locator('[data-result-view="all"]').click()
+        page.locator('#evidence-close').click()
         page.locator('#results-sort').select_option('paper')
         page.locator('[data-model="GLM-5.3"]').click()
         assert page.locator('.result-control strong').inner_text()=='3 / 3'
@@ -65,7 +67,7 @@ def main():
             page.locator(f'#scene-tab-{number:02}').click()
             page.wait_for_function('id=>document.querySelector("#scene-name").textContent===window.LONGCHANG.scenes.find(s=>s.id===id).name',arg=f"{number:02}")
             assert page.locator(f'#scene-tab-{number:02}').get_attribute('aria-selected')=='true'
-        page.locator('[data-atlas-view=analysis]').click()
+        page.locator('[data-atlas-view=physics]').click();page.locator('#demo-explanation').scroll_into_view_if_needed()
         assert '10 seconds' in page.locator('#scene-law-text').inner_text()
         page.locator('[data-atlas-view=physics]').click()
         for scene in ['07','06','14','15']:
@@ -86,10 +88,12 @@ def main():
         assert 'judge' in page.locator('#fw-detail-description').inner_text()
         page.locator('#fw-play').click();page.wait_for_timeout(100)
         page.locator('#fw-play').click()
-        page.locator('[data-result-view="D"]').click()
         page.locator('[data-result-scene="07"]').click()
+        page.locator('#evidence-run-3').click()
+        page.locator('#evidence-film').click()
         assert page.locator('#discovery-title').inner_text()=='Tile rebounds'
         page.locator('#exploration-close').click()
+        page.locator('#evidence-close').click()
         page.locator('#tool-tab').click()
         assert page.locator('#tool-case').is_visible()
         assert not page.locator('#color-case').is_visible()

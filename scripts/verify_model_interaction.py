@@ -10,7 +10,7 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--url',default='http://127.0.0.1:8765');args=parser.parse_args();errors=[]
     with sync_playwright() as p:
         browser=p.chromium.launch(headless=True,args=['--no-sandbox']);page=browser.new_page(viewport={'width':1366,'height':768});page.on('pageerror',lambda e:errors.append(str(e)))
-        page.goto(args.url+'/#worlds');page.locator('[data-atlas-view=analysis]').click()
+        page.goto(args.url+'/#worlds');page.locator('[data-atlas-view=physics]').click();page.locator('#demo-explanation').scroll_into_view_if_needed()
         def choose(id):page.evaluate('(id)=>showWorld(id)',id);page.locator('#atlas-reset').click()
         def start(dx,dy):
             x,y=center(page);page.mouse.move(x,y);page.mouse.down();page.mouse.move(x+dx,y+dy,steps=12)
@@ -31,13 +31,15 @@ def main():
         page.mouse.click(point['x'],point['y']);assert page.locator('#atlas-parameter').input_value()=='4.5'
         choose('07');start(0,-20);page.keyboard.press('Escape')
         assert page.locator('#atlas-parameter').input_value()=='2' and not page.evaluate('LongChangAtlas.getState().playing');page.mouse.up()
+        choose('07');start(0,-20);page.evaluate('window.dispatchEvent(new Event("blur"))')
+        assert page.locator('#atlas-parameter').input_value()=='2' and not page.evaluate('LongChangAtlas.getState().playing');page.mouse.up()
         page.locator('#analysis-fullscreen').click();page.wait_for_function('!!document.fullscreenElement');page.locator('#atlas-reset').click();start(0,-35)
         assert float(page.locator('#atlas-parameter').input_value())>2;page.mouse.up();page.locator('#analysis-fullscreen').click();page.wait_for_function('!document.fullscreenElement')
         choose('12');x,y=center(page);page.mouse.click(x,y);page.wait_for_function('LongChangAtlas.getState().time>.2')
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>/\\.(wasm|mp4)/.test(r.name))')
         phone=browser.new_page(viewport={'width':390,'height':844},is_mobile=True,has_touch=True);phone.on('pageerror',lambda e:errors.append(str(e)))
-        phone.goto(args.url+'/#worlds');phone.locator('[data-atlas-view=analysis]').tap();phone.locator('#atlas-reset').tap();phone.locator('#atlas-canvas').scroll_into_view_if_needed()
-        x,y=center(phone);cdp=phone.context.new_cdp_session(phone)
+        phone.goto(args.url+'/#worlds');phone.locator('[data-atlas-view=physics]').tap();phone.locator('#demo-explanation').scroll_into_view_if_needed();phone.locator('#atlas-reset').tap();phone.locator('#atlas-canvas').scroll_into_view_if_needed()
+        x,y=center(phone);x+=20;cdp=phone.context.new_cdp_session(phone)
         cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':x,'y':y}]})
         for step in [5,10,15,20]:cdp.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':x,'y':y-step}]})
         assert float(phone.locator('#atlas-parameter').input_value())>2

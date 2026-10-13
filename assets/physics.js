@@ -11,12 +11,13 @@
   $('#oracle-chart-wrap').before($('.physics-readout'));
   const speedReadout=document.createElement('div');speedReadout.className='scene-speed-readout';speedReadout.hidden=true;
   speedReadout.innerHTML='<span class="speed-caption" title="Forward speed, in bricks per count">Forward speed</span><span class="speed-red"><i aria-hidden="true"></i><output id="speed-red-value" aria-label="Red ball forward speed"></output></span><span class="speed-blue"><i aria-hidden="true"></i><output id="speed-blue-value" aria-label="Blue ball forward speed"></output></span>';
-  law.append(measurements);
-  $('.atlas-visual').append(law);$('.physics-playback').insertBefore(speedReadout,$('#physics-progress'));
+  $('#model-controls').after($('#analysis-formula'));law.append(measurements);
+  $('#demo-rule').append(law);$('.physics-playback').insertBefore(speedReadout,$('#physics-progress'));
   $('.atlas-playback').prepend($('#atlas-controls'));
+  let measurementsVisible=false;
   function syncView(mode){
-    law.hidden=mode!=='analysis';$('#atlas-controls').hidden=mode!=='analysis';
-    if(mode==='analysis')loadMeasurements();
+    law.hidden=mode!=='physics';$('#atlas-controls').hidden=mode!=='physics';
+    if(mode==='physics'&&measurementsVisible)loadMeasurements();
     readoutVisibility();
   }
   function readoutVisibility(){
@@ -101,7 +102,7 @@
     playButton.textContent=video.paused?'▶':'Ⅱ';playButton.setAttribute('aria-label',video.paused?'Play scene video':'Pause scene video');
     let phase='';for(const [t,text]of demo.phases){if(t>video.currentTime)break;phase=text;}
     $('#simple-phase').textContent=phase;$('#simple-phase').hidden=Boolean(demo.proof)||!image.hidden||!phase;
-    if(details&&$('.atlas-detail').dataset.view==='analysis')plot();
+    if(details&&measurementsVisible&&shown)plot();
   }
   function select(id){
     const next=items.find(d=>d.id===id);if(!next)return;
@@ -116,7 +117,7 @@
     $('.physics-video-frame').classList.add(demo.presentation==='clear'?'is-clear':'is-simple');
     video.setAttribute('aria-label',`${demo.name}: demonstration of the hidden rule`);
     readoutVisibility();progress();
-    if($('.atlas-detail').dataset.view==='analysis')loadMeasurements();
+    if(shown&&measurementsVisible)loadMeasurements();
   }
   function measuredRows(entry,sample){
     const labels={
@@ -167,13 +168,14 @@
     $('#oracle-chart').setAttribute('viewBox','0 0 320 163');
     $('#oracle-chart').innerHTML=svg;$('#oracle-chart').dataset.drawn='true';}
     $('#oracle-cursor').setAttribute('transform',`translate(${xy(t,0)[0]},0)`);
+    $('#oracle-cursor').setAttribute('visibility',source?'visible':'hidden');
     $('#oracle-chart-legend').replaceChildren(...p.labels.map((label,i)=>{const item=document.createElement('span');item.textContent=label.replace('Ordinary physics reference','Ordinary physics').replace('Oracle active','Altered rule');item.style.color=p.colors[i];return item;}));
     $('#oracle-signal').textContent='Demo data · '+entry.oracle.measure;
   }
   async function loadMeasurements(){
     if(!demo||details)return;const id=demo.id;detailAbort?.abort();detailAbort=new AbortController();
     try{const response=await fetch(demo.details,{signal:detailAbort.signal});if(!response.ok)throw Error();const data=await response.json();if(id!==demo.id)return;details=data;$('#oracle-chart').dataset.drawn='';$('#oracle-chart-wrap').hidden=false;plot();}
-    catch(e){if(e.name!=='AbortError'){ $('#oracle-chart-wrap').hidden=false;$('#oracle-signal').textContent='Demo data could not load. Select Explain to retry.'; }}
+    catch(e){if(e.name!=='AbortError'){ $('#oracle-chart-wrap').hidden=false;$('#oracle-signal').textContent='Demo data unavailable. Select the scene again to retry.'; }}
   }
   playButton.addEventListener('click',()=>{if(video.paused&&!wants)start();else{stop();}});
   overlay.addEventListener('click',start);
@@ -198,6 +200,7 @@
   document.addEventListener('longchang:atlas-view',e=>{shown=e.detail.view==='physics';syncView(e.detail.view);if(shown)select(e.detail.id);else{stop();}});
   document.addEventListener('longchang:scene',e=>select(e.detail.id));
   new IntersectionObserver(e=>{if(!e[0].isIntersecting&&source)stop();},{threshold:0}).observe($('#atlas-physics-view'));
+  new IntersectionObserver(entries=>{measurementsVisible=entries[0].isIntersecting;if(measurementsVisible&&shown){loadMeasurements();if(details)plot();}},{rootMargin:'100px'}).observe($('#demo-rule'));
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
   window.LongChangPhysics=Object.freeze({play:start});
   shown=$('.atlas-detail').dataset.view==='physics';syncView($('.atlas-detail').dataset.view);select(window.LongChangAtlas.currentScene());

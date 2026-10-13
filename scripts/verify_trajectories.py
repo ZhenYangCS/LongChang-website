@@ -88,7 +88,7 @@ def main():
             assert page.locator('.scene-motion-path').first.get_attribute('d') == before
         page.locator('#physics-reset').click()
         expect(guides).to_be_hidden()
-        page.locator('[data-atlas-view="analysis"]').click()
+        page.locator('#demo-explanation').scroll_into_view_if_needed()
         expect(guides).to_be_hidden()
         page.locator('[data-atlas-view="physics"]').click()
 

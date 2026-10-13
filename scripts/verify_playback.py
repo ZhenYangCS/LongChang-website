@@ -30,8 +30,8 @@ def main():
    page.evaluate('(id)=>showWorld(id)',scene);page.locator('#physics-reset').click();page.locator('#physics-play').click();page.wait_for_function('!document.querySelector("#physics-video").paused');page.wait_for_timeout(250)
    row=page.evaluate(MEASURE,2.5);row.update(scene=scene,framing='detail');report.append(row);print(json.dumps(row),flush=True)
    page.locator('#physics-play').click()
-  # Explain keeps the recorded plot stable while the adjustable model runs.
-  page.locator('[data-atlas-view=analysis]').click();page.wait_for_function('document.querySelector("#oracle-cursor")!==null');page.evaluate('window.savedChartPath=document.querySelector("#oracle-chart path")');page.locator('#atlas-reset').click();page.locator('#atlas-play').click();page.wait_for_timeout(500)
+  # The recorded plot stays stable while the independent model runs.
+  page.locator('[data-atlas-view=physics]').click();page.locator('#demo-rule').scroll_into_view_if_needed();page.wait_for_function('document.querySelector("#oracle-cursor")!==null');page.evaluate('window.savedChartPath=document.querySelector("#oracle-chart path")');page.locator('#atlas-reset').click();page.locator('#atlas-play').click();page.wait_for_timeout(500)
   assert page.evaluate('window.savedChartPath===document.querySelector("#oracle-chart path")')
   browser.close();assert not errors,errors
  Path(args.output).write_text(json.dumps(report,indent=2)+'\n')

@@ -1,0 +1,123 @@
+{
+  "source": "runs/acl-weakness-evolution-20261006-122456-2aa1c1/frozen_designs.json",
+  "source_sha256": "7d0a7c1d64bd2adb355d23e4bcf42ec9eb33f54dd662c5c79b868ebe895a0dd5",
+  "reference_sources": [
+    {
+      "id": "S6",
+      "scene": "15_launch_suppressed_drift",
+      "repeat": 2,
+      "episode_id": "e4b54cf941bb4fd5bfa231aae0af3c28",
+      "session_path": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gpt-6-astra/r2/T0/session.json",
+      "session_sha256": "4432d8094cfb2707ac60a01ea3f0834b5c89a096e5be6af6c4ae49b01bff6fdc",
+      "eval_path": "runs/eval-fixed-20261004/eval-770.json",
+      "eval_sha256": "a161feecab815779a4457536beaf0aeca6de191965ce2c04ebbc6e61da218732"
+    },
+    {
+      "id": "S4",
+      "scene": "14_delayed_motion_echo",
+      "repeat": 2,
+      "episode_id": "5e6f99e65e4a4553b1da3c456f6b2fde",
+      "session_path": "runs/main-15-20260930-022640-2180080/14_delayed_motion_echo/gpt-6-astra/r2/T0/session.json",
+      "session_sha256": "98038e3d788306866d75557780ec7d4264ee371d9f20f2eeedec8b1eba58a208",
+      "eval_path": "runs/eval-fixed-20261004/eval-734.json",
+      "eval_sha256": "b733c0cfd1196c9219a409088135b880faa3a711e04b4b8e4da00c61e1f4de8d"
+    }
+  ],
+  "weakness": {
+    "id": "S6-W1",
+    "weakness": "Mistook the temporary absence of an effect after intervention for evidence against a persistent underlying tendency.",
+    "mistaken_inference": "After pushing red south and observing it stop normally, the explorer concluded that the earlier northward acceleration was not a persistent local effect. The push had actually suppressed the drift temporarily.",
+    "evidence": [
+      {
+        "session_id": "S6",
+        "turn": 30,
+        "field": "note",
+        "quote": "Red traveled the usual 1.5 bricks south and remained at rest (turns 28–29), so the earlier northward acceleration is not a persistent local effect."
+      }
+    ],
+    "contradiction": [
+      {
+        "session_id": "S6",
+        "turn": 31,
+        "field": "note",
+        "quote": "Red restarted north after 3.884 counts of turn 30, about 10 counts after the southward push, while blue stayed still. This corrects my earlier inference: the effect is delayed, not absent."
+      }
+    ],
+    "oracle_quote": "The red ball drifts north of its own accord at 1.5 bricks/s^2, but the drift is shy: any launch of any object in the room silences it for 10.0 seconds, after which it resumes.",
+    "status": "corrected_during_exploration",
+    "correction_turn": 31,
+    "consequence": "An observation confined to the post-launch suppression interval could lead the explorer to dismiss a real spontaneous drift law because the diagnostic intervention temporarily disables it. The explorer corrected this inference after waiting longer; it was not an error in the successful final report."
+  },
+  "case": {
+    "operation": "compose",
+    "source_ids": [
+      "S6",
+      "S4"
+    ],
+    "weakness_id": "S6-W1",
+    "source_error_status": "corrected_during_exploration",
+    "weakness_link": "The recorded error dismissed persistent drift during intervention-induced suppression. Preserve that law alongside the independent delayed velocity copy: intervening on blue can keep red's drive absent while green still reproduces red's earlier motion. This contrast targets the same corrected reasoning, while matched trials distinguish suppression from disappearance without changing either source law.",
+    "design_idea": "Use separated paths so blue's intervention delays red's drift while green still copies red's earlier southward motion.",
+    "public_description": "Red, green and blue balls rest on a level floor. Red and green occupy separated north–south paths.",
+    "oracle": {
+      "control": false,
+      "rule_count": 2,
+      "initial_conditions": "Red, green and blue are stationary spheres of radius 0.1 bricks and mass 1.0, centred at (0, -3, 0.1), (-4, 1, 0.1) and (4, 1, 0.1). The existing room has horizontal bounds [-6, 6] and vertical bounds [0, 12]. North is positive y. There are no additional fixtures.",
+      "rules": [
+        {
+          "id": "L1",
+          "claim": "Only the original red ball receives an additional northward acceleration of 1.5 bricks/s² whenever at least 10.0 seconds have elapsed since the latest nonzero push or throw of any movable object anywhere in the room. Each such intervention, including one on green, blue or an introduced object, immediately starts a fresh 10.0-second suppression interval. Intervals do not accumulate. At exactly 10.0 seconds after the latest intervention, the acceleration resumes, independently of red's position, velocity, height or contact."
+        },
+        {
+          "id": "L2",
+          "claim": "Every nonzero push or throw of the original red ball makes the original green ball take on red's full three-dimensional linear velocity immediately after that intervention, exactly 12.0 seconds later. This replaces green's linear velocity, does not copy angular velocity, and is independent of separation and red's subsequent motion. Every qualifying red intervention produces its own copy; later interventions on any object do not cancel earlier copies. If multiple copies coincide, the velocity from the latest originating intervention prevails. A push or throw of any object other than the original red ball causes no copy."
+        }
+      ],
+      "reset_and_scope": "Initialization clears suppression and all future copies, with red's drive active. Zero-strength interventions and actions without a nonzero push or throw trigger neither law. Green's copied motion is not itself a push or throw and does not suppress red or cause another copy. Subsequent gravity, friction and collisions act normally on the copied velocity. The northward force affects only red, while the velocity replacement affects only green, so their simultaneous effects require no precedence between assignments to the same object. Blue, added bodies and constrained apparatus receive no exceptional motion. Object identities, not later colours, determine the subjects.",
+      "ground_truth": "There are exactly two independent exceptional laws, preserving S6's 1.5 bricks/s² northward drive with global 10.0-second suppression and S4's red-to-green copy of intervention velocity after 12.0 seconds. Ordinary physics otherwise remains unchanged.",
+      "rubric": [
+        "Notice red moving north without contact and its drive being absent immediately after intervention.",
+        "Do not dismiss the initial drift sighting; watch through consecutive quiet observations and identify intervention itself as the suppressor.",
+        "Notice green moving without contact and connect its motion to an earlier push or throw rather than a present cause.",
+        "Identify red as the copied source and green as the recipient.",
+        "Estimate the 12.0-second lag and identify copying of the original direction and speed.",
+        "Recover both laws, including suppression by blue and the fact that green's copied motion does not restart suppression."
+      ]
+    },
+    "oracle_summary": "Red accelerates north except for ten seconds after any nonzero push or throw. A nonzero push or throw of red makes green copy red's resulting velocity twelve seconds later.",
+    "trace_summary": "The explorer denied persistent drift after red stopped; red later restarted north without intervention, and the inference was later corrected.",
+    "original_oracle_summary": [
+      "Red accelerates north at 1.5 bricks/s² except during the ten seconds after the latest nonzero push or throw of any object.",
+      "A nonzero push or throw of red makes green copy red's resulting velocity twelve seconds later, while blue has no exceptional motion."
+    ],
+    "counterfactual_test": {
+      "setup": "Use matched trials with the stated positions and clear separated paths. Before recreating positions with GRASP, MOVE and RELEASE, wait until all copies from the preceding trial have occurred. Inspect each onset promptly rather than requiring motion to remain unobstructed for many seconds.",
+      "actions": "In both trials, give red the same modest southward push or throw at t = 0 and note its resulting direction and speed. In the comparison trial only, give blue a modest northward push or throw at t = 8. Otherwise WAIT, observing shortly before and after t = 10 and t = 12, and around t = 18 in the comparison trial. Use small impulses so ordinary stopping occurs before the relevant recoveries and blue remains in its separate lane.",
+      "prediction_from_weakness": "If the old reasoning is reused, red's continued rest while green moves at twelve seconds could be taken as evidence against persistent red drift, leaving only the delayed copy as an explanation.",
+      "correct_prediction": "Without the blue intervention, red's drive returns at t = 10 and green receives red's original southward velocity at t = 12. With the blue intervention, green still receives that velocity at t = 12, but red's drive returns at t = 18. Green's copied motion does not postpone red's recovery to t = 22.",
+      "what_discriminates": "The blue intervention shifts only red's recovery, not green's copy. Opposite directions distinguish returning northward drive from copied southward motion, and separated lanes exclude contact transmission."
+    },
+    "feasibility": "The matched trials use public timing and motion observations with PUSH or THROW and WAIT. A further trial with a different modest red direction or speed distinguishes copying from a fixed green impulse; a blue-only trial verifies suppression without a copy. With short observations around onsets and ordinary repositioning between trials, these comparisons fit within 90 actions. Neither delay is increased, and no new model failure or simulation result is claimed.",
+    "zh": {
+      "design_idea": "采用互相分离的路径，让对蓝球的干预延后红球漂移，而绿球仍复制红球先前的向南运动。",
+      "oracle_summary": "红球向北加速，但任何非零力度推动或投掷后的十秒内除外。对红球进行非零力度的推动或投掷，会使绿球在十二秒后复制红球当时得到的速度。",
+      "trace_summary": "探索者在红球停下后否认持续漂移；红球随后在无干预时重新向北运动，该判断后来已被纠正。",
+      "original_oracle_summary": [
+        "红球以每秒平方1.5砖的加速度向北运动，但任何物体最近一次受到非零力度推动或投掷后的十秒内除外。",
+        "对红球进行非零力度的推动或投掷，会使绿球在十二秒后复制红球当时得到的速度，而蓝球没有特殊运动。"
+      ]
+    }
+  },
+  "review": {
+    "approved": true,
+    "operation": "compose",
+    "reason": "The design directly tests S6-W1: temporary post-intervention silence must not be mistaken for absence of red's persistent drive. It correctly labels that inference as corrected during exploration, not a final-report failure. The oracle preserves both source laws, their constants, launch triggers, object scope, independent memory, and full scoring requirements. Matched trials discriminate the laws: a blue intervention shifts red's recovery from t=10 to t=18 while leaving green's queued t=12 velocity copy unchanged. Separated paths, modest impulses, cleared prior copies, and observations near onset make the comparison physically feasible without increasing either delay or adding hidden laws. These are counterfactual predictions, not claimed simulation results or newly observed failures.",
+    "chain_checks": {
+      "weakness_grounded": true,
+      "design_targets_weakness": true,
+      "oracle_implements_idea": true,
+      "feasible_discriminating_test": true
+    }
+  },
+  "revision": 3
+}

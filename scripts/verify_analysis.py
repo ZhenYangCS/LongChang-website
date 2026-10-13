@@ -10,9 +10,9 @@ def main():
         browser=p.chromium.launch(headless=True,args=['--no-sandbox','--enable-unsafe-swiftshader'])
         page=browser.new_page(viewport={'width':1366,'height':768});page.on('pageerror',lambda e:errors.append(str(e)))
         page.goto(args.url+'/#worlds');page.wait_for_load_state('networkidle')
-        assert page.locator('.atlas-view-switch button').all_text_contents()==['Demo','Experiment','Explain']
-        assert not page.evaluate('performance.getEntriesByType("resource").some(r=>/\\.(wasm|mp4|woff2)/.test(r.name))')
-        page.locator('[data-atlas-view=analysis]').click()
+        assert page.locator('.atlas-view-switch button').all_text_contents()==['Demo','Experiment']
+        assert not page.evaluate('performance.getEntriesByType("resource").some(r=>/\\.(wasm|mp4)/.test(r.name))')
+        page.locator('[data-atlas-view=physics]').click();page.locator('#demo-explanation').scroll_into_view_if_needed()
         for i in range(1,16):
             id=f'{i:02}';page.evaluate('(id)=>showWorld(id)',id)
             page.locator('#atlas-reset').click()
@@ -25,7 +25,7 @@ def main():
                 for v in values:control.select_option(v)
             else:
                 control.evaluate('e=>{e.value=e.max;e.dispatchEvent(new Event("input",{bubbles:true}));}')
-            assert page.locator('#scene-detail').get_attribute('data-view')=='analysis'
+            assert page.locator('#scene-detail').get_attribute('data-view')=='physics'
             page.locator('#atlas-progress').evaluate('e=>{e.value=650;e.dispatchEvent(new Event("input",{bubbles:true}));}')
             assert page.locator('#atlas-time').text_content()=='6.5 / 8.0 s'
             assert not any(s in page.locator('#atlas-canvas').inner_html() for s in ['NaN','undefined'])
@@ -44,11 +44,12 @@ def main():
         assert page.locator('.atlas-playback #atlas-controls').count()==1
         for i in range(1,16):
             page.evaluate('(id)=>showWorld(id)',f'{i:02}');page.evaluate('document.fonts.ready')
-            assert page.locator('#analysis-formula #analysis-model-note').is_visible()
-            assert page.locator('#analysis-model-note').text_content().startswith('Interactive model · ')
+            assert page.locator('#analysis-model-note').is_visible()
+            assert page.locator('#model-heading').text_content()=='Simplified model' and page.locator('#analysis-model-note').text_content()
             assert page.locator('#full-rule-label').text_content()=='Scene rule'
             text=page.locator('#scene-law-text').text_content()
             assert '^' not in text and '_' not in text,(i,text)
+            page.locator('#demo-rule').scroll_into_view_if_needed()
             page.wait_for_function('!document.querySelector("#oracle-chart-wrap").hidden')
             assert page.locator('#oracle-signal').text_content().startswith('Demo data · ')
             assert page.locator('#oracle-chart').is_visible() and page.locator('#scene-law a[download]').count()==0
@@ -60,22 +61,22 @@ def main():
                 assert 'Red' in page.locator('#oracle-chart').text_content() and 'Blue' in page.locator('#oracle-chart').text_content()
         for width,height in [(1366,768),(1280,720),(390,844),(320,740)]:
             page.set_viewport_size({'width':width,'height':height})
-            page.locator('[data-atlas-view=analysis]').click()
+            page.locator('[data-atlas-view=physics]').click();page.locator('#demo-explanation').scroll_into_view_if_needed()
             for i in range(1,16):
                 page.evaluate('(id)=>showWorld(id)',f'{i:02}')
                 assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,i)
                 assert page.locator('#analysis-formula').evaluate('e=>e.scrollWidth<=e.clientWidth+1'),(width,i)
             page.evaluate('showWorld("08")')
             assert page.locator('#scene-law').evaluate('e=>e.scrollWidth<=e.clientWidth+1')
-            page.locator('[data-atlas-view=physics]').click();assert not page.locator('#scene-law').is_visible()
-        page.set_viewport_size({'width':1366,'height':768});page.evaluate('showWorld("07")');page.locator('[data-atlas-view=analysis]').click();page.locator('#atlas-reset').click();page.screenshot(path=str(Path(__file__).resolve().parents[1]/'math-preview.png'))
+            page.locator('[data-atlas-view=physics]').click();assert page.locator('#scene-law').is_visible()
+        page.set_viewport_size({'width':1366,'height':768});page.evaluate('showWorld("07")');page.locator('[data-atlas-view=physics]').click();page.locator('#demo-explanation').scroll_into_view_if_needed();page.locator('#atlas-reset').click();page.locator('#demo-explanation').screenshot(path=str(Path(__file__).resolve().parents[1]/'math-preview.png'))
         page.locator('[data-atlas-view=motion]').click();page.wait_for_function('window.SceneRoom?.getState().scene==="07"')
         page.locator('#scene-live-reset').click()
         page.locator('#scene-live-play').click();page.wait_for_function('SceneRoom.isRunning()')
-        page.locator('[data-atlas-view=analysis]').click();time=page.evaluate('SceneRoom.getState().time');page.wait_for_timeout(120)
+        page.locator('[data-atlas-view=physics]').click();page.locator('#demo-explanation').scroll_into_view_if_needed();time=page.evaluate('SceneRoom.getState().time');page.wait_for_timeout(120)
         assert page.evaluate('SceneRoom.getState().time')==time
         browser.close()
     assert not errors,errors
-    print('PASS: all 15 Explain formulas, parameters, play/reset, fullscreen and view transitions; rules, recorded plots and sources are integrated without extra disclosures; local mathematical font, lazy media, and 320–1366 px layout.')
+    print('PASS: all 15 integrated Demo formulas, parameters, play/reset, fullscreen and view transitions; rules, recorded plots and sources are integrated without extra disclosures; local mathematical font, lazy media, and 320–1366 px layout.')
 
 if __name__=='__main__':main()

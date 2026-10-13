@@ -31,16 +31,6 @@ def main():
     assert {s['id']:s['law'] for s in data['scenes']}==laws,'Law descriptions must match the ACL appendix'
     p=Links();p.feed((SITE/'index.html').read_text())
     assert len(p.ids)==len(set(p.ids)), 'Duplicate HTML IDs'
-    # The compact related-work matrix uses the current paper's four criteria.
-    markup=(SITE/'index.html').read_text().split('<table id="benchmark-table">',1)[1].split('</table>',1)[0]
-    benchmark_source=(ROOT/'ACL/secs/02_introduction.tex').read_text()
-    benchmark_rows=re.findall(r'<tr[^>]*>(.*?)</tr>',markup.split('<tbody>',1)[1],re.S)
-    assert len(benchmark_rows)==4
-    for row in benchmark_rows:
-        name=re.search(r'<th scope="row">(.*?)</th>',row).group(1)
-        line=next(line for line in benchmark_source.splitlines() if name in line and r'\ding{' in line)
-        expected=['Yes' if value=='51' else 'No' for value in re.findall(r'\\ding\{(51|55)\}',line)]
-        assert re.findall(r'aria-label="(Yes|No)"',row)==expected,(name,'benchmark criteria')
     for link in p.links:
         if link.startswith(('http:','https:')):continue
         if link.startswith('#'):

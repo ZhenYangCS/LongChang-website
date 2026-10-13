@@ -31,7 +31,7 @@ def main():
             assert not page.locator('#oracle-chapters').is_visible()
             assert not page.locator('#atlas-model-note').is_visible()
             assert not page.locator('#scene-law').evaluate('(e)=>e.open')
-            assert not page.locator('.full-rule').is_visible() and page.locator('#scene-law-text').text_content()
+            assert page.locator('.full-rule').is_visible() and page.locator('#scene-law-text').text_content()
             assert len(page.locator('#oracle-plain').inner_text().split())<20
             page.locator('.physics-video-frame').scroll_into_view_if_needed()
             rule=page.locator('#oracle-plain').bounding_box();art=page.locator('.physics-video-frame').bounding_box()
@@ -61,13 +61,13 @@ def main():
         page.wait_for_function('!document.querySelector("#physics-video").paused')
         page.locator('#physics-play').click()
         page.locator('#physics-fullscreen').click();page.wait_for_function('Boolean(document.fullscreenElement)');page.evaluate('document.exitFullscreen()')
-        page.locator('[data-atlas-view=analysis]').click()
+        page.locator('[data-atlas-view=physics]').click();page.locator('#demo-rule').scroll_into_view_if_needed()
         page.wait_for_function('document.querySelector("#oracle-chart path")!==null')
         assert page.locator('#scene-law-text').is_visible()
         page.locator('[data-atlas-view=physics]').click()
         assert page.locator('#atlas-tour').count()==0 and page.locator('.atlas-toolbar').count()==0
         assert page.locator('#worlds a[download]').count()==0
-        print('PASS: 15 names, concise summaries and folded full rules, framing switch, playback rates, seek, fullscreen, measurements and grouped downloads.',flush=True)
+        print('PASS: 15 names, concise summaries and integrated rules, framing switch, playback rates, seek, fullscreen, measurements and grouped downloads.',flush=True)
         # Both views reserve the same space, including their bottom controls.
         for mode in ['physics','motion']:
             page.locator('[data-atlas-view='+mode+']').click()
@@ -97,7 +97,7 @@ def main():
             assert all(page.locator('#scene-tab-'+f'{i:02}').is_visible() for i in range(1,16))
             for i in range(1,16):
                 page.evaluate('(id)=>showWorld(id)',f'{i:02}')
-                assert not page.locator('.full-rule').is_visible()
+                assert page.locator('.full-rule').is_visible()
                 assert page.locator('.physics-video-frame').bounding_box()['height']>=170
         for width in [1440,1024,768,390,360,320]:
             page.set_viewport_size({'width':width,'height':900})

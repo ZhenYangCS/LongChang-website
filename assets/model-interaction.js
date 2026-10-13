@@ -3,13 +3,28 @@
   'use strict';
   const svg=document.querySelector('#atlas-canvas'),atlas=window.LongChangAtlas;
   let gesture=null,ignoreClick=false;
-  const active=()=>document.querySelector('#scene-detail').dataset.view==='analysis';
+  const active=()=>!document.querySelector('#demo-explanation').hidden;
   const local=event=>new DOMPoint(event.clientX,event.clientY).matrixTransform(svg.getScreenCTM().inverse());
+  function resizeTargets(){
+    const matrix=svg.getScreenCTM(),scale=matrix&&Math.hypot(matrix.a,matrix.b);
+    if(scale>0)svg.style.setProperty('--model-hit-radius',`${Math.max(23,(matchMedia('(pointer:coarse)').matches?26:20)/scale)}px`);
+  }
+  new ResizeObserver(resizeTargets).observe(svg);
+  function pickBall(event){
+    const matrix=svg.getScreenCTM(),scale=Math.hypot(matrix.a,matrix.b),reach=Math.max(23*scale,event.pointerType==='touch'?26:20);
+    let ball=null,nearest=reach;
+    for(const hit of svg.querySelectorAll('.model-hit')){
+      const point=new DOMPoint(Number(hit.getAttribute('cx')),Number(hit.getAttribute('cy'))).matrixTransform(matrix),distance=Math.hypot(point.x-event.clientX,point.y-event.clientY);
+      if(distance<=nearest){nearest=distance;ball=hit.closest('[data-model-ball]');}
+    }
+    return ball;
+  }
   function sync(){
     const state=atlas.getState(),kind=state.gesture||'replay';svg.dataset.gesture=kind;
     const labels={height:'Drag ball to set height',strength:state.id==='05'?'Drag to set speed':'Drag to set impulse',direction:'Drag to aim',phase:'Phase · click the curve'};
     document.querySelector('#atlas-controls label').textContent=labels[kind]||state.label;
     document.querySelector('#atlas-parameter').setAttribute('aria-label',state.label);
+    resizeTargets();
   }
   function finish(event,cancel=false){
     if(!gesture||event.pointerId!==gesture.pointerId)return;
@@ -22,8 +37,9 @@
   svg.tabIndex=-1;
   svg.addEventListener('pointerdown',event=>{
     ignoreClick=false;
+    if(gesture&&event.pointerId!==gesture.pointerId){finish({pointerId:gesture.pointerId},true);return;}
     if(!active()||event.button!==0||!event.isPrimary)return;
-    const ball=event.target.closest('[data-model-ball]'),state=atlas.getState();
+    const ball=pickBall(event),state=atlas.getState();
     if(!ball||!['height','strength','direction'].includes(state.gesture))return;
     event.preventDefault();svg.focus({preventScroll:true});
     const start=local(event);
@@ -46,6 +62,11 @@
   svg.addEventListener('pointerup',event=>finish(event));
   svg.addEventListener('pointercancel',event=>finish(event,true));
   svg.addEventListener('lostpointercapture',event=>finish(event,true));
+  document.addEventListener('pointerup',event=>finish(event));
+  document.addEventListener('pointercancel',event=>finish(event,true));
+  const cancel=()=>{if(gesture)finish({pointerId:gesture.pointerId},true);};
+  window.addEventListener('blur',cancel);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancel();});
   svg.addEventListener('keydown',event=>{if(event.key==='Escape'&&gesture){event.preventDefault();finish({pointerId:gesture.pointerId},true);}});
   svg.addEventListener('click',event=>{
     if(!active())return;if(ignoreClick){ignoreClick=false;return;}

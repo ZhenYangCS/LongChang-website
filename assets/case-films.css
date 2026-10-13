@@ -1,23 +1,46 @@
-
-.case-studies.section { padding-block:72px; }
-.case-studies .section-heading { display:block; margin-bottom:28px; }
-.case-studies .case-tabs { display:flex; justify-content:center; gap:6px; border:0; width:min(100%,840px,calc(100svh - 72px)); margin-inline:auto; }
-.case-studies .case-tabs button { flex:1; max-width:180px; padding:11px 18px; border:1px solid transparent; border-radius:7px; background:transparent; font-size:13px; line-height:1.5; text-align:center; }
+.case-player { width:min(100%,880px,calc(100svh - 48px)); margin-inline:auto; overflow:hidden; border:1px solid var(--line); border-radius:14px; background:#f5f8f7; }
+.case-studies .case-tabs { display:flex; justify-content:center; gap:6px; padding:8px 12px; border:0; border-bottom:1px solid var(--line); background:#fbfcfa; }
+.case-studies .case-tabs button { flex:1; justify-content:center; max-width:180px; padding:9px 14px; border:1px solid transparent; border-radius:6px; background:transparent; font-size:13px; line-height:1.5; text-align:center; transition:background .2s,color .2s; }
 .case-studies .case-tabs button::after { display:none; }
+.case-studies .case-tabs button:hover { color:var(--teal); background:#eef4f0; }
 .case-studies .case-tabs button[aria-selected=true] { color:var(--teal); background:#e6efea; border-color:#c5d7ce; }
-.case-studies .case-panel { width:min(100%,840px,calc(100svh - 72px)); margin-inline:auto; padding-top:16px; }
-.case-film { overflow:hidden; border:1px solid var(--line); border-radius:12px; background:#fff; }
-.case-film-screen { position:relative; aspect-ratio:16/9; background:#f5f8f6; }
+.case-studies .case-panel { padding:0; }
+.case-film { margin:0; background:#f5f8f7; }
+.case-film-screen { position:relative; aspect-ratio:16/9; min-height:0; }
 .case-film-screen video { width:100%; height:100%; object-fit:contain; }
-.case-film-start { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; align-items:center; gap:10px; padding:13px 18px; border:1px solid #ffffff80; border-radius:9px; color:#fff; background:#203c43e8; box-shadow:0 6px 28px #203c432b; font-size:12px; white-space:nowrap; }
-.case-film-start > span:first-child { font-size:19px; line-height:1.3; }
-.case-film-start:hover { background:var(--teal); }
-.case-film-status { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; background:#f5f8f6eb; color:var(--ink); font-size:15px; }
-.case-film-status button { padding:10px 20px; border:1px solid var(--teal); border-radius:6px; color:var(--teal); background:#fff; }
+.case-playback { display:flex; align-items:center; gap:10px; padding:10px 16px; border-top:1px solid var(--line); background:#f5f8f7; }
+.case-playback .round-control { width:32px; height:32px; color:#456b59; font-size:13px; }
+.case-playback .case-play { color:#fff; border-color:var(--teal); background:var(--teal); }
+.case-playback .case-play:hover { background:#286a67; }
+.case-pause-icon,.case-playback.is-playing .case-play-icon { display:none; }
+.case-playback.is-playing .case-pause-icon { display:block; }
+.case-playback .case-progress { flex:1; min-width:30px; height:28px; margin:0; appearance:none; -webkit-appearance:none; background:transparent; cursor:pointer; touch-action:pan-y; }
+.case-progress::-webkit-slider-runnable-track { height:4px; border-radius:3px; background:linear-gradient(to right,var(--teal) var(--case-progress,0%),#d5e1db var(--case-progress,0%)); }
+.case-progress::-moz-range-track { height:4px; border-radius:3px; background:#d5e1db; }
+.case-progress::-moz-range-progress { height:4px; border-radius:3px; background:var(--teal); }
+.case-progress::-webkit-slider-thumb { width:12px; height:12px; margin-top:-4px; border:2px solid #fff; border-radius:50%; background:var(--teal); box-shadow:0 0 0 1px #afc7be; appearance:none; -webkit-appearance:none; }
+.case-progress::-moz-range-thumb { width:8px; height:8px; border:2px solid #fff; border-radius:50%; background:var(--teal); box-shadow:0 0 0 1px #afc7be; }
+.case-clock { min-width:74px; color:#637b6e; font-size:11px; font-variant-numeric:tabular-nums; white-space:nowrap; text-align:center; }
+.case-speed { border:1px solid #ccd9d1; border-radius:5px; padding:5px 3px; color:#456753; background:#fbfdfa; font:12px var(--sans); cursor:pointer; }
+.case-player :is(button,input,select):focus-visible { outline:2px solid #5388ad; outline-offset:2px; }
+.case-film-status { position:absolute; left:50%; top:16px; transform:translateX(-50%); display:flex; align-items:center; gap:12px; width:max-content; max-width:calc(100% - 24px); padding:9px 14px; border:1px solid #d4e1d9; border-radius:8px; background:#fbfdf9f5; color:var(--ink); font-size:12px; box-shadow:0 3px 12px #264e380b; }
+.case-film-status button { flex-shrink:0; padding:5px 9px; border:1px solid #bdd3c7; border-radius:5px; color:var(--teal); background:#fff; }
+.case-film:fullscreen { display:flex; flex-direction:column; width:100%; height:100%; }
+.case-film:fullscreen .case-film-screen { flex:1; aspect-ratio:auto; }
+.case-film:fullscreen .case-playback { flex-shrink:0; padding:12px 20px; padding-bottom:max(12px,env(safe-area-inset-bottom)); }
+@media(max-width:800px) {
+  .case-player { width:100%; }
+}
 @media(max-width:600px) {
-  .case-studies.section { padding-block:52px; }
-  .case-studies .case-tabs { gap:4px; }
-  .case-studies .case-tabs button { padding:10px 8px; font-size:12px; }
-  .case-film { border-radius:10px; }
-  .case-film-start { padding:10px 14px; gap:8px; font-size:11px; }
+  .case-player { border-radius:10px; }
+  .case-studies .case-tabs { gap:4px; padding:6px; }
+  .case-studies .case-tabs button { padding:8px 6px; font-size:12px; }
+  .case-playback { display:grid; grid-template-columns:32px 32px minmax(0,1fr) auto 32px; gap:4px 8px; padding:6px 12px 10px; }
+  .case-playback .case-progress { grid-area:1 / 1 / 2 / -1; height:24px; }
+  .case-playback .round-control { width:32px; height:32px; }
+  .case-clock { min-width:67px; font-size:11px; text-align:left; }
+  .case-speed { font-size:11px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .case-studies .case-tabs button { transition:none; }
 }

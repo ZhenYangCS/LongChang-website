@@ -45,7 +45,8 @@ export async function createRoom(stage,status,options={}) {
   const tile=document.createElement('canvas');tile.width=1024;tile.height=1024;const ctx=tile.getContext('2d');
   for(let y=0;y<8;y++)for(let x=0;x<8;x++){ctx.fillStyle=(x+y)%2?'#bfcfd9':'#ecf2f4';ctx.fillRect(x*128,y*128,128,128);ctx.strokeStyle='#c5d4dd';ctx.lineWidth=1.4;ctx.strokeRect(x*128,y*128,128,128);}
   const texture=new T.CanvasTexture(tile);texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=renderer.capabilities.getMaxAnisotropy();materials.floor_mat=new T.MeshLambertMaterial({color:0xffffff,map:texture});
-  const meshes=[],movable=[],geomIds={},groups=new Map(),matrix=new T.Matrix4(),bodyIds={};
+  const meshes=[],movable=[],pickGeoms=[],geomIds={},groups=new Map(),matrix=new T.Matrix4(),bodyIds={};
+  const pickHistory=[];
   for(let i=1;i<model.nbody;i++){if(model.body_dofnum[i]<=0)continue;const b=model.body(i);bodyIds[b.name]=i;b.delete();}
   const bodyMatrix=body=>{const q=data.xquat,p=new T.Vector3().fromArray(data.xpos,body*3);return new T.Matrix4().compose(p,new T.Quaternion(q[body*4+1],q[body*4+2],q[body*4+3],q[body*4]),new T.Vector3(1,1,1));};
   for(let i=0;i<model.ngeom;i++){
@@ -64,6 +65,7 @@ export async function createRoom(stage,status,options={}) {
     matrix.set(r[o],r[o+1],r[o+2],p[i*3],r[o+3],r[o+4],r[o+5],p[i*3+1],r[o+6],r[o+7],r[o+8],p[i*3+2],0,0,0,1);
     if(live&&name==='floor')matrix.elements[14]=-.017;
     const body=model.geom_bodyid[i],dynamic=model.body_dofnum[body]>0,glass=materialName==='glass';
+    if(dynamic)pickGeoms.push({geom:i,body,radius:s[0]});
     const cast=!glass&&!name.startsWith('corner_')&&!name.startsWith('edge_')&&!name.startsWith('floor');
     const local=dynamic?bodyMatrix(body).invert().multiply(matrix):matrix;
     geometry.applyMatrix4(local);
@@ -101,7 +103,7 @@ export async function createRoom(stage,status,options={}) {
     const p=data.xpos,q=data.xquat;
     for(const mesh of movable){const b=mesh.userData.body;mesh.position.fromArray(p,b*3);mesh.quaternion.set(q[b*4+1],q[b*4+2],q[b*4+3],q[b*4]);mesh.updateMatrix();if(live&&mesh.userData.colorSource!==null){const material=materials[geomColor(mesh.userData.colorSource)+'_enamel'];mesh.material=bakedMaterials.get(material)||material;}}
     if(softShadows)updateContactShadows();
-    renderer.render(scene,camera);renderMs=performance.now()-drawStart;options.onFrame?.(data.time);
+    renderer.render(scene,camera);rememberPickPositions();updateMarker();renderMs=performance.now()-drawStart;options.onFrame?.(data.time);
   }
   let softShadows=false;
   const contactShadows=[];
@@ -148,14 +150,50 @@ export async function createRoom(stage,status,options={}) {
       shadow.position.set(p.x+.24*height,p.y+.3*height,.009);const size=(radius*2.5+height*.38);shadow.scale.set(size,size,1);shadow.material.opacity=.8*Math.exp(-height*.9);
     }
   }
-  const orbit=new OrbitControls(camera,canvas);orbit.target.copy(lookTarget);orbit.update();orbit.saveState();orbit.enablePan=false;orbit.minZoom=.7;orbit.maxZoom=live?5:2;orbit.enableDamping=false;orbit.enabled=false;if(live)orbit.maxPolarAngle=Math.PI/2-.05;orbit.addEventListener('change',draw);
+  const orbit=new OrbitControls(camera,canvas);orbit.target.copy(lookTarget);orbit.update();orbit.saveState();orbit.enablePan=false;orbit.minZoom=.7;orbit.maxZoom=live?5:2;orbit.enableDamping=false;orbit.enabled=false;if(live)orbit.maxPolarAngle=Math.PI/2-.05;orbit.addEventListener('change',()=>{pickHistory.length=0;draw();});
   const ray=new T.Raycaster(),pointer=new T.Vector2();let mode='push',drag=null,forces=[],frame=0,last=0,until=0,visible=true,active=false,selected=bodyIds.red_ball?'red_ball':Object.keys(bodyIds)[0];
   orbit.zoomToCursor=live;
   const pointers=new Set();
+  const marker=document.createElement('span');marker.className='room-grab-marker';marker.setAttribute('aria-hidden','true');marker.hidden=true;stage.append(marker);let hovered=null,hoverPointer=null,hoverFrame=0;
+  function markHit(hit){
+    if(!hit){hovered=null;marker.hidden=true;cancelAnimationFrame(hoverFrame);hoverFrame=0;return;}
+    const body=hit.object.userData.body,q=data.xquat,rotation=new T.Quaternion(q[body*4+1],q[body*4+2],q[body*4+3],q[body*4]);
+    hovered={body,offset:hit.point.clone().sub(new T.Vector3().fromArray(data.xpos,body*3)).applyQuaternion(rotation.invert())};
+    marker.hidden=false;updateMarker();
+  }
+  function updateMarker(){
+    if(!hovered)return;const b=hovered.body,q=data.xquat,rotation=new T.Quaternion(q[b*4+1],q[b*4+2],q[b*4+3],q[b*4]);
+    const p=hovered.offset.clone().applyQuaternion(rotation).add(new T.Vector3().fromArray(data.xpos,b*3)).project(camera),r=canvas.getBoundingClientRect();
+    marker.style.transform=`translate(${(p.x+1)*r.width/2}px,${(1-p.y)*r.height/2}px) translate(-50%,-50%)`;
+  }
   const physicsStep=model.opt.timestep;let playbackRate=options.speed??(live?4:1);
   let accumulated=0,frameAverage=16.7,qualitySamples=0,stableSamples=0,quietSince=null;
   const arrow=new T.ArrowHelper(new T.Vector3(0,1,0),new T.Vector3(),0,0x387f68,.22,.13);arrow.visible=false;scene.add(arrow);
   function setRay(e){const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(pointer,camera);}
+  const projectedTargets=()=>pickGeoms.map(({geom})=>new T.Vector3().fromArray(data.geom_xpos,geom*3).project(camera));
+  function rememberPickPositions(){
+    const now=performance.now();
+    while(pickHistory.length&&now-pickHistory[0].time>120)pickHistory.shift();
+    if(!pickHistory.length||now-pickHistory.at(-1).time>=8)pickHistory.push({time:now,points:projectedTargets()});
+  }
+  function pick(e,recent=false){
+    setRay(e);const direct=ray.intersectObjects(movable,false)[0];if(direct)return direct;
+    // Small balls remain easy to grab at full-room scale and on touch screens.
+    const r=canvas.getBoundingClientRect(),scale=r.height/(camera.top-camera.bottom)*camera.zoom;
+    let hit=null,nearest=Infinity;
+    const consider=(points,age)=>points.forEach((p,i)=>{
+      if(p.z < -1 || p.z > 1)return;
+      const {geom,body,radius}=pickGeoms[i];
+      const distance=Math.hypot(r.left+(p.x+1)*r.width/2-e.clientX,r.top+(1-p.y)*r.height/2-e.clientY);
+      const reach=Math.max(e.pointerType==='touch'?28:22,Math.min(18,radius*scale)+6),score=distance+age*.08;
+      if(distance<reach&&score<nearest){nearest=score;hit={object:movable.find(m=>m.userData.body===body),point:new T.Vector3().fromArray(data.geom_xpos,geom*3)};}
+    });
+    consider(projectedTargets(),0);
+    // At 4x a small ball can leave the clicked pixels between frames. Honour
+    // the last 120 ms of displayed positions, without rewinding the physics.
+    if(recent){const now=performance.now();for(const snapshot of pickHistory){const age=now-snapshot.time;if(age<=120)consider(snapshot.points,age);}}
+    return hit;
+  }
   function tick(now){
     frame=0;if(disposed||!active||!visible||document.hidden)return;const elapsed=Math.max(0,now-last)||16.7;last=now;
     frameAverage=frameAverage*.85+elapsed*.15;
@@ -176,12 +214,20 @@ export async function createRoom(stage,status,options={}) {
       data.xfrc_applied.fill(0);data.qfrc_applied.fill(0);forces=forces.filter(f=>data.time<f.end);
       for(const f of forces){const o=f.body*6;for(let k=0;k<3;k++)data.xfrc_applied[o+k]+=f.force[k];const center=new T.Vector3().fromArray(data.xpos,f.body*3),torque=f.point.clone().sub(center).cross(new T.Vector3(...f.force));for(let k=0;k<3;k++)data.xfrc_applied[o+3+k]+=torque.getComponent(k);}
       if(drag?.kind==='drag'&&!live){
-        const b=drag.body,q=data.xquat,rotation=new T.Quaternion(q[b*4+1],q[b*4+2],q[b*4+3],q[b*4]);
-        const offset=drag.localOffset.clone().applyQuaternion(rotation),point=new T.Vector3().fromArray(data.xpos,b*3).add(offset);
-        const v=new T.Vector3().fromArray(data.cvel,b*6+3).add(new T.Vector3().fromArray(data.cvel,b*6).cross(offset));
-        const f=drag.target.clone().sub(point).multiplyScalar(70).addScaledVector(v,-12);
-        if(model.body_dofnum[b]===6)f.z+=model.body_mass[b]*9.81;
-        f.clampLength(0,90);f.toArray(data.xfrc_applied,b*6);offset.cross(f).toArray(data.xfrc_applied,b*6+3);
+        const b=drag.body;
+        if(model.body_dofnum[b]===6){
+          // Grip free bodies at their centre, without adding accidental spin.
+          // A critically damped, mass-scaled hand follows promptly and settles.
+          const mass=model.body_mass[b],center=new T.Vector3().fromArray(data.xpos,b*3),v=new T.Vector3().fromArray(data.qvel,model.body_dofadr[b]);
+          const f=drag.target.clone().sub(drag.centerOffset).sub(center).multiplyScalar(400*mass).addScaledVector(v,-40*mass).addScaledVector(new T.Vector3().fromArray(model.opt.gravity),-mass);
+          f.clampLength(0,100*mass).toArray(data.xfrc_applied,b*6);
+        }else{
+          const q=data.xquat,rotation=new T.Quaternion(q[b*4+1],q[b*4+2],q[b*4+3],q[b*4]);
+          const offset=drag.localOffset.clone().applyQuaternion(rotation),point=new T.Vector3().fromArray(data.xpos,b*3).add(offset);
+          const v=new T.Vector3().fromArray(data.cvel,b*6+3).add(new T.Vector3().fromArray(data.cvel,b*6).cross(offset));
+          const f=drag.target.clone().sub(point).multiplyScalar(70).addScaledVector(v,-12).clampLength(0,90);
+          f.toArray(data.xfrc_applied,b*6);offset.cross(f).toArray(data.xfrc_applied,b*6+3);
+        }
       }
       if(live)simulation.step(true);else mj.mj_step(model,data);
       accumulated-=physicsStep;
@@ -195,32 +241,45 @@ export async function createRoom(stage,status,options={}) {
   function wake(seconds=12){if(disposed)return;active=true;quietSince=null;until=Math.max(until,data.time+seconds);if(!frame&&visible&&!document.hidden){last=performance.now();frame=requestAnimationFrame(tick);}}
   function push(body,impulse,point){const bid=typeof body==='number'?body:bodyIds[body];if(live){const name=Object.keys(bodyIds).find(n=>bodyIds[n]===bid);if(simulation.info().held===name){status('Release the object to push it.');return;}simulation.launch(name,impulse);wake();draw();return;}forces.push({body:bid,force:impulse.map(v=>v/.12),point:point||new T.Vector3().fromArray(data.xpos,bid*3),end:data.time+.12});wake();}
   const labels={red_ball:'Red ball',blue_ball:'Blue ball',test_block:'Block',pendulum_arm:'Pendulum',balance_arm:'Balance'};
-  function releaseDrag(){const pointer=drag?.pointer;drag=null;simulation?.releaseGrip();arrow.visible=false;if(pointer!==undefined&&canvas.hasPointerCapture(pointer))canvas.releasePointerCapture(pointer);}
-  canvas.addEventListener('pointerdown',e=>{
-    pointers.add(e.pointerId);if(pointers.size>1){releaseDrag();return;}if(e.button!==0||mode==='view')return;setRay(e);let hit=ray.intersectObjects(movable,false)[0];if(!hit&&live){const r=stage.getBoundingClientRect();let nearest=22;for(const mesh of movable){const point=new T.Vector3().fromArray(data.xpos,mesh.userData.body*3),p=point.clone().project(camera),distance=Math.hypot(r.left+(p.x+1)*r.width/2-e.clientX,r.top+(1-p.y)*r.height/2-e.clientY);if(distance<nearest){nearest=distance;hit={object:mesh,point};}}}if(!hit)return;e.preventDefault();canvas.focus({preventScroll:true});const body=hit.object.userData.body;selected=Object.keys(bodyIds).find(n=>bodyIds[n]===body)||selected;canvas.setPointerCapture(e.pointerId);
+  function releaseDrag(){const pointer=drag?.pointer;drag=null;simulation?.releaseGrip();arrow.visible=false;markHit(null);marker.classList.remove('is-held');canvas.style.cursor=mode==='view'?'grab':'default';if(pointer!==undefined&&canvas.hasPointerCapture(pointer))canvas.releasePointerCapture(pointer);}
+  function beginInteraction(e){
+    pointers.add(e.pointerId);if(pointers.size>1){releaseDrag();return;}if(e.button!==0||mode==='view')return;
+    const hit=pick(e,true);if(!hit){status('Choose a ball or a movable part.');return;}
+    e.preventDefault?.();canvas.focus({preventScroll:true});const body=hit.object.userData.body;selected=Object.keys(bodyIds).find(n=>bodyIds[n]===body)||selected;canvas.setPointerCapture(e.pointerId);
     const plane=new T.Plane().setFromNormalAndCoplanarPoint(mode==='drag'?camera.getWorldDirection(new T.Vector3()):new T.Vector3(0,0,1),hit.point);
     const q=data.xquat,rotation=new T.Quaternion(q[body*4+1],q[body*4+2],q[body*4+3],q[body*4]);
-    drag={kind:mode,pointer:e.pointerId,body,point:hit.point.clone(),target:hit.point.clone(),plane,localOffset:hit.point.clone().sub(new T.Vector3().fromArray(data.xpos,body*3)).applyQuaternion(rotation.invert()),startX:e.clientX,startY:e.clientY};
+    drag={kind:mode,pointer:e.pointerId,body,point:hit.point.clone(),target:hit.point.clone(),plane,centerOffset:hit.point.clone().sub(new T.Vector3().fromArray(data.xpos,body*3)),localOffset:hit.point.clone().sub(new T.Vector3().fromArray(data.xpos,body*3)).applyQuaternion(rotation.invert()),startX:e.clientX,startY:e.clientY};
     if(mode==='drag'&&model.body_dofnum[body]===6){
       const center=new T.Vector3().fromArray(data.xpos,body*3),screen=center.clone().project(camera),higher=center.clone().add(new T.Vector3(0,0,1)).project(camera),height=canvas.getBoundingClientRect().height;
       drag.lift={center,right:new T.Vector3(1,0,0).applyQuaternion(camera.quaternion),pixelsPerUnit:height/(camera.top-camera.bottom)*camera.zoom,pixelsPerZ:Math.max(1,Math.abs(higher.y-screen.y)*height/2)};
       drag.floorPlane=new T.Plane().setFromNormalAndCoplanarPoint(new T.Vector3(0,0,1),hit.point);
     }
     if(live&&mode==='drag'){const center=new T.Vector3().fromArray(data.xpos,body*3);if(center.z>simulation.config.grip.reach_height+.04){releaseDrag();status('Object is above hand reach. Wait for it to fall.');return;}drag.centerOffset=hit.point.clone().sub(center);simulation.setGrip(selected,center.toArray());}
-    if(!live)status(`${labels[selected]||selected.replaceAll('_',' ')} · ${mode==='push'?'release to push':'release to drop'}`);if(mode==='drag')wake(20);
-  });
-  canvas.addEventListener('pointermove',e=>{
-    if(!drag||drag.pointer!==e.pointerId)return;setRay(e);let p;
+    markHit(hit);marker.classList.add('is-held');canvas.style.cursor='grabbing';
+    status(`${labels[selected]||selected.replaceAll('_',' ')} · ${mode==='push'?'release to push':'release to drop'}`);if(mode==='drag')wake(20);
+  }
+  function moveInteraction(e){
+    if(!drag){
+      if(mode!=='view'&&e.pointerType!=='touch'){
+        hoverPointer=e;
+        if(!hoverFrame)hoverFrame=requestAnimationFrame(()=>{hoverFrame=0;if(disposed||drag||mode==='view')return;const hit=pick(hoverPointer);markHit(hit);canvas.style.cursor=hit?'grab':'default';});
+      }
+      return;
+    }
+    if(drag.pointer!==e.pointerId)return;setRay(e);let p;
     if(drag.lift&&!e.shiftKey){
       const lift=drag.lift,center=lift.center.clone().addScaledVector(lift.right,(e.clientX-drag.startX)/lift.pixelsPerUnit);
       center.z-=(e.clientY-drag.startY)/lift.pixelsPerZ;
       p=center.add(drag.point.clone().sub(lift.center));
     }else p=ray.ray.intersectPlane(drag.lift?drag.floorPlane:drag.plane,new T.Vector3());
     if(!p)return;
-    const limit=live?5.8:3.7;p.x=T.MathUtils.clamp(p.x,-limit,limit);p.y=T.MathUtils.clamp(p.y,-limit,limit);p.z=T.MathUtils.clamp(p.z,.15,live?simulation.config.grip.reach_height:5.4);drag.target=p;
-    if(live&&drag.kind==='drag'){const target=p.clone().sub(drag.centerOffset);simulation.setGrip(selected,simulation.clampGripTarget(selected,target.toArray()));}
+    const limit=live?5.8:3.7;if(!(live&&drag.kind==='drag')){p.x=T.MathUtils.clamp(p.x,-limit,limit);p.y=T.MathUtils.clamp(p.y,-limit,limit);p.z=T.MathUtils.clamp(p.z,.15,live?simulation.config.grip.reach_height:5.4);}drag.target=p;
+    if(live&&drag.kind==='drag'){const target=p.clone().sub(drag.centerOffset),clamped=simulation.clampGripTarget(selected,target.toArray());simulation.setGrip(selected,clamped);if(clamped[2]>=simulation.config.grip.reach_height-.01)status(`Hand reaches ${simulation.config.grip.reach_height} m · release to drop`);}
     if(drag.kind==='push'){const d=p.clone().sub(drag.point);d.z=0;arrow.position.copy(drag.point);if(d.length()>.01){arrow.setDirection(d.clone().normalize());arrow.setLength(Math.min(d.length(),2.5),.22,.13);}arrow.visible=d.length()>.04;draw();}
-  });
+  }
+  canvas.addEventListener('pointerdown',beginInteraction);
+  canvas.addEventListener('pointermove',moveInteraction);
+  canvas.addEventListener('pointerleave',()=>{if(!drag)markHit(null);});
   canvas.addEventListener('pointerup',e=>{
     pointers.delete(e.pointerId);if(!drag||drag.pointer!==e.pointerId)return;
     if(drag.kind==='push'){const d=drag.target.clone().sub(drag.point);d.z=0;if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)<5)d.set(0,.7,0);d.multiplyScalar(3).clampLength(0,8);push(drag.body,d.toArray(),drag.point);}
@@ -228,33 +287,36 @@ export async function createRoom(stage,status,options={}) {
   });
   canvas.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);releaseDrag();draw();});
   canvas.addEventListener('lostpointercapture',e=>{pointers.delete(e.pointerId);if(drag?.pointer===e.pointerId){releaseDrag();draw();}});
+  const clearPointer=e=>{pointers.delete(e.pointerId);if(drag?.pointer===e.pointerId){releaseDrag();draw();}};
+  document.addEventListener('pointerup',clearPointer);document.addEventListener('pointercancel',clearPointer);
+  const blur=()=>{pointers.clear();releaseDrag();};window.addEventListener('blur',blur);
   canvas.addEventListener('keydown',e=>{if(e.key==='Escape'){reset();return;}const d={ArrowUp:[0,2,0],ArrowDown:[0,-2,0],ArrowLeft:[-2,0,0],ArrowRight:[2,0,0],' ':[0,0,3]};if(d[e.key]){e.preventDefault();push(selected,d[e.key]);}});
-  function reset(){cancelAnimationFrame(frame);frame=0;active=false;quietSince=null;releaseDrag();forces=[];until=0;accumulated=0;arrow.visible=false;if(live)simulation.reset();else{mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);}renderer.shadowMap.needsUpdate=true;draw();setMode(mode);}
+  function reset(){cancelAnimationFrame(frame);frame=0;active=false;quietSince=null;releaseDrag();pickHistory.length=0;forces=[];until=0;accumulated=0;arrow.visible=false;if(live)simulation.reset();else{mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);}renderer.shadowMap.needsUpdate=true;draw();setMode(mode);}
   function setMode(value){
     if(value!==mode)releaseDrag();mode=value;
-    orbit.enabled=live||value==='view';orbit.enableRotate=value==='view';orbit.enablePan=live&&value==='view';canvas.style.cursor=value==='view'?'grab':'crosshair';
+    orbit.enabled=live||value==='view';orbit.enableRotate=value==='view';orbit.enablePan=live&&value==='view';canvas.style.cursor=value==='view'?'grab':'default';
     const touch=matchMedia('(pointer:coarse)').matches,zoom=touch?'pinch to zoom':'scroll to zoom';
-    const instructions={push:'Drag an object, then release to push.',drag:'Drag up to lift; release to drop.',view:'Drag the scene to change your view.'};
+    const instructions={push:'Drag, then release to push.',drag:'Drag up to lift; release to drop.',view:'Drag to rotate.'};
     status(live?instructions[value]:value==='view'?`Drag to rotate · ${zoom}`:value==='drag'?(touch?'Drag up to lift · release to drop':'Drag up to lift · Shift-drag to slide'):'Drag to push · tap to nudge');
   }
   function resize(){
-    if(disposed)return;const r=stage.getBoundingClientRect();if(!r.width||!r.height)return;let half=5.8;
+    if(disposed)return;const r=stage.getBoundingClientRect();if(!r.width||!r.height)return;pickHistory.length=0;let half=5.8;
     if(live)half=simulation.config.camera.span/2*Math.max(1,1.5/(r.width/r.height));
     camera.top=half;camera.bottom=-half;camera.left=-half*r.width/r.height;camera.right=half*r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false);draw();
   }
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(stage);
   const visibilityObserver=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(!visible){cancelAnimationFrame(frame);frame=0;}else if(active)wake(0);});visibilityObserver.observe(stage);
-  const visibility=()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else if(active)wake(0);};document.addEventListener('visibilitychange',visibility);
+  const visibility=()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;pointers.clear();releaseDrag();}else if(active)wake(0);};document.addEventListener('visibilitychange',visibility);
   canvas.addEventListener('webglcontextlost',e=>{if(disposed)return;e.preventDefault();status('Graphics paused. Reload to retry.');cancelAnimationFrame(frame);});
   if(softwareRenderer){renderer.setPixelRatio(Math.min(devicePixelRatio,1));useContactShadows();}
   function pause(){active=false;cancelAnimationFrame(frame);frame=0;releaseDrag();}
   function destroy(){
-    pause();disposed=true;resizeObserver.disconnect();visibilityObserver.disconnect();document.removeEventListener('visibilitychange',visibility);orbit.dispose();
+    pause();disposed=true;resizeObserver.disconnect();visibilityObserver.disconnect();document.removeEventListener('visibilitychange',visibility);document.removeEventListener('pointerup',clearPointer);document.removeEventListener('pointercancel',clearPointer);window.removeEventListener('blur',blur);orbit.dispose();marker.remove();
     const geometries=new Set(),mats=new Set(Object.values(materials)),textures=new Set([texture,scene.environment]);
     scene.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)mats.add(o.material);});for(const m of bakedMaterials.values())mats.add(m);
     for(const m of mats){for(const v of Object.values(m))if(v?.isTexture)textures.add(v);m.dispose();}for(const g of geometries)g.dispose();for(const t of textures)t?.dispose();
     renderer.dispose();renderer.forceContextLoss();canvas.remove();if(live)simulation.destroy();else{data.delete();model.delete();}
   }
   stage.append(canvas);resize();setMode(mode);
-  return {setMode,reset,push,pause,setSpeed(value){if([.5,1,2,4].includes(value))playbackRate=value;},play:()=>wake(),isRunning:()=>active,destroy,getRenderInfo:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,pixelRatio:renderer.getPixelRatio(),frameMs:frameAverage,renderMs,physicsMs,softShadows,room:live?{bounds:simulation.config.physics_bounds,camera:simulation.config.camera,roofBottom:new T.Box3().setFromObject(scene.getObjectByName('Native ceiling glass')).min.z}:null}),getState:()=>({time:data.time,rate:playbackRate,mode,selected,scene:simulation?.config.id,oracle:simulation?.info(),qvel:Array.from(data.qvel),colors:live?Object.fromEntries(Object.values(simulation.bodies).map(b=>[b.name,Array.from(model.geom_rgba.subarray(b.g*4,b.g*4+4))])):{},qpos:Array.from(data.qpos),positions:Object.fromEntries(Object.entries(bodyIds).map(([n,b])=>[n,Array.from(data.xpos.slice(b*3,b*3+3))])),contacts:data.ncon}),project:name=>{const p=(Array.isArray(name)?new T.Vector3().fromArray(name):name in geomIds?new T.Vector3().fromArray(data.geom_xpos,geomIds[name]*3):new T.Vector3().fromArray(data.xpos,bodyIds[name]*3)).project(camera),r=stage.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
+  return {setMode,reset,push,pause,beginInteraction,moveInteraction,setSpeed(value){if([.5,1,2,4].includes(value))playbackRate=value;},play:()=>wake(),isRunning:()=>active,destroy,getRenderInfo:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,pixelRatio:renderer.getPixelRatio(),frameMs:frameAverage,renderMs,physicsMs,softShadows,room:live?{bounds:simulation.config.physics_bounds,camera:simulation.config.camera,roofBottom:new T.Box3().setFromObject(scene.getObjectByName('Native ceiling glass')).min.z}:null}),getState:()=>({time:data.time,rate:playbackRate,mode,selected,scene:simulation?.config.id,oracle:simulation?.info(),qvel:Array.from(data.qvel),colors:live?Object.fromEntries(Object.values(simulation.bodies).map(b=>[b.name,Array.from(model.geom_rgba.subarray(b.g*4,b.g*4+4))])):{},qpos:Array.from(data.qpos),positions:Object.fromEntries(Object.entries(bodyIds).map(([n,b])=>[n,Array.from(data.xpos.slice(b*3,b*3+3))])),contacts:data.ncon}),project:name=>{const p=(Array.isArray(name)?new T.Vector3().fromArray(name):name in geomIds?new T.Vector3().fromArray(data.geom_xpos,geomIds[name]*3):new T.Vector3().fromArray(data.xpos,bodyIds[name]*3)).project(camera),r=stage.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
 }
