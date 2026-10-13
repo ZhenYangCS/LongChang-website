@@ -41,7 +41,7 @@ z
     <g id="xtick_1">
      <g id="line2d_1"/>
      <g id="text_1">
-      <!-- Free -->
+      
       <g style="fill: #65797c" transform="translate(90.22378 266.616) scale(0.1 -0.1)">
        <defs>
         <path id="DMSans-Regular-46" d="M 480 0 
@@ -118,7 +118,7 @@ z
     <g id="xtick_2">
      <g id="line2d_2"/>
      <g id="text_2">
-      <!-- Guided -->
+      
       <g style="fill: #65797c" transform="translate(222.332755 266.616) scale(0.1 -0.1)">
        <defs>
         <path id="DMSans-Regular-47" d="M 2406 -77 
@@ -246,7 +246,7 @@ L 284.430066 250.416
      </g>
      <g id="line2d_4"/>
      <g id="text_3">
-      <!-- 0 -->
+      
       <g style="fill: #203c43" transform="translate(39.455375 254.016) scale(0.1 -0.1)">
        <defs>
         <path id="DMSans-Regular-30" d="M 2195 -77 
@@ -291,7 +291,7 @@ L 284.430066 213.192
      </g>
      <g id="line2d_6"/>
      <g id="text_4">
-      <!-- 10 -->
+      
       <g style="fill: #203c43" transform="translate(36.335062 216.792) scale(0.1 -0.1)">
        <defs>
         <path id="DMSans-Regular-31" d="M 973 0 
@@ -318,7 +318,7 @@ L 284.430066 175.968
      </g>
      <g id="line2d_8"/>
      <g id="text_5">
-      <!-- 20 -->
+      
       <g style="fill: #203c43" transform="translate(33.696 179.568) scale(0.1 -0.1)">
        <defs>
         <path id="DMSans-Regular-32" d="M 410 0 
@@ -364,7 +364,7 @@ L 284.430066 138.744
      </g>
      <g id="line2d_10"/>
      <g id="text_6">
-      <!-- 30 -->
+      
       <g style="fill: #203c43" transform="translate(33.546 142.344) scale(0.1 -0.1)">
        <defs>
         <path id="DMSans-Regular-33" d="M 1875 -77 
@@ -422,7 +422,7 @@ L 284.430066 101.52
      </g>
      <g id="line2d_12"/>
      <g id="text_7">
-      <!-- 40 -->
+      
       <g style="fill: #203c43" transform="translate(33.385062 105.12) scale(0.1 -0.1)">
        <defs>
         <path id="DMSans-Regular-34" d="M 2509 0 
@@ -469,7 +469,7 @@ z
 " clip-path="url(#pe4a1945a37)" style="fill: #347c79"/>
    </g>
    <g id="text_8">
-    <!-- 16.7% -->
+    
     <g style="fill: #203c43" transform="translate(84.451671 183.4128) scale(0.13 -0.13)">
      <defs>
       <path id="DMSans-Regular-36" d="M 2086 -77 
@@ -609,7 +609,7 @@ z
     </g>
    </g>
    <g id="text_9">
-    <!-- 28.6% -->
+    
     <g style="fill: #203c43" transform="translate(221.12502 139.11624) scale(0.13 -0.13)">
      <defs>
       <path id="DMSans-Regular-38" d="M 1946 -77 
@@ -666,7 +666,7 @@ z
     </g>
    </g>
    <g id="text_10">
-    <!-- Task guidance -->
+    
     <g style="fill: #203c43" transform="translate(55.296 79.52) scale(0.13 -0.13)">
      <defs>
       <path id="DMSans-Regular-54" d="M 1530 0 
@@ -928,7 +928,7 @@ z
     <g id="xtick_3">
      <g id="line2d_13"/>
      <g id="text_11">
-      <!-- 100 turns -->
+      
       <g style="fill: #65797c" transform="translate(381.099497 266.616) scale(0.1 -0.1)">
        <defs>
         <path id="DMSans-Regular-74" d="M 1715 0 
@@ -969,7 +969,7 @@ z
     <g id="xtick_4">
      <g id="line2d_14"/>
      <g id="text_12">
-      <!-- 500 turns -->
+      
       <g style="fill: #65797c" transform="translate(518.478784 266.616) scale(0.1 -0.1)">
        <defs>
         <path id="DMSans-Regular-35" d="M 1990 -77 
@@ -1028,7 +1028,7 @@ L 586.887033 250.416
      </g>
      <g id="line2d_16"/>
      <g id="text_13">
-      <!-- 0 -->
+      
       <g style="fill: #203c43" transform="translate(341.912342 254.016) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-30"/>
       </g>
@@ -1042,7 +1042,7 @@ L 586.887033 213.192
      </g>
      <g id="line2d_18"/>
      <g id="text_14">
-      <!-- 10 -->
+      
       <g style="fill: #203c43" transform="translate(338.79203 216.792) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-31"/>
        <use xlink:href="#DMSans-Regular-30" transform="translate(31.199997 0)"/>
@@ -1057,7 +1057,7 @@ L 586.887033 175.968
      </g>
      <g id="line2d_20"/>
      <g id="text_15">
-      <!-- 20 -->
+      
       <g style="fill: #203c43" transform="translate(336.152967 179.568) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-32"/>
        <use xlink:href="#DMSans-Regular-30" transform="translate(57.599991 0)"/>
@@ -1072,7 +1072,7 @@ L 586.887033 138.744
      </g>
      <g id="line2d_22"/>
      <g id="text_16">
-      <!-- 30 -->
+      
       <g style="fill: #203c43" transform="translate(336.002967 142.344) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-33"/>
        <use xlink:href="#DMSans-Regular-30" transform="translate(59.099991 0)"/>
@@ -1087,7 +1087,7 @@ L 586.887033 101.52
      </g>
      <g id="line2d_24"/>
      <g id="text_17">
-      <!-- 40 -->
+      
       <g style="fill: #203c43" transform="translate(335.84203 105.12) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-34"/>
        <use xlink:href="#DMSans-Regular-30" transform="translate(60.699997 0)"/>
@@ -1112,7 +1112,7 @@ z
 " clip-path="url(#p3efbbb7a8d)" style="fill: #347c79"/>
    </g>
    <g id="text_18">
-    <!-- 16.7% -->
+    
     <g style="fill: #203c43" transform="translate(386.908638 183.4128) scale(0.13 -0.13)">
      <use xlink:href="#DMSans-Regular-31"/>
      <use xlink:href="#DMSans-Regular-36" transform="translate(31.199997 0)"/>
@@ -1122,7 +1122,7 @@ z
     </g>
    </g>
    <g id="text_19">
-    <!-- 14.3% -->
+    
     <g style="fill: #203c43" transform="translate(525.544175 192.34656) scale(0.13 -0.13)">
      <use xlink:href="#DMSans-Regular-31"/>
      <use xlink:href="#DMSans-Regular-34" transform="translate(31.199997 0)"/>
@@ -1132,7 +1132,7 @@ z
     </g>
    </g>
    <g id="text_20">
-    <!-- Exploration budget -->
+    
     <g style="fill: #203c43" transform="translate(357.752967 79.52) scale(0.13 -0.13)">
      <defs>
       <path id="DMSans-Regular-45" d="M 480 0 
@@ -1306,7 +1306,7 @@ z
     <g id="xtick_5">
      <g id="line2d_25"/>
      <g id="text_21">
-      <!-- Disabled -->
+      
       <g style="fill: #65797c" transform="translate(685.252558 266.616) scale(0.1 -0.1)">
        <defs>
         <path id="DMSans-Regular-44" d="M 480 0 
@@ -1347,7 +1347,7 @@ z
     <g id="xtick_6">
      <g id="line2d_26"/>
      <g id="text_22">
-      <!-- Enabled -->
+      
       <g style="fill: #65797c" transform="translate(825.576376 266.616) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-45"/>
        <use xlink:href="#DMSans-Regular-6e" transform="translate(56.499985 0)"/>
@@ -1369,7 +1369,7 @@ L 889.344 250.416
      </g>
      <g id="line2d_28"/>
      <g id="text_23">
-      <!-- 0 -->
+      
       <g style="fill: #203c43" transform="translate(644.369309 254.016) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-30"/>
       </g>
@@ -1383,7 +1383,7 @@ L 889.344 213.192
      </g>
      <g id="line2d_30"/>
      <g id="text_24">
-      <!-- 10 -->
+      
       <g style="fill: #203c43" transform="translate(641.248997 216.792) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-31"/>
        <use xlink:href="#DMSans-Regular-30" transform="translate(31.199997 0)"/>
@@ -1398,7 +1398,7 @@ L 889.344 175.968
      </g>
      <g id="line2d_32"/>
      <g id="text_25">
-      <!-- 20 -->
+      
       <g style="fill: #203c43" transform="translate(638.609934 179.568) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-32"/>
        <use xlink:href="#DMSans-Regular-30" transform="translate(57.599991 0)"/>
@@ -1413,7 +1413,7 @@ L 889.344 138.744
      </g>
      <g id="line2d_34"/>
      <g id="text_26">
-      <!-- 30 -->
+      
       <g style="fill: #203c43" transform="translate(638.459934 142.344) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-33"/>
        <use xlink:href="#DMSans-Regular-30" transform="translate(59.099991 0)"/>
@@ -1428,7 +1428,7 @@ L 889.344 101.52
      </g>
      <g id="line2d_36"/>
      <g id="text_27">
-      <!-- 40 -->
+      
       <g style="fill: #203c43" transform="translate(638.298997 105.12) scale(0.1 -0.1)">
        <use xlink:href="#DMSans-Regular-34"/>
        <use xlink:href="#DMSans-Regular-30" transform="translate(60.699997 0)"/>
@@ -1453,7 +1453,7 @@ z
 " clip-path="url(#p3084be67c5)" style="fill: #347c79"/>
    </g>
    <g id="text_28">
-    <!-- 4.8% -->
+    
     <g style="fill: #203c43" transform="translate(691.049511 227.70936) scale(0.13 -0.13)">
      <use xlink:href="#DMSans-Regular-34"/>
      <use xlink:href="#DMSans-Regular-2e" transform="translate(60.699997 0)"/>
@@ -1462,7 +1462,7 @@ z
     </g>
    </g>
    <g id="text_29">
-    <!-- 16.7% -->
+    
     <g style="fill: #203c43" transform="translate(828.234736 183.4128) scale(0.13 -0.13)">
      <use xlink:href="#DMSans-Regular-31"/>
      <use xlink:href="#DMSans-Regular-36" transform="translate(31.199997 0)"/>
@@ -1472,7 +1472,7 @@ z
     </g>
    </g>
    <g id="text_30">
-    <!-- Apparatus access -->
+    
     <g style="fill: #203c43" transform="translate(660.209934 79.52) scale(0.13 -0.13)">
      <defs>
       <path id="DMSans-Regular-41" d="M 192 0 
@@ -1513,7 +1513,7 @@ z
    </g>
   </g>
   <g id="text_31">
-   <!-- What helps an explorer discover? -->
+   
    <g style="fill: #203c43" transform="translate(41.472 27.072) scale(0.27 -0.27)">
     <defs>
      <path id="Newsreader-Regular-57" d="M 3200 3798 
@@ -2144,7 +2144,7 @@ z
    </g>
   </g>
   <g id="text_32">
-   <!-- Controlled comparisons  /  GPT-6-Astra  /  Discovery rate (%) -->
+   
    <g style="fill: #65797c" transform="translate(41.472 50.76) scale(0.1 -0.1)">
     <defs>
      <path id="DMSans-Regular-43" d="M 2426 -77 
@@ -2372,7 +2372,7 @@ z
    </g>
   </g>
   <g id="text_33">
-   <!-- Guidance and apparatus: 100-turn main baseline. Budget comparison: matched runs without context compaction. -->
+   
    <g style="fill: #65797c" transform="translate(41.472 294.408) scale(0.09 -0.09)">
     <defs>
      <path id="DMSans-Regular-3a" d="M 640 -32 
@@ -2585,7 +2585,7 @@ z
    </g>
   </g>
   <g id="text_34">
-   <!-- The two 100-turn baselines are distinct experimental conditions. All bars use the same 0–40% scale. -->
+   
    <g style="fill: #65797c" transform="translate(41.472 313.02) scale(0.09 -0.09)">
     <defs>
      <path id="DMSans-Regular-2013" d="M 461 1664 

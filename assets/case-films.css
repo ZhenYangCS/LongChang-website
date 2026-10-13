@@ -1,4 +1,4 @@
-/* One case selector, one film. Playback controls appear after play. */
+
 .case-studies.section { padding-block:72px; }
 .case-studies .section-heading { display:block; margin-bottom:28px; }
 .case-studies .case-tabs { display:flex; justify-content:center; gap:6px; border:0; width:min(100%,840px,calc(100svh - 72px)); margin-inline:auto; }

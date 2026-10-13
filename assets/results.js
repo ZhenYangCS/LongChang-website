@@ -1,4 +1,4 @@
-/* Explore the frozen paper results without changing their evaluation scale. */
+
 (() => {
   'use strict';
   const data = window.LONGCHANG;
@@ -13,6 +13,13 @@
   const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const metrics = [{key:'D', name:'Discovery'}, {key:'C', name:'Correct law'}, {key:'S', name:'Support'}];
   const scenes = data.scenes.filter(scene => scene.id !== '01');
+  const behavior = [
+    {key:'L', label:'Mean turns', unit:'', detail:'Mean turns used across all 45 runs.'},
+    {key:'ES', label:'Early stops', unit:'%', detail:'Runs ending before the 100-turn limit.'},
+    {key:'CS', label:'Runs with a build', unit:' / 45', detail:'Runs with at least one successfully built apparatus.'},
+    {key:'CF', label:'Build failures', unit:'%', detail:'Failed build attempts as a percentage of all build attempts.'},
+    {key:'AF', label:'Action failures', unit:'%', detail:'Turns with failed actions as a percentage of all turns.'}
+  ];
   let view = 'all';
   let selected = data.models[0];
   const rows = data.models.map(model => {
@@ -34,7 +41,7 @@
     inspector.innerHTML = `<button type="button" class="result-inspector-close" aria-label="Close model details">×</button><div class="result-inspector-heading"><span class="result-inspector-label">SELECTED MODEL</span><a class="result-data-link" href="downloads/model-results.csv" download aria-label="Download all model metrics (CSV)" title="Download all model metrics (CSV)"><svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M5 16v5h14v-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div><h3 id="result-model-title">${esc(selected.name)}</h3><dl class="result-scores">${metrics.map(({key, name}) => {
       const count = scenes.reduce((sum, scene) => sum + selected.scenes[scene.id][key], 0);
       return `<div class="result-score result-${key}" ${view === key ? 'data-emphasized="true"' : ''}><dt><i class="result-dot" aria-hidden="true"></i>${name}</dt><dd><strong>${selected[key].toFixed(1)}<small>%</small></strong><span>${count} / 42 runs</span></dd></div>`;
-    }).join('')}</dl><div class="result-scene-heading"><span>${sceneLabel} by scene</span><small>Passes / 3</small></div><div class="result-scenes">${scenes.map(scene => {
+    }).join('')}</dl><div class="result-behavior-heading"><span>Exploration</span><small>All 45 runs</small></div><dl class="result-behavior">${behavior.map(({key, label, unit, detail}) => `<div title="${esc(selected[key] == null ? 'No build attempts.' : detail)}"><dt>${label}</dt><dd data-behavior="${key}">${selected[key] == null ? '—' : `${key === 'CS' ? selected[key] : selected[key].toFixed(1)}${unit}`}</dd></div>`).join('')}</dl><div class="result-scene-heading"><span>${sceneLabel} by scene</span><small>Passes / 3</small></div><div class="result-scenes">${scenes.map(scene => {
       const value = selected.scenes[scene.id][sceneMetric];
       const label = `Scene ${scene.id}: ${scene.name}. ${sceneLabel}: ${value} of 3 runs.`;
       const detail = `Scene ${scene.id}: ${scene.name}. ${metrics.map(metric => `${metric.name}: ${selected.scenes[scene.id][metric.key]}/3`).join('. ')}.`;

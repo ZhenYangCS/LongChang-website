@@ -66,7 +66,7 @@ def main():
         assert page.locator('#scene-law-text').is_visible()
         page.locator('[data-atlas-view=physics]').click()
         assert page.locator('#atlas-tour').count()==0 and page.locator('.atlas-toolbar').count()==0
-        assert page.locator('#scene-law .physics-downloads').count()==1
+        assert page.locator('#worlds a[download]').count()==0
         print('PASS: 15 names, concise summaries and folded full rules, framing switch, playback rates, seek, fullscreen, measurements and grouped downloads.',flush=True)
         # Both views reserve the same space, including their bottom controls.
         for mode in ['physics','motion']:
@@ -80,11 +80,11 @@ def main():
                     page.wait_for_function('(id)=>window.SceneRoom?.getState().scene===id',arg=f'{i:02}',timeout=60000)
                     assert page.locator('#scene-live-controls').is_visible()
         page.locator('[data-atlas-view=physics]').click()
-        page.locator('#successful-explorations > summary').click()
+        page.evaluate('showDiscovery("07")')
         page.locator('#replay-play').click();page.wait_for_function('!document.querySelector("#success-video").paused')
         page.locator('#replay-speed').select_option('2');assert page.locator('#success-video').evaluate('(v)=>v.playbackRate')==2
         page.locator('#replay-play').click()
-        page.locator('#successful-explorations > summary').click()
+        page.locator('#exploration-close').click()
         for width,height in [(1366,768),(1280,720),(1440,900)]:
             page.set_viewport_size({'width':width,'height':height})
             page.evaluate('document.querySelector("#worlds").scrollIntoView({behavior:"instant",block:"start"})')

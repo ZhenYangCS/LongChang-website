@@ -1,4 +1,4 @@
-/* Three recorded films. Native video controls handle playback and fullscreen. */
+
 (() => {
   'use strict';
   const films = [...document.querySelectorAll('.case-film')];
@@ -52,7 +52,7 @@
         loadingTimer = setTimeout(failed, 15000);
       }
       video.play().catch(error => {
-        // A tab change or seek may interrupt a pending play request.
+
         if (error.name !== 'AbortError' && playRequested) {
           clearStatus();
           start.hidden = false;

@@ -3192,7 +3192,7 @@ footer {
     font-size:9px
   }
 }
-/* Chart labels remain legible at normal browser zoom. */
+
 .chart-model-row {
   min-height:49px
 }

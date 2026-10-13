@@ -5,7 +5,7 @@ import {OrbitControls} from './vendor/three/OrbitControls.js';
 import {mergeGeometries} from './vendor/three/BufferGeometryUtils.js';
 import {getMujoco} from './mujoco-runtime.js';
 
-// Native MuJoCo resolves contacts and forces; Three.js renders its state.
+
 export async function createRoom(stage,status,options={}) {
   const simulation=options.simulation||null,live=Boolean(simulation);let mj,model,data,disposed=false;
   if(live)({mj,model,data}=simulation);
@@ -38,7 +38,7 @@ export async function createRoom(stage,status,options={}) {
   const palette={red:[.9,.1,.1],blue:[.1,.1,.9],green:[.1,.8,.2],yellow:[.9,.9,.1],brown:[.6,.4,.2],gray:[.55,.55,.55]};
   function geomColor(g){const c=model.geom_rgba.subarray(g*4,g*4+3);return Object.keys(palette).sort((a,b)=>Math.hypot(...palette[a].map((v,k)=>v-c[k]))-Math.hypot(...palette[b].map((v,k)=>v-c[k])))[0];}
   const bakedMaterials=new Map();
-  // Clear panes need a restrained tint, without multiple full-screen PBR passes.
+
   materials.glass=new T.MeshBasicMaterial({color:0xb8d9df,transparent:true,opacity:.045,depthWrite:false,side:T.DoubleSide});
   const tile=document.createElement('canvas');tile.width=1024;tile.height=1024;const ctx=tile.getContext('2d');
   for(let y=0;y<8;y++)for(let x=0;x<8;x++){ctx.fillStyle=(x+y)%2?'#bfcfd9':'#ecf2f4';ctx.fillRect(x*128,y*128,128,128);ctx.strokeStyle='#c5d4dd';ctx.lineWidth=1.4;ctx.strokeRect(x*128,y*128,128,128);}
@@ -75,7 +75,7 @@ export async function createRoom(stage,status,options={}) {
     if(group.glass)mesh.renderOrder=2;scene.add(mesh);meshes.push(mesh);if(group.body)movable.push(mesh);
   }
   if(live){
-    // Glass inner faces coincide with the native walls and ceiling.
+
     const add=(geometry,material)=>{const m=new T.Mesh(geometry,material);scene.add(m);meshes.push(m);return m;};
     const base=add(new T.BoxGeometry(12.08,12.08,.15),materials.metal);base.position.z=-.095;
     const panes=[],rails=[],z=ceiling;
@@ -86,7 +86,7 @@ export async function createRoom(stage,status,options={}) {
     }
     const glass=add(mergeGeometries(panes),materials.glass);glass.renderOrder=2;add(mergeGeometries(rails),materials.frame);
     const roof=add(new T.BoxGeometry(12,12,.024),new T.MeshBasicMaterial({color:0xb8dce5,transparent:true,opacity:.09,depthWrite:false,side:T.DoubleSide}));roof.name='Native ceiling glass';roof.position.z=z+.012;roof.renderOrder=2;
-    // Subpixel metal rails need a continuous outline at small display sizes.
+
     const edgePoints=[];
     for(const x of [-6,6])for(const y of [-6,6])edgePoints.push(new T.Vector3(x,y,0),new T.Vector3(x,y,z));
     for(const height of [0,z])for(const side of [-6,6])edgePoints.push(new T.Vector3(-6,side,height),new T.Vector3(6,side,height),new T.Vector3(side,-6,height),new T.Vector3(side,6,height));
@@ -104,8 +104,8 @@ export async function createRoom(stage,status,options={}) {
   let softShadows=false;
   const contactShadows=[];
   function bakeMatcaps(){
-    // Cache the same polished materials into tiny normal-based lighting textures
-    // on slower GPUs. Geometry and MuJoCo dynamics remain fully three-dimensional.
+
+
     const originalSize=renderer.getSize(new T.Vector2()),ratio=renderer.getPixelRatio(),clear=renderer.getClearColor(new T.Color()),alpha=renderer.getClearAlpha();
     const studio=new T.Scene();studio.environment=scene.environment;studio.environmentIntensity=scene.environmentIntensity;
     const inverse=camera.quaternion.clone().invert();
@@ -199,7 +199,7 @@ export async function createRoom(stage,status,options={}) {
       drag.floorPlane=new T.Plane().setFromNormalAndCoplanarPoint(new T.Vector3(0,0,1),hit.point);
     }
     if(live&&mode==='drag'){const center=new T.Vector3().fromArray(data.xpos,body*3);if(center.z>simulation.config.grip.reach_height+.04){releaseDrag();status('Object is above hand reach. Wait for it to fall.');return;}drag.centerOffset=hit.point.clone().sub(center);simulation.setGrip(selected,center.toArray());}
-    status(`${labels[selected]||selected.replaceAll('_',' ')} · ${mode==='push'?'release to push':'release to drop'}`);if(mode==='drag')wake(20);
+    if(!live)status(`${labels[selected]||selected.replaceAll('_',' ')} · ${mode==='push'?'release to push':'release to drop'}`);if(mode==='drag')wake(20);
   });
   canvas.addEventListener('pointermove',e=>{
     if(!drag||drag.pointer!==e.pointerId)return;setRay(e);let p;
@@ -222,7 +222,13 @@ export async function createRoom(stage,status,options={}) {
   canvas.addEventListener('lostpointercapture',e=>{pointers.delete(e.pointerId);if(drag?.pointer===e.pointerId){releaseDrag();draw();}});
   canvas.addEventListener('keydown',e=>{if(e.key==='Escape'){reset();return;}const d={ArrowUp:[0,2,0],ArrowDown:[0,-2,0],ArrowLeft:[-2,0,0],ArrowRight:[2,0,0],' ':[0,0,3]};if(d[e.key]){e.preventDefault();push(selected,d[e.key]);}});
   function reset(){cancelAnimationFrame(frame);frame=0;active=false;quietSince=null;releaseDrag();forces=[];until=0;accumulated=0;arrow.visible=false;if(live)simulation.reset();else{mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);}renderer.shadowMap.needsUpdate=true;draw();setMode(mode);}
-  function setMode(value){if(value!==mode)releaseDrag();mode=value;orbit.enabled=live||value==='view';orbit.enableRotate=value==='view';orbit.enablePan=live&&value==='view';canvas.style.cursor=value==='view'?'grab':'crosshair';const touch=matchMedia('(pointer:coarse)').matches,zoom=touch?'pinch to zoom':'scroll to zoom';status(value==='view'?`Drag to rotate · ${zoom}`:value==='drag'?(touch?'Drag up to lift · release to drop':'Drag up to lift · Shift-drag to slide'):live?`Drag to push · ${zoom}`:'Drag to push · tap to nudge');}
+  function setMode(value){
+    if(value!==mode)releaseDrag();mode=value;
+    orbit.enabled=live||value==='view';orbit.enableRotate=value==='view';orbit.enablePan=live&&value==='view';canvas.style.cursor=value==='view'?'grab':'crosshair';
+    const touch=matchMedia('(pointer:coarse)').matches,zoom=touch?'pinch to zoom':'scroll to zoom';
+    const instructions={push:'Drag an object, then release to push.',drag:'Drag up to lift; release to drop.',view:'Drag the scene to change your view.'};
+    status(live?instructions[value]:value==='view'?`Drag to rotate · ${zoom}`:value==='drag'?(touch?'Drag up to lift · release to drop':'Drag up to lift · Shift-drag to slide'):'Drag to push · tap to nudge');
+  }
   function resize(){
     if(disposed)return;const r=stage.getBoundingClientRect();if(!r.width||!r.height)return;let half=5.8;
     if(live)half=simulation.config.camera.span/2*Math.max(1,1.5/(r.width/r.height));

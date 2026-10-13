@@ -1,4 +1,4 @@
-/* Zoom the current video on the compositor; its source and clock never change. */
+
 window.createSceneZoom = (frame, video, poster) => {
   'use strict';
   const layer=document.createElement('div');layer.className='physics-media';
@@ -48,7 +48,7 @@ window.createSceneZoom = (frame, video, poster) => {
     if(!fitWidth||!fitHeight)return;
     fitFocus=false;
     next=clamp(next,1,6);
-    // Keep the image point under the cursor (or pinch midpoint) fixed.
+
     cx+=(x-width/2)/fitWidth*(1/scale-1/next);
     cy+=(y-height/2)/fitHeight*(1/scale-1/next);
     scale=next;paint();
@@ -91,7 +91,7 @@ window.createSceneZoom = (frame, video, poster) => {
   });
   new ResizeObserver(resize).observe(frame);
   video.addEventListener('loadedmetadata',()=>{if(video.videoWidth&&video.videoHeight){aspect=useDetail?1.5:video.videoWidth/video.videoHeight;resize();}});
-  // Custom playback controls remain reachable below the frame in fullscreen.
+
   document.addEventListener('fullscreenchange',resize);
   reset();
   return {setScene(scene){
@@ -99,8 +99,8 @@ window.createSceneZoom = (frame, video, poster) => {
     useDetail=Boolean(scene.room_background&&scene.detail_video);background.hidden=!useDetail;
     if(useDetail)background.src=scene.room_background;
     const [l,t,r,b]=useDetail?crop:[0,0,1440,960];
-    // The HD clip occupies its exact window in the full-room image. All moving
-    // bodies stay in this window, so exploring the room needs only one decoder.
+
+
     for(const element of [video,poster])Object.assign(element.style,{inset:'auto',left:l/1440*100+'%',top:t/960*100+'%',width:(r-l)/1440*100+'%',height:(b-t)/960*100+'%'});
     if(scene.context_poster)toggle.querySelector('img').src=scene.context_poster;
     reset();showDetail();

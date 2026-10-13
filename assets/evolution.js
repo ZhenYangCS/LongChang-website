@@ -1,4 +1,4 @@
-/* Three looping native-physics demos with one shared playback control. */
+
 (() => {
   'use strict';
   const root=document.querySelector('#evolution-demos');

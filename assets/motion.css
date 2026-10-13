@@ -1,4 +1,4 @@
-/* Editorial layout and motion figures. All fonts and media are local. */
+
 :root { --paper:#f8f9f6; --ink:#233d3b; --muted:#647870; --line:#dce4dc; --teal:#32796d; }
 body { background:var(--paper); }
 ::selection { background:#cfe4d7; color:#243e37; }

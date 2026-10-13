@@ -31,6 +31,13 @@ def main():
         assert page.locator('#result-details').count()==0
         assert page.locator('.result-control strong').inner_text()=='0 / 3'
         assert page.locator('#scene-picker button').count()==15
+        assert page.locator('#benchmark-table tbody tr').count()==4
+        assert page.locator('.controlled-card td').count()==30
+        assert page.locator('#evolution-results tbody tr').count()==5
+        assert not page.locator('#controlled-comparisons').evaluate('(e)=>!!e.closest("details")')
+        assert not page.locator('#evolution-results').evaluate('(e)=>!!e.closest("details")')
+        assert page.locator('[data-behavior="L"]').inner_text()=='39.3'
+        assert page.locator('[data-behavior="CS"]').inner_text()=='11 / 45'
         assert page.locator('#model-chart [data-result-metric]').count()==36
         page.locator('[data-result-view="S"]').click()
         page.locator('#results-sort').select_option('score')
@@ -46,7 +53,7 @@ def main():
         page.locator('[data-result-scene="07"]').click()
         assert page.locator('#successful-explorations').evaluate('e=>e.open')
         assert page.locator('#success-tab-07').get_attribute('aria-selected')=='true'
-        page.locator('#successful-explorations > summary').click()
+        page.locator('#exploration-close').click()
         page.locator('[data-result-view="all"]').click()
         page.locator('#results-sort').select_option('paper')
         page.locator('[data-model="GLM-5.3"]').click()
@@ -59,9 +66,9 @@ def main():
             page.wait_for_function('id=>document.querySelector("#scene-name").textContent===window.LONGCHANG.scenes.find(s=>s.id===id).name',arg=f"{number:02}")
             assert page.locator(f'#scene-tab-{number:02}').get_attribute('aria-selected')=='true'
         page.locator('[data-atlas-view=analysis]').click()
-        assert '10-second pause' in page.locator('#scene-law-text').inner_text()
+        assert '10 seconds' in page.locator('#scene-law-text').inner_text()
         page.locator('[data-atlas-view=physics]').click()
-        page.locator('#successful-explorations > summary').click()
+        page.evaluate('showDiscovery("07")')
         for scene in ['07','06','14','15']:
             page.locator('#success-tab-'+scene).click()
             assert 'Astra' in page.locator('#discovery-run').inner_text()
@@ -83,7 +90,7 @@ def main():
         # Closing the archive pauses playback; model details reopen the right run.
         page.locator('#replay-play').click()
         page.wait_for_function('!document.querySelector("#success-video").paused')
-        page.locator('#successful-explorations > summary').click()
+        page.locator('#exploration-close').click()
         page.wait_for_function('document.querySelector("#success-video").paused')
         page.locator('[data-node="judge"]').click()
         assert 'judge' in page.locator('#fw-detail-description').inner_text()
@@ -92,19 +99,18 @@ def main():
         page.locator('[data-result-view="D"]').click()
         page.locator('[data-result-scene="07"]').click()
         assert page.locator('#success-tab-07').get_attribute('aria-selected')=='true'
+        page.locator('#exploration-close').click()
         page.locator('#tool-tab').click()
         assert page.locator('#tool-case').is_visible()
         assert not page.locator('#color-case').is_visible()
         page.locator('#tool-tab').press('ArrowLeft')
         assert page.locator('#color-case').is_visible()
-        page.locator('#controlled-details > summary').click()
-        page.locator('#controlled-details .full-results > summary').click()
-        assert page.locator('#controlled-table tbody tr').count()==9
-        page.locator('#controlled-details > summary').click()
+        page.evaluate('showDiscovery("07")')
         page.locator('[data-chapter="0"]').click()
         page.locator('.success-evidence .note-details summary').click()
         assert 'red' in page.locator('#success-note').inner_text().lower()
         page.locator('.success-evidence .note-details summary').click()
+        page.locator('#exploration-close').click()
         # Test every local download through the browser's HTTP client when served.
         if args.url.startswith('http'):
             links=page.locator('a[href^="downloads/"]').evaluate_all('(a)=>[...new Set(a.map(x=>x.href))]')

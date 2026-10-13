@@ -31,6 +31,16 @@ def main():
     assert {s['id']:s['law'] for s in data['scenes']}==laws,'Law descriptions must match the ACL appendix'
     p=Links();p.feed((SITE/'index.html').read_text())
     assert len(p.ids)==len(set(p.ids)), 'Duplicate HTML IDs'
+    # The compact related-work matrix uses the current paper's four criteria.
+    markup=(SITE/'index.html').read_text().split('<table id="benchmark-table">',1)[1].split('</table>',1)[0]
+    benchmark_source=(ROOT/'ACL/secs/02_introduction.tex').read_text()
+    benchmark_rows=re.findall(r'<tr[^>]*>(.*?)</tr>',markup.split('<tbody>',1)[1],re.S)
+    assert len(benchmark_rows)==4
+    for row in benchmark_rows:
+        name=re.search(r'<th scope="row">(.*?)</th>',row).group(1)
+        line=next(line for line in benchmark_source.splitlines() if name in line and r'\ding{' in line)
+        expected=['Yes' if value=='51' else 'No' for value in re.findall(r'\\ding\{(51|55)\}',line)]
+        assert re.findall(r'aria-label="(Yes|No)"',row)==expected,(name,'benchmark criteria')
     for link in p.links:
         if link.startswith(('http:','https:')):continue
         if link.startswith('#'):
@@ -99,6 +109,12 @@ def main():
             text=re.sub(r'(?<!\\)%[^\n]*','',text)
             text=next(block for block in re.findall(r'\\begin\{table\*?\}.*?\\end\{table\*?\}',text,re.S) if '\\label{'+label+'}' in block)
         assert hashlib.sha256(text.encode()).hexdigest()==source['sha256'],label
+        if label in {'tab:controlled-comparisons','tab:evolution-evaluation'}:
+            dataset,fields=(data['controlled'],['D','C','S','L','AF']) if label=='tab:controlled-comparisons' else (data['evolution'],['C','S','D'])
+            for row in dataset:
+                values=re.search(r'(?m)^\s*'+re.escape(row['name'])+r'\s*&\s*(.*?)\\\\',text).group(1)
+                expected=[float(value.strip()) for value in values.split('&')]
+                assert [row[key] for key in fields]==expected,(label,row['name'])
     with zipfile.ZipFile(SITE/'downloads/prompts.zip') as z:
         assert {'exploration.txt','report.txt','report_judge.txt'}.issubset(z.namelist())
     with zipfile.ZipFile(SITE/'downloads/longchang-source.zip') as z:

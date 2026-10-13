@@ -1,4 +1,4 @@
-/* Three comparable demos; one shared playback control. */
+
 .evolution-compact > .section { padding-block:64px; }
 .evolution-compact .section-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:18px; }
 #evolution-play { flex:none; padding:10px 16px; border:1px solid #afc6b6; border-radius:7px; color:var(--teal); background:#f8fbf8; font-size:12px; }

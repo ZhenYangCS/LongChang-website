@@ -32,7 +32,6 @@ def main():
                 page.wait_for_function('!document.querySelector("#physics-video").seeking')
                 page.wait_for_function('(phase)=>document.querySelector(".proof-state").textContent.includes(phase)',arg=phase)
                 page.locator('#scene-detail').screenshot(path=str(out/f'{id}-{t:g}.png'))
-            assert 'explained-captioned' in page.locator('#physics-download').get_attribute('href')
             for width,height in [(1280,720),(390,844),(320,740),(1366,768)]:
                 page.set_viewport_size({'width':width,'height':height});page.wait_for_timeout(70)
                 frame=page.locator('.physics-video-frame').bounding_box();clip=page.locator('#physics-video').bounding_box();proof=page.locator('.scene-proof').bounding_box()

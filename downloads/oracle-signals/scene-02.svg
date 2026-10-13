@@ -41,7 +41,7 @@ z
     <g id="xtick_1">
      <g id="line2d_1"/>
      <g id="text_1">
-      <!-- 0.0 -->
+      
       <g style="fill: #789294" transform="translate(67.288438 257.338437) scale(0.1 -0.1)">
        <defs>
         <path id="DejaVuSans-30" d="M 2034 4250 
@@ -82,7 +82,7 @@ z
     <g id="xtick_2">
      <g id="line2d_2"/>
      <g id="text_2">
-      <!-- 0.2 -->
+      
       <g style="fill: #789294" transform="translate(150.834152 257.338437) scale(0.1 -0.1)">
        <defs>
         <path id="DejaVuSans-32" d="M 1228 531 
@@ -119,7 +119,7 @@ z
     <g id="xtick_3">
      <g id="line2d_3"/>
      <g id="text_3">
-      <!-- 0.4 -->
+      
       <g style="fill: #789294" transform="translate(234.379866 257.338437) scale(0.1 -0.1)">
        <defs>
         <path id="DejaVuSans-34" d="M 2419 4116 
@@ -151,7 +151,7 @@ z
     <g id="xtick_4">
      <g id="line2d_4"/>
      <g id="text_4">
-      <!-- 0.6 -->
+      
       <g style="fill: #789294" transform="translate(317.92558 257.338437) scale(0.1 -0.1)">
        <defs>
         <path id="DejaVuSans-36" d="M 2113 2584 
@@ -194,7 +194,7 @@ z
     <g id="xtick_5">
      <g id="line2d_5"/>
      <g id="text_5">
-      <!-- 0.8 -->
+      
       <g style="fill: #789294" transform="translate(401.471295 257.338437) scale(0.1 -0.1)">
        <defs>
         <path id="DejaVuSans-38" d="M 2034 2216 
@@ -246,7 +246,7 @@ z
     <g id="xtick_6">
      <g id="line2d_6"/>
      <g id="text_6">
-      <!-- 1.0 -->
+      
       <g style="fill: #789294" transform="translate(485.017009 257.338437) scale(0.1 -0.1)">
        <defs>
         <path id="DejaVuSans-31" d="M 794 531 
@@ -273,7 +273,7 @@ z
     <g id="xtick_7">
      <g id="line2d_7"/>
      <g id="text_7">
-      <!-- 1.2 -->
+      
       <g style="fill: #789294" transform="translate(568.562723 257.338437) scale(0.1 -0.1)">
        <use xlink:href="#DejaVuSans-31"/>
        <use xlink:href="#DejaVuSans-2e" transform="translate(63.623047 0)"/>
@@ -284,7 +284,7 @@ z
     <g id="xtick_8">
      <g id="line2d_8"/>
      <g id="text_8">
-      <!-- 1.4 -->
+      
       <g style="fill: #789294" transform="translate(652.108438 257.338437) scale(0.1 -0.1)">
        <use xlink:href="#DejaVuSans-31"/>
        <use xlink:href="#DejaVuSans-2e" transform="translate(63.623047 0)"/>
@@ -293,7 +293,7 @@ z
      </g>
     </g>
     <g id="text_9">
-     <!-- Simulation time (counts) -->
+     
      <g style="fill: #647f82" transform="translate(305.930469 271.016563) scale(0.1 -0.1)">
       <defs>
        <path id="DejaVuSans-53" d="M 3425 4513 
@@ -634,7 +634,7 @@ L 660.06 246.24
      </g>
      <g id="line2d_10"/>
      <g id="text_10">
-      <!-- 0 -->
+      
       <g style="fill: #789294" transform="translate(65.3775 250.039219) scale(0.1 -0.1)">
        <use xlink:href="#DejaVuSans-30"/>
       </g>
@@ -648,7 +648,7 @@ L 660.06 205.956075
      </g>
      <g id="line2d_12"/>
      <g id="text_11">
-      <!-- 20 -->
+      
       <g style="fill: #789294" transform="translate(59.015 209.755294) scale(0.1 -0.1)">
        <use xlink:href="#DejaVuSans-32"/>
        <use xlink:href="#DejaVuSans-30" transform="translate(63.623047 0)"/>
@@ -663,7 +663,7 @@ L 660.06 165.67215
      </g>
      <g id="line2d_14"/>
      <g id="text_12">
-      <!-- 40 -->
+      
       <g style="fill: #789294" transform="translate(59.015 169.471369) scale(0.1 -0.1)">
        <use xlink:href="#DejaVuSans-34"/>
        <use xlink:href="#DejaVuSans-30" transform="translate(63.623047 0)"/>
@@ -678,7 +678,7 @@ L 660.06 125.388225
      </g>
      <g id="line2d_16"/>
      <g id="text_13">
-      <!-- 60 -->
+      
       <g style="fill: #789294" transform="translate(59.015 129.187444) scale(0.1 -0.1)">
        <use xlink:href="#DejaVuSans-36"/>
        <use xlink:href="#DejaVuSans-30" transform="translate(63.623047 0)"/>
@@ -686,7 +686,7 @@ L 660.06 125.388225
      </g>
     </g>
     <g id="text_14">
-     <!-- Attractive force (force units) -->
+     
      <g style="fill: #647f82" transform="translate(52.935312 237.50375) rotate(-90) scale(0.1 -0.1)">
       <defs>
        <path id="DejaVuSans-41" d="M 2188 4044 
@@ -855,7 +855,7 @@ L 579.034687 99.268594
 " style="fill: none; stroke: #c7795d; stroke-width: 2; stroke-linecap: square"/>
     </g>
     <g id="text_15">
-     <!-- Red pair force -->
+     
      <g style="fill: #29474c" transform="translate(586.234687 102.418594) scale(0.09 -0.09)">
       <defs>
        <path id="DejaVuSans-52" d="M 2841 2188 
@@ -962,7 +962,7 @@ L 579.034687 112.478906
 " style="fill: none; stroke: #688fb8; stroke-width: 2; stroke-linecap: square"/>
     </g>
     <g id="text_16">
-     <!-- Blue pair force -->
+     
      <g style="fill: #29474c" transform="translate(586.234687 115.628906) scale(0.09 -0.09)">
       <defs>
        <path id="DejaVuSans-42" d="M 1259 2228 
@@ -1018,7 +1018,7 @@ z
    </g>
   </g>
   <g id="text_17">
-   <!-- 02 / Red attraction -->
+   
    <g style="fill: #29474c" transform="translate(47.88 29.16) scale(0.19 -0.19)">
     <defs>
      <path id="DejaVuSans-2f" d="M 1625 4666 
@@ -1051,7 +1051,7 @@ z
    </g>
   </g>
   <g id="text_18">
-   <!-- F = 20 / r²  (r ≥ 0.5) -->
+   
    <g style="fill: #467b70" transform="translate(47.88 55.08) scale(0.12 -0.12)">
     <defs>
      <path id="DejaVuSans-46" d="M 628 4666 
@@ -1167,7 +1167,7 @@ z
    </g>
   </g>
   <g id="text_19">
-   <!-- Fresh scripted experiment. Curves are recorded simulation samples; they are not model-discovery results. -->
+   
    <g style="fill: #829794" transform="translate(47.88 289.98) scale(0.08 -0.08)">
     <defs>
      <path id="DejaVuSans-68" d="M 3513 2113 
@@ -1372,7 +1372,7 @@ z
    </g>
   </g>
   <g id="text_20">
-   <!-- Ordinary reference: identical geometry, masses and actions with the altered physical program disabled. -->
+   
    <g style="fill: #829794" transform="translate(47.88 306.18) scale(0.08 -0.08)">
     <defs>
      <path id="DejaVuSans-4f" d="M 2522 4238 

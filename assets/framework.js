@@ -1,6 +1,6 @@
-/* Interactive adaptation of ACL Figure 2 and Sections 3.1–3.3.
- * Particles explain information flow; they do not represent a recorded run.
- */
+
+
+
 (() => {
   'use strict';
   const root = document.getElementById('framework-flow');
@@ -12,23 +12,23 @@
   const stacked = matchMedia('(max-width: 900px)');
   const nodeElements = new Map($$('[data-node]').map(node => [node.dataset.node, node]));
   const phases = [
-    {kicker:'01 / CONSTRUCT', title:'Build the world.', description:'Define objects and altered laws, then test and review the scene.', input:'Scene design', output:'Validated world + hidden law', nodes:['designer','scenes'], edges:['design']},
-    {kicker:'02 / EXPLORE', title:'Explore freely.', description:'The explorer chooses questions and tests them through actions, without tasks or hints.', input:'Observations', output:'Questions + experiments', nodes:['scenes','world','explorer'], edges:['enter','observe','act']},
-    {kicker:'03 / BUILD', title:'Build an instrument.', description:'Review apparatus designs, install accepted tools, and return feedback for revision.', input:'Apparatus design', output:'Instrument or feedback', nodes:['explorer','world','tools','traces'], edges:['act','build','install','record']},
-    {kicker:'04 / EVALUATE', title:'Check the discovery.', description:'The judge checks claims against hidden laws and recorded experiments. Discovery requires both correctness and support.', input:'Report + law + traces', output:'Correctness + support', nodes:['report','judge','assessment','traces','scenes'], edges:['report','claims','law','evidence','assess']},
-    {kicker:'05 / EVOLVE', title:'Shape the next world.', description:'Use exploration evidence to generate, refine or combine scenes.', input:'Scenes + evidence', output:'New scene designs', nodes:['traces','evolution','designer'], edges:['feedback','evolve']}
+    {kicker:'01 / CONSTRUCT', title:'Build the world.', description:'Define altered physics, then test and review the scene.', input:'Scene design', output:'Validated world + hidden law', nodes:['designer','scenes'], edges:['design']},
+    {kicker:'02 / EXPLORE', title:'Explore freely.', description:'Choose questions and experiments, without tasks or hints.', input:'Observations', output:'Questions + experiments', nodes:['scenes','world','explorer'], edges:['enter','observe','act']},
+    {kicker:'03 / BUILD', title:'Build an instrument.', description:'Review apparatus designs; install tools or return feedback.', input:'Apparatus design', output:'Instrument or feedback', nodes:['explorer','world','tools','traces'], edges:['act','build','install','record']},
+    {kicker:'04 / EVALUATE', title:'Check the discovery.', description:'Check claims against hidden laws and recorded evidence.', input:'Report + law + traces', output:'Correctness + support', nodes:['report','judge','assessment','traces','scenes'], edges:['report','claims','law','evidence','assess']},
+    {kicker:'05 / EVOLVE', title:'Shape the next world.', description:'Generate, refine or combine scenes using exploration evidence.', input:'Scenes + evidence', output:'New scene designs', nodes:['traces','evolution','designer'], edges:['feedback','evolve']}
   ];
   const details = {
-    designer:{phase:0,title:'Design and validate.',description:'The designer defines objects and laws; failed tests or reviews trigger revision.',input:'Design + feedback',output:'Validated scene'},
-    scenes:{phase:0,title:'Keep the law hidden.',description:'The explorer investigates the world. The hidden law goes to the judge.',input:'Validated scene',output:'World → explorer; law → judge'},
-    world:{phase:1,title:'Observe the response.',description:'Actions produce text observations of positions, motion and instrument readings.',input:'Physical actions',output:'Text observations'},
-    explorer:{phase:1,title:'Choose what to test.',description:'The explorer forms questions, tests explanations and designs tools when needed.',input:'Observations + notes',output:'Hypotheses + experiments'},
-    tools:{phase:2,title:'Review and install.',description:'Accepted apparatus enters the world; rejected designs return with feedback.',input:'Apparatus design',output:'Instrument or feedback'},
-    traces:{phase:4,title:'Retain every turn.',description:'Record observations, actions and feedback from all attempts for evaluation and scene evolution.',input:'All exploration turns',output:'Evidence'},
-    report:{phase:3,title:'Support every claim.',description:'Conclusions cite recorded turns and preserve the uncertainty in the explorer’s notes.',input:'Exploration record',output:'Claims + citations'},
-    judge:{phase:3,title:'Evaluate independently.',description:'The judge checks each claim against the hidden law and the full exploration record.',input:'Report + law + traces',output:'Correctness + support'},
-    assessment:{phase:3,title:'Require both checks.',description:'Count a discovery only when the report passes both correctness (C) and evidence support (S).',input:'C + S',output:'Discovery if both pass'},
-    evolution:{phase:4,title:'Create the next challenge.',description:'Use source laws and cited exploration evidence to generate, refine or combine scenes.',input:'Laws + evidence',output:'New scene designs'}
+    designer:{phase:0,title:'Design and validate.',description:'Define objects and laws; revise failed tests or reviews.',input:'Design + feedback',output:'Validated scene'},
+    scenes:{phase:0,title:'Keep the law hidden.',description:'The explorer receives the world; the judge receives its law.',input:'Validated scene',output:'World → explorer; law → judge'},
+    world:{phase:1,title:'Observe the response.',description:'Actions return positions, motion and instrument readings.',input:'Physical actions',output:'Text observations'},
+    explorer:{phase:1,title:'Choose what to test.',description:'Choose questions, test explanations, and design tools.',input:'Observations + notes',output:'Hypotheses + experiments'},
+    tools:{phase:2,title:'Review and install.',description:'Review apparatus designs; install accepted tools or return feedback.',input:'Apparatus design',output:'Instrument or feedback'},
+    traces:{phase:4,title:'Retain every turn.',description:'Keep all observations, actions and feedback for evaluation and evolution.',input:'All exploration turns',output:'Evidence'},
+    report:{phase:3,title:'Support every claim.',description:'Cite recorded turns and preserve uncertainty.',input:'Exploration record',output:'Claims + citations'},
+    judge:{phase:3,title:'Evaluate independently.',description:'The judge compares each claim with the hidden law and full record.',input:'Report + law + traces',output:'Correctness + support'},
+    assessment:{phase:3,title:'Require both checks.',description:'Both correctness and evidence support must pass.',input:'C + S',output:'Discovery if both pass'},
+    evolution:{phase:4,title:'Create the next challenge.',description:'Generate, refine or combine scenes using exploration evidence.',input:'Laws + evidence',output:'New scene designs'}
   };
   const edges = [
     {id:'design',from:'designer',to:'scenes',kind:'construction',label:'Compile & review'},
@@ -77,8 +77,8 @@
     svg.append(edge.group);
   });
 
-  // Rounded orthogonal paths are measured from the actual HTML nodes, so text
-  // and keyboard targets stay crisp at every size, including the stacked map.
+
+
   function rounded(points, radius = 10) {
     let d = `M${points[0].join(',')}`;
     for (let i = 1; i < points.length - 1; i++) {
@@ -96,8 +96,8 @@
   function placeLabel(edge, anchor) {
     edge.labelGroup.style.display = anchor ? '' : 'none';
     if (!anchor) return;
-    // Place the actual text bounds beside the path. No opaque label covers a
-    // connector or a moving packet, even when a narrow gap needs two lines.
+
+
     edge.labelText.textContent = edge.label;
     if (anchor.maxWidth && edge.labelText.getComputedTextLength() > anchor.maxWidth) {
       edge.labelText.replaceChildren();
@@ -120,7 +120,7 @@
       return [id,{l:r.left-bounds.left,r:r.right-bounds.left,t:r.top-bounds.top,b:r.bottom-bounds.top,x:r.left-bounds.left+r.width/2,y:r.top-bounds.top+r.height/2}];
     }));
     const b = boxes, middle = (b.world.r+b.explorer.l)/2;
-    const observeY = b.world.t-29, actY = b.world.b+32;
+    const observeY = b.world.t-24, actY = b.world.b+24;
     const routes = {
       design:{points:[[b.designer.x,b.designer.b],[b.scenes.x,b.scenes.t]],label:{x:b.designer.x,y:(b.designer.b+b.scenes.t)/2,side:'right'}},
       observe:{points:[[b.world.x,b.world.t],[b.world.x,observeY],[b.explorer.x,observeY],[b.explorer.x,b.explorer.t]],label:{x:middle,y:observeY}},
@@ -146,7 +146,7 @@
       });
     } else {
       const right = bounds.width-8, left = 8;
-      const enterY = b.world.t-70, enterX = b.world.l+(b.world.r-b.world.l)*.26;
+      const enterY = b.world.t-56, enterX = b.world.l+(b.world.r-b.world.l)*.26;
       const reportY = b.report.t-15;
       Object.assign(routes,{
         enter:{points:[[b.scenes.r,b.scenes.y],[right-9,b.scenes.y],[right-9,enterY],[enterX,enterY],[enterX,b.world.t]]},
@@ -200,7 +200,7 @@
     if (!geometryReady) return;
     edges.forEach((edge,index) => {
       if (!edge.active) return;
-      // Long reference/feedback routes move at a readable speed too.
+
       const duration = Math.max(1700,edge.length*4.5);
       const progress = (elapsed/duration+index*.13)%1;
       const point = edge.path.getPointAtLength(progress*edge.length);
@@ -263,7 +263,7 @@
   new ResizeObserver(layout).observe(map);
   document.fonts.ready.then(layout);
   document.addEventListener('visibilitychange',updatePlayback);
-  // The page's presentation dialog temporarily covers the framework.
+
   const presentation = document.getElementById('motion-dialog');
   if (presentation) new MutationObserver(() => {
     modalOpen = presentation.open;

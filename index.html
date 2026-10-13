@@ -16,18 +16,22 @@
   <link rel="stylesheet" href="assets/motion.css">
   <link rel="stylesheet" href="assets/atlas.css">
   <link rel="stylesheet" href="assets/clarity.css">
+  <link rel="stylesheet" href="assets/hero.css">
   <link rel="stylesheet" href="assets/framework.css">
   <link rel="stylesheet" href="assets/scene-trajectories.css">
   <link rel="stylesheet" href="assets/results.css">
+  <link rel="stylesheet" href="assets/comparisons.css">
   <link rel="stylesheet" href="assets/discovery.css">
   <link rel="stylesheet" href="assets/case-films.css">
   <link rel="stylesheet" href="assets/evolution.css">
+  <link rel="stylesheet" href="assets/chapters.css">
   <script src="data/paper.js" defer></script>
   <script src="data/discoveries.js" defer></script>
   <script src="data/scene-index.js" defer></script>
   <script src="data/oracles.js" defer></script>
   <script src="assets/app.js" defer></script>
   <script src="assets/results.js" defer></script>
+  <script src="assets/comparisons.js" defer></script>
   <script src="assets/discovery.js" defer></script>
   <script src="assets/case-films.js" defer></script>
   <script src="assets/evolution.js" defer></script>
@@ -35,6 +39,7 @@
   <script src="assets/motion.js" defer></script>
   <script src="assets/oracle-math.js" defer></script>
   <script src="assets/atlas.js" defer></script>
+  <script src="assets/model-interaction.js" defer></script>
   <script src="assets/scene-zoom.js" defer></script>
   <script src="assets/physics.js" defer></script>
   <script src="assets/scene-trajectories.js" defer></script>
@@ -48,24 +53,22 @@
     <div class="nav-wrap">
       <a class="wordmark" href="#" aria-label="LongChang home"><img src="assets/favicon.svg" alt="" width="32" height="32">LongChang<span class="wordmark-dot">.</span></a>
       <nav aria-label="Main navigation">
-        <a href="#worlds">15 worlds</a><a href="#framework">Framework</a><a href="#results">Results</a><a href="#explore">Case studies</a>
+        <a href="#worlds">Worlds</a><a href="#framework">Framework</a><a href="#results">Results</a><a href="#controlled">Comparisons</a><a href="#explore">Case studies</a><a href="#evolution">Evolution</a>
       </nav>
       <a class="nav-paper" href="downloads/paper.pdf" target="_blank" rel="noopener">Read the paper <span aria-hidden="true">↗</span></a>
     </div>
   </header>
   <main id="main">
-    <section class="hero container" aria-labelledby="hero-title">
+    <section class="hero container publication-hero" aria-labelledby="hero-title" aria-describedby="paper-title">
       <div class="hero-copy">
-        <div class="eyebrow"><span class="status-dot"></span> LongChang <span class="eyebrow-divider">/</span> A study of autonomous discovery</div>
-        <h1 id="hero-title">A world to explore.<br><em>Laws to discover.</em></h1>
-        <p class="paper-title">Can LLMs Uncover Hidden Physical Laws<br class="desktop-break"> through Free Exploration?</p>
-        <p class="hero-explanation">LLMs explore 15 worlds with no hints<br class="desktop-break"> about what to discover.</p>
+        <h1 id="hero-title">Long<span class="title-accent">Chang</span></h1>
+        <p id="paper-title" class="paper-title">Can LLMs Uncover Hidden Physical Laws<br class="desktop-break"> through Free Exploration?</p>
+        <div class="hero-authors">Anonymous Authors</div>
         <div class="hero-actions">
-          <a class="button primary" href="#worlds">Explore all 15 worlds <span aria-hidden="true">↘</span></a>
-          <a class="button secondary" href="downloads/paper.pdf" target="_blank" rel="noopener">Read the paper ↗</a>
-          <a class="button secondary" href="downloads/longchang-source.zip" download>Code ↓</a>
+          <a class="button primary" href="downloads/paper.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h7l3 3V17.5H5zM12 2.5v4h3M8 10h4M8 13h4"/></svg>Paper</a>
+          <a class="button secondary" href="downloads/longchang-source.zip" download><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6-4 4 4 4m8-8 4 4-4 4M11.5 4l-3 12"/></svg>Code</a>
+          <a class="button secondary explore-link" href="#worlds">Explore 15 worlds <span aria-hidden="true">↓</span></a>
         </div>
-        <div class="hero-authors">Anonymous Authors <span class="small-divider"></span> Research project & interactive companion</div>
       </div>
       <figure class="motion-hero" aria-label="Animated overview of four altered physical laws" hidden>
         <div class="motion-overline"><span><i></i> THE PHYSICS OF DISCOVERY</span><span id="hero-scene-index">SCENE 07</span></div>
@@ -75,14 +78,13 @@
         <div class="motion-footnote"><span>Law illustrations · idealized motion</span><button data-open-presentation>Open the motion atlas <span aria-hidden="true">↗</span></button></div>
       </figure>
       <figure class="paper-hero-art" id="interactive-figure">
-        <span class="paper-figure-index">FIGURE 1 / THE LONGCHANG WORLD</span>
         <div id="room-stage" class="room-stage"><img id="room-still" src="assets/images/glass-world.webp" alt="Figure 1: a glass room with a pendulum, balance, red ball and blue ball" width="1250" height="1222" fetchpriority="high"></div>
         <figcaption class="room-caption"><div class="room-tools" role="group" aria-label="Interact with the world"><button data-room-mode="push" aria-pressed="false">Push</button><button data-room-mode="drag" aria-pressed="false">Drag</button><button data-room-mode="view" aria-pressed="false">Rotate</button><button id="room-reset" aria-label="Reset the world">↺</button></div><span id="room-hint" role="status">Try the world</span></figcaption>
       </figure>
     </section>
 
-    <section id="worlds" class="section container atlas-section">
-      <div class="section-heading"><div><div class="eyebrow"><span class="section-number">01</span> The fifteen worlds of LongChang</div><h2>One room. <em>Different rules.</em></h2></div></div>
+    <section id="worlds" class="section container atlas-section chapter" aria-labelledby="worlds-title">
+      <div class="section-heading chapter-heading"><h2 id="worlds-title"><span class="section-number">01</span> The 15 Worlds</h2><p>One room. Different rules.</p></div>
       <div class="scene-workspace">
       <aside class="scene-index" aria-label="Scene guide from Table 1">
 
@@ -100,7 +102,7 @@
               <div id="oracle-overlay" class="oracle-overlay" hidden><span>THE ORACLE IN ACTION</span><strong id="oracle-live-state"></strong></div>
               <div class="physics-playback"><button id="physics-play" class="round-control" aria-label="Play physics demonstration">▶</button><button id="physics-reset" class="round-control" aria-label="Restart physics demonstration">↺</button><label class="sr-only" for="physics-progress">Physics demonstration progress</label><input id="physics-progress" type="range" min="0" max="1000" value="0"><span id="physics-clock">0:00</span><label class="sr-only" for="physics-speed">Playback speed</label><select id="physics-speed" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1">1×</option><option value="2">2×</option><option value="4" selected>4×</option></select><button id="physics-fullscreen" class="round-control" aria-label="Expand physics demonstration"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button></div>
               <div class="oracle-chapters" id="oracle-chapters" role="group" aria-label="Jump to a demonstration stage" hidden></div><section id="oracle-measurements" class="oracle-measurements"><div class="oracle-chart" id="oracle-chart-wrap" hidden><div><span id="oracle-signal"></span><span id="oracle-chart-legend"></span></div><svg id="oracle-chart" viewBox="0 0 640 165" role="img" aria-label="Measured effect of the oracle"></svg></div><div class="physics-readout"><span id="physics-sample-label">MEASURED IN THE SIMULATION</span><div id="physics-values"></div></div>
-              </section><div class="physics-downloads"><a id="physics-download" download>Download video ↓</a><a id="physics-record" download>Download data ↓</a><a id="oracle-signal-download" download hidden>Plot (SVG) ↓</a></div>
+              </section>
             </div>
             <div class="world-image" id="atlas-initial-view" hidden><img id="scene-image" src="assets/images/scene-01.webp" width="1000" height="620" alt="Recorded initial state of Scene 01" loading="lazy"><span class="image-label">INITIAL STATE · RECORDED WORLD</span></div>
             <div class="atlas-playback"><button id="atlas-play" class="round-control" aria-label="Play scene illustration">▶</button><button id="atlas-reset" class="round-control" aria-label="Reset scene illustration">↺</button><label class="sr-only" for="atlas-progress">Scene illustration progress</label><input id="atlas-progress" type="range" min="0" max="800" value="0"><span id="atlas-time">0.0 / 8.0 s</span><button id="analysis-fullscreen" class="round-control" aria-label="Expand mathematical illustration">⛶</button></div>
@@ -112,51 +114,60 @@
       </div>
     </section>
 
-    <section id="framework" class="framework-section" aria-labelledby="framework-title">
+    <section id="framework" class="framework-section chapter" aria-labelledby="framework-title">
       <div class="container section">
-        <div class="section-heading"><div><div class="eyebrow"><span class="section-number">02</span> The LongChang framework</div><h2 id="framework-title">A world, an explorer,<br><em>a cycle of discovery.</em></h2></div><p>Build a world. Let an LLM investigate it. Evaluate the evidence, then use what was learned to shape the next world.</p></div>
+        <div class="section-heading chapter-heading"><h2 id="framework-title"><span class="section-number">02</span> Framework</h2><p>Build worlds. Test ideas. Evaluate evidence.</p></div>
         <figure class="framework-figure" id="framework-flow">
-          <div class="fw-toolbar"><span class="fw-figure-label">THE DISCOVERY CYCLE</span><div class="fw-legend" aria-label="Diagram legend"><span><i></i>Workflow</span><span><i class="fw-feedback-key"></i>Feedback</span><span><i class="fw-law-key"></i>Hidden law</span></div></div>
+          <div class="fw-toolbar"><span class="fw-figure-label">Select a node to inspect</span><div class="fw-legend" aria-label="Diagram legend"><span><i></i>Workflow</span><span><i class="fw-feedback-key"></i>Feedback</span><span><i class="fw-law-key"></i>Hidden law</span></div></div>
           <div class="fw-map" id="fw-map">
             <svg class="fw-connections" id="fw-connections" aria-hidden="true"></svg>
             <div class="fw-lanes">
               <div class="fw-lane fw-construction">
-                <h3 class="fw-lane-title"><span>01</span>Environment construction</h3>
-                <button class="fw-node fw-process" data-node="designer" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-kind">Scene design + review</span><span class="fw-node-title">LLM designer</span><span class="fw-node-note">Define · compile · check</span></button>
-                <button class="fw-node fw-artifact" data-node="scenes" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-kind">Objects + altered laws</span><span class="fw-node-title">Validated scenes</span><span class="fw-node-note fw-law-note"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="7" rx="1.5"/><path d="M5.5 7V4.5a2.5 2.5 0 0 1 5 0V7"/></svg>Law hidden from the explorer</span><svg class="fw-room-mark" viewBox="0 0 72 68" aria-hidden="true"><path d="m36 5 29 15v30L36 64 7 50V20Z M7 20l29 15 29-15M36 35v29"/><path d="M7 50 36 36l29 14M36 5v31" class="fw-room-back"/><circle cx="25" cy="44" r="6" fill="#ce7564"/><circle cx="47" cy="49" r="6" fill="#688eb3"/></svg></button>
-                <button class="fw-node fw-process" data-node="evolution" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-kind">Exploration evidence</span><span class="fw-node-title">Scene evolution</span><span class="fw-node-note">Generate · refine · combine</span></button>
+                <h3 class="fw-lane-title"><span>01</span>Construct</h3>
+                <button class="fw-node fw-process" data-node="designer" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-title">LLM designer</span><span class="fw-node-note">Define · test · review</span></button>
+                <button class="fw-node fw-artifact" data-node="scenes" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-title">Validated scenes</span><span class="fw-node-note fw-law-note"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="7" rx="1.5"/><path d="M5.5 7V4.5a2.5 2.5 0 0 1 5 0V7"/></svg>Law hidden</span><svg class="fw-room-mark" viewBox="0 0 72 68" aria-hidden="true"><path d="m36 5 29 15v30L36 64 7 50V20Z M7 20l29 15 29-15M36 35v29"/><path d="M7 50 36 36l29 14M36 5v31" class="fw-room-back"/><circle cx="25" cy="44" r="6" fill="#ce7564"/><circle cx="47" cy="49" r="6" fill="#688eb3"/></svg></button>
+                <button class="fw-node fw-process" data-node="evolution" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-title">Evolve scenes</span><span class="fw-node-note">Generate · refine · combine</span></button>
               </div>
               <div class="fw-lane fw-exploration">
-                <h3 class="fw-lane-title"><span>02</span>Autonomous exploration</h3>
-                <button class="fw-node fw-process" data-node="world" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-kind">Text observations</span><span class="fw-node-title">Physical world</span><span class="fw-node-note">Positions · motion · readings</span></button>
-                <button class="fw-node fw-process" data-node="explorer" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-kind">Free exploration</span><span class="fw-node-title">LLM explorer</span><span class="fw-node-note">Hypothesize · experiment</span></button>
-                <button class="fw-node fw-process" data-node="tools" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-kind">Reviewed apparatus</span><span class="fw-node-title">Tool construction</span><span class="fw-node-note">Design · review · install</span></button>
-                <button class="fw-node fw-artifact" data-node="traces" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-kind">Exploration record</span><span class="fw-node-title">Session traces</span><span class="fw-node-note">Notes · actions · observations</span></button>
+                <h3 class="fw-lane-title"><span>02</span>Explore</h3>
+                <button class="fw-node fw-process" data-node="world" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-title">World</span><span class="fw-node-note">Text observations</span></button>
+                <button class="fw-node fw-process" data-node="explorer" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-title">LLM explorer</span><span class="fw-node-note">Choose · test</span></button>
+                <button class="fw-node fw-process" data-node="tools" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-title">Build tools</span><span class="fw-node-note">Review · install</span></button>
+                <button class="fw-node fw-artifact" data-node="traces" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-title">Full record</span><span class="fw-node-note">Actions · observations</span></button>
               </div>
               <div class="fw-lane fw-evaluation">
-                <h3 class="fw-lane-title"><span>03</span>Discovery evaluation</h3>
-                <button class="fw-node fw-artifact" data-node="report" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-kind">Claims + evidence</span><span class="fw-node-title">Final report</span><span class="fw-node-note">Conclusions cite recorded turns</span></button>
-                <button class="fw-node fw-process" data-node="judge" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-kind">Independent evaluation</span><span class="fw-node-title">LLM judge</span><span class="fw-node-note">Check the law and the record</span></button>
-                <button class="fw-node fw-artifact fw-assessment" data-node="assessment" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-kind">Assessment</span><span class="fw-node-title"><span>C</span> Correctness <b>+</b> <span>S</span> Support</span><span class="fw-node-note">A discovery requires both</span></button>
+                <h3 class="fw-lane-title"><span>03</span>Evaluate</h3>
+                <button class="fw-node fw-artifact" data-node="report" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-title">Report</span><span class="fw-node-note">Claims + evidence</span></button>
+                <button class="fw-node fw-process" data-node="judge" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-title">LLM judge</span><span class="fw-node-note">Law + record</span></button>
+                <button class="fw-node fw-artifact fw-assessment" data-node="assessment" aria-controls="fw-detail" aria-pressed="false"><span class="fw-node-title"><span>C</span> Correctness <b>+</b> <span>S</span> Support</span><span class="fw-node-note">Both must pass</span></button>
               </div>
             </div>
           </div>
           <div class="fw-playback">
             <div class="fw-playback-buttons"><button id="fw-play" class="fw-play" aria-label="Pause data flow"><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M6 4v10M12 4v10"/></svg><span>Pause</span></button><button id="fw-reset" class="fw-reset" aria-label="Restart data flow">↺</button></div>
             <div class="fw-stages" role="group" aria-label="Follow a stage of the discovery cycle"><button data-fw-stage="0" aria-pressed="true"><span>01</span>Construct</button><button data-fw-stage="1" aria-pressed="false"><span>02</span>Explore</button><button data-fw-stage="2" aria-pressed="false"><span>03</span>Build</button><button data-fw-stage="3" aria-pressed="false"><span>04</span>Evaluate</button><button data-fw-stage="4" aria-pressed="false"><span>05</span>Evolve</button></div>
-            <span class="fw-inspect-hint">Select a node to inspect</span>
           </div>
           <figcaption class="fw-detail" id="fw-detail" aria-live="off">
             <div class="fw-detail-heading"><span id="fw-detail-kicker">01 / CONSTRUCT</span><h3 id="fw-detail-title">Build the world.</h3></div>
-            <div class="fw-detail-body"><p id="fw-detail-description">Define objects and altered laws, then test and review the scene.</p><dl class="fw-payload"><div><dt>IN</dt><dd id="fw-detail-input">Scene design</dd></div><div><dt>OUT</dt><dd id="fw-detail-output">Validated world + hidden law</dd></div></dl></div>
+            <div class="fw-detail-body"><p id="fw-detail-description">Define altered physics, then test and review the scene.</p><dl class="fw-payload"><div><dt>IN</dt><dd id="fw-detail-input">Scene design</dd></div><div><dt>OUT</dt><dd id="fw-detail-output">Validated world + hidden law</dd></div></dl></div>
           </figcaption>
         </figure>
       </div>
     </section>
 
-    <section id="results" class="results-section" aria-labelledby="results-title">
+    <aside class="benchmark-comparison container" aria-labelledby="benchmark-title">
+      <div><h3 id="benchmark-title">How the setting differs</h3><p>Four capabilities compared with the closest benchmarks.</p></div>
+      <table id="benchmark-table"><caption class="sr-only">Selected capabilities from the paper's comparison of related benchmarks</caption><thead><tr><th scope="col">Benchmark</th><th scope="col" title="No assigned research goal">No assigned task</th><th scope="col" title="Manipulable objects with simulated physical interactions">Interactive 3D</th><th scope="col" title="Design devices that interact with scene objects">Tool design</th><th scope="col" title="Generate or revise scenes using exploration records">Scene evolution</th></tr></thead><tbody>
+        <tr><th scope="row">PhysGym</th><td aria-label="No">×</td><td aria-label="No">×</td><td aria-label="No">×</td><td aria-label="No">×</td></tr>
+        <tr><th scope="row">NewtonBench</th><td aria-label="No">×</td><td aria-label="No">×</td><td aria-label="No">×</td><td aria-label="No">×</td></tr>
+        <tr><th scope="row">DiscoverPhysics</th><td aria-label="No">×</td><td aria-label="No">×</td><td aria-label="No">×</td><td aria-label="No">×</td></tr>
+        <tr class="benchmark-featured"><th scope="row">LongChang</th><td aria-label="Yes">✓</td><td aria-label="Yes">✓</td><td aria-label="Yes">✓</td><td aria-label="Yes">✓</td></tr>
+      </tbody></table>
+    </aside>
+
+    <section id="results" class="results-section chapter" aria-labelledby="results-title">
       <div class="container section">
-        <div class="section-heading"><div><div class="eyebrow"><span class="section-number">03</span> Main results</div><h2 id="results-title">Only one model<br><em>makes a discovery.</em></h2></div><p>GPT-6-Astra succeeds in <strong>7 of 42</strong> altered-world runs (<strong>16.7%</strong>). The other 11 models record no discoveries under free exploration.</p></div>
+        <div class="section-heading chapter-heading"><h2 id="results-title"><span class="section-number">03</span> Main Results</h2><p>GPT-6-Astra succeeds in <strong>7 of 42</strong> altered-world runs (<strong>16.7%</strong>).<br>The other 11 models record no discoveries under free exploration.</p></div>
         <figure class="main-results-figure" aria-labelledby="main-results-caption">
           <figcaption id="main-results-caption">A discovery requires <strong>both a correct law and experimental support.</strong></figcaption>
           <div class="results-toolbar">
@@ -181,9 +192,15 @@
       </div>
     </section>
 
-    <section id="explore" class="section container case-studies" aria-labelledby="cases-title">
-      <div class="section-heading" id="cases">
-        <div><div class="eyebrow"><span class="section-number">04</span> Case studies</div><h2 id="cases-title">How discovery <em>happens.</em></h2></div>
+    <section id="controlled" class="section container controlled-section chapter" aria-labelledby="controlled-title">
+      <div class="section-heading chapter-heading"><h2 id="controlled-title"><span class="section-number">04</span> Controlled Comparisons</h2><p>GPT-6-Astra · guidance, turn budget and apparatus access.</p></div>
+      <div id="controlled-comparisons" class="controlled-comparisons"></div>
+      <p class="controlled-baseline">Guidance and apparatus use the 100-turn main baseline. Budget runs use a separate matched baseline without context compaction.</p>
+    </section>
+
+    <section id="explore" class="section container case-studies chapter" aria-labelledby="cases-title">
+      <div class="section-heading chapter-heading" id="cases">
+        <h2 id="cases-title"><span class="section-number">05</span> Case Studies</h2><p>Follow anomalies, test explanations, and build better instruments.</p>
       </div>
       <div class="case-tabs" role="tablist" aria-label="Choose a case study">
         <button id="question-tab" role="tab" aria-controls="question-case" aria-selected="true" data-case="question">Anomaly</button>
@@ -219,9 +236,9 @@
       </div>
     </section>
 
-    <section id="evolution" class="evolution-section evolution-compact" aria-labelledby="evolution-title">
+    <section id="evolution" class="evolution-section evolution-compact chapter" aria-labelledby="evolution-title">
       <div class="container section">
-        <div class="section-heading"><div><div class="eyebrow"><span class="section-number">05</span> Scene evolution</div><h2 id="evolution-title">One finding. <em>Three new worlds.</em></h2></div><button id="evolution-play" type="button" aria-label="Play all three evolution demos">Play demos</button></div>
+        <div class="section-heading chapter-heading"><h2 id="evolution-title"><span class="section-number">06</span> Scene Evolution</h2><p>Generate, refine, and combine physical rules.</p><button id="evolution-play" type="button" aria-label="Play all three evolution demos">Play demos</button></div>
         <p class="evolution-origin">From Scene 15: a push temporarily pauses red’s force.</p>
         <div class="evolution-demos" id="evolution-demos">
           <figure class="evolution-demo">
@@ -237,8 +254,9 @@
             <figcaption><span>Composition</span><h3>Combine two rules</h3><p>Green copies at 12; red’s force returns at 18.</p></figcaption>
           </figure>
         </div>
-        <p class="evolution-demo-note">Scripted demos of the evolved laws. <span>GPT-6-Astra: 0/3 discoveries in each new world.</span></p>
-        <details class="evolution-details"><summary>Rules &amp; evaluation <span>+</span></summary><div class="evo-rule-details"><p><strong>Generation.</strong> Replace red’s northward force with mutual red–blue repulsion. Any nonzero push or throw pauses this repulsion for ten counts.</p><p><strong>Refinement.</strong> Blue inside the gray square blocks red’s northward force, including after the ten-count pause expires.</p><p><strong>Composition.</strong> Retain the paused northward force and add Scene 14’s rule: green copies red’s launch velocity twelve counts after a nonzero push or throw on red.</p></div><div class="evolution-chart-wrap"><div><h3>Supported, but incomplete.</h3><p>All evolved-world reports have evidence support, but none identifies the complete law.</p></div><div id="evolution-chart" aria-label="Discovery rates in source and evolved scenes"></div></div><div class="evolution-eval-note"><p>Separate evaluation with three runs per condition. Source-scene runs differ from the main comparison.</p><div class="chart-downloads"><a href="downloads/scene-evolution.svg" download>Figure (SVG) ↓</a><a href="downloads/scene-evolution.png" download>PNG ↓</a></div></div></details>
+        <p class="evolution-demo-note">Scripted demos of the evolved laws.</p>
+        <div class="evolution-evaluation"><div><h3>Supported, but incomplete.</h3><p>No complete discoveries in the three evolved worlds.</p><p class="evaluation-sample">GPT-6-Astra · 3 runs per scene.<br>Separate evaluation; source-scene runs differ from Main results.</p></div><table id="evolution-results"><caption class="sr-only">Discovery, law correctness and evidence support in source and evolved scenes</caption></table></div>
+        <details class="evolution-details"><summary>Full rules <span>+</span></summary><div class="evo-rule-details"><p><strong>Generation.</strong> Replace red’s northward force with mutual red–blue repulsion. Any nonzero push or throw pauses this repulsion for ten counts.</p><p><strong>Refinement.</strong> Blue inside the gray square blocks red’s northward force, including after the ten-count pause expires.</p><p><strong>Composition.</strong> Retain the paused northward force and add Scene 14’s rule: green copies red’s launch velocity twelve counts after a nonzero push or throw on red.</p></div></details>
       </div>
     </section>
 

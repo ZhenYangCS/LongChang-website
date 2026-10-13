@@ -1,7 +1,7 @@
-/* Fifteen explanatory models in Explain. Native scene physics is available
- * through Experiment. These diagrams isolate each altered law;
- * they are not MuJoCo trajectories or evidence of model performance.
- */
+
+
+
+
 (() => {
   'use strict';
   const $ = selector => document.querySelector(selector);
@@ -12,28 +12,36 @@
   const uid = 'atlas';
   const configs = {
     '01': {trigger:'Drop matched balls onto the gray tile and the ordinary floor.', label:'Release height', range:[1, 3, .1], initial:2, unit:'bricks', note:'Matched qualitative drops. Ordinary contact response is simplified; the tile adds no physical effect.'},
-    '02': {trigger:'Place two free spheres near each other, then let go.', label:'Pair of spheres', options:[['red-red','Red + red'],['red-blue','Red + blue'],['blue-blue','Blue + blue']], initial:'red-red', note:'Inverse-square attraction before contact, with equal unit masses. Ordinary contact and friction are omitted.'},
-    '03': {trigger:'Compare a light red ball (mass 1) with a heavy blue ball (mass 4).', label:'Experiment', options:[['drop','Drop from equal height'],['speed','Equal upward speeds'],['impulse','Equal upward impulses']], initial:'drop', note:'Vertical flight uses a = g√(1/m). Contact is shown as stopping at the floor; rebound is omitted.'},
-    '04': {trigger:'Repeat the same upward launch at different phases of the gravity cycle.', label:'Launch phase', options:[['0','0 counts · baseline, rising'],['1.5','1.5 counts · strongest gravity'],['4.5','4.5 counts · weakest gravity']], initial:'0', note:'Flight integrates the published sinusoidal gravity. The waveform spans one 6-count cycle; contact is simplified.'},
+    '02': {trigger:'Place two free spheres near each other, then let go.', label:'Pair', options:[['red-red','Red + red'],['red-blue','Red + blue'],['blue-blue','Blue + blue']], initial:'red-red', note:'Inverse-square attraction before contact, with equal unit masses. Ordinary contact and friction are omitted.'},
+    '03': {trigger:'Compare a light red ball (mass 1) with a heavy blue ball (mass 4).', label:'Compare', options:[['drop','Drop from equal height'],['speed','Equal upward speeds'],['impulse','Equal upward impulses']], initial:'drop', note:'Vertical flight uses a = g√(1/m). Contact is shown as stopping at the floor; rebound is omitted.'},
+    '04': {trigger:'Repeat the same upward launch at different phases of the gravity cycle.', label:'Launch phase', options:[['0','0 s · rising'],['1.5','1.5 s · strongest'],['4.5','4.5 s · weakest']], initial:'0', note:'Flight integrates the published sinusoidal gravity. The waveform spans one 6-count cycle; contact is simplified.'},
     '05': {trigger:'Launch the same unit-mass ball above or below the speed threshold.', label:'Launch speed', range:[1, 5, .1], initial:4, unit:'bricks/count', note:'Only the added braking force is integrated. Ordinary friction is omitted to isolate the 2.5 threshold.'},
     '06': {trigger:'Launch a ball in different directions and follow the curvature.', label:'Launch direction', options:[['0','East →'],['90','North ↑'],['180','West ←'],['270','South ↓']], initial:'0', note:'Unit-mass, constant-speed illustration of the sideways force. Ordinary friction is omitted.'},
     '07': {trigger:'Release identical balls over the red and blue tiles.', label:'Release height', range:[1, 3, .1], initial:2, unit:'bricks', note:'Shows vertical bounces only. Friction and rotation are omitted; the rebound ratios follow the selected tile.'},
-    '08': {trigger:'Increase the launch impulse and compare the resulting speed.', label:'Launch impulse', range:[.5, 12, .5], initial:3, unit:'unit mass', note:'The launch speed is computed from the published momentum–velocity law for unit mass. Subsequent forces are omitted.'},
+    '08': {trigger:'Increase the launch impulse and compare the resulting speed.', label:'Launch impulse', range:[.5, 12, .5], initial:3, unit:'units', note:'The launch speed is computed from the published momentum–velocity law for unit mass. Subsequent forces are omitted.'},
     '09': {trigger:'Send a ball through the gray tile’s horizontal footprint.', label:'Trajectory', options:[['through','Through the tile'],['beside','Beside the tile'],['above','Above the tile']], initial:'through', note:'Boundary multipliers are isolated. Gravity and friction are omitted; real exit speed also depends on intervening losses.'},
-    '10': {trigger:'Place a ball at rest inside or outside the yellow region.', label:'Starting position', options:[['inside','At rest · inside the region'],['outside','At rest · outside the region'],['above','At rest · above the region']], initial:'inside', note:'Qualitative illustration of active driving in a vertical column. Ordinary motion and per-step gain are simplified.'},
-    '11': {trigger:'Bring two experiment balls into contact, then let them separate.', label:'Collision partner', options:[['ball','Another experiment ball'],['wall','A wall']], initial:'ball', note:'Schematic collision: ×1.8 applies to each participant’s remaining velocity at separation, not to the incoming velocity.'},
-    '12': {trigger:'Bring two free spheres into contact while tracking their identities.', label:'Contact sequence', options:[['repeat','Separate and make contact again'],['hold','Hold the same contact']], initial:'repeat', note:'Contact sequence is staged to isolate color exchange. A and B label persistent object identities.'},
-    '13': {trigger:'Repeat separate ball–ball contacts and count the events.', label:'Contact sequence', options:[['repeat','Three separate ball contacts'],['hold','One sustained ball contact'],['wall','Three wall contacts']], initial:'repeat', note:'Staged contact events; every third qualifying event sets upward velocity to 4. Floor, wall and apparatus contacts do not count.'},
-    '14': {trigger:'Launch red, then watch green twelve counts later.', label:'After launching red', options:[['free','Let red move freely'],['hold','Hold red just after launch'],['moving','Give green a northward velocity']], initial:'free', note:'The 12-count schedule and velocity replacement are preserved. Ordinary slowing and the diagram scale are simplified.'},
-    '15': {trigger:'Observe red’s northward drive, then act on either ball.', label:'Intervention at count 3', options:[['blue','Nonzero push on blue'],['red','Nonzero push on red'],['zero','Zero-impulse push']], initial:'blue', note:'Extra-force contribution only. The nonzero command pauses it for 10 counts; ordinary post-push motion is omitted.'}
+    '10': {trigger:'Place a ball at rest inside or outside the yellow region.', label:'Starting position', options:[['inside','Inside yellow'],['outside','Outside yellow'],['above','Above yellow']], initial:'inside', note:'Qualitative illustration of active driving in a vertical column. Ordinary motion and per-step gain are simplified.'},
+    '11': {trigger:'Bring two experiment balls into contact, then let them separate.', label:'Collision partner', options:[['ball','Another ball'],['wall','A wall']], initial:'ball', note:'Schematic collision: ×1.8 applies to each participant’s remaining velocity at separation, not to the incoming velocity.'},
+    '12': {trigger:'Bring two free spheres into contact while tracking their identities.', label:'Contact sequence', options:[['repeat','Touch, separate, repeat'],['hold','Hold contact']], initial:'repeat', note:'Contact sequence is staged to isolate color exchange. A and B label persistent object identities.'},
+    '13': {trigger:'Repeat separate ball–ball contacts and count the events.', label:'Contact sequence', options:[['repeat','Three ball contacts'],['hold','Hold contact'],['wall','Three wall contacts']], initial:'repeat', note:'Staged contact events; every third qualifying event sets upward velocity to 4. Floor, wall and apparatus contacts do not count.'},
+    '14': {trigger:'Launch red, then watch green twelve counts later.', label:'After launch', options:[['free','Let red move'],['hold','Hold red'],['moving','Move green north']], initial:'free', note:'The 12-count schedule and velocity replacement are preserved. Ordinary slowing and the diagram scale are simplified.'},
+    '15': {trigger:'Observe red’s northward drive, then act on either ball.', label:'At 3 s', options:[['blue','Push blue'],['red','Push red'],['zero','Zero push']], initial:'blue', note:'Extra-force contribution only. The nonzero command pauses it for 10 counts; ordinary post-push motion is omitted.'}
   };
+  for(const key of ['01','07']){configs[key].gesture='height';configs[key].range[0]=.2;}
+  for(const key of ['05','08'])configs[key].gesture='strength';
+  configs['06'].gesture='direction';configs['04'].gesture='phase';
   let id = '01', value = configs[id].initial, time = 0, playing = false, touring = false;
   let visible = false, frame = 0, previous = 0, lastDraw = 0, exportMode = false, view = window.SCENE_INDEX?.length ? 'physics' : 'motion';
   let initialPreview = false;
   const duration = 8;
-  const modelNote=document.createElement('p');modelNote.id='analysis-model-note';modelNote.className='model-note';$('#scene-law').append(modelNote);
+  const playbackRate = 2;
+  const modelNote=document.createElement('p');modelNote.id='analysis-model-note';modelNote.className='model-note';$('#analysis-formula').prepend(modelNote);
 
-  const sphere = (x, y, z, color, label = '') => ball(uid, x, y, Math.max(0, z), color, label);
+  const sphere = (x, y, z, color, label = '') => {
+    const actualZ=Math.max(0,z),p=point(x,y,actualZ),floor=point(x,y,.06),kind=configs[id].gesture;
+    const hint=kind==='height'?'Drag up or down to set height':kind==='strength'?'Drag along the launch direction to set strength':kind==='direction'?'Drag to aim':'Click to replay';
+    return `<g class="model-object" data-model-ball data-cy="${p[1]-13}" data-floor-y="${floor[1]-13}"><title>${hint}</title>${ball(uid,x,y,actualZ,color,label)}<circle class="model-hit" cx="${p[0]}" cy="${p[1]-13}" r="23"/></g>`;
+  };
   const arrow = (a, b, color = '#3b837b') => line(a, b, color, `stroke-width="2" marker-end="url(#${uid}-arrow)"`);
   const trace = (a, b, color = '#b6c8be') => line(a, b, color, 'stroke-dasharray="3 5" stroke-width="1.2"');
   const annotation = (x, y, str, color = '#668079') => text(x, y, str, `font-size="10" fill="${color}"`);
@@ -54,9 +62,8 @@
         art += trace(point(x, y), point(x, y, height));
         art += sphere(x, y, rebound(height, e, t) + .06, 'stone', i ? 'B' : 'A');
       });
-      art += annotation(171, 336, special ? 'RED · e = 0.90' : 'GRAY TILE');
-      art += annotation(398, 352, special ? 'BLUE · e = 0.15' : 'ORDINARY FLOOR');
-      state = special ? 'Predicted rebound height · bricks' : 'Matched drops';
+      if(!special){art += annotation(171,336,'GRAY TILE');art += annotation(398,352,'ORDINARY FLOOR');}
+      state = special ? 'First rebound · bricks' : 'Matched drops';
       reading = special ? `Red ${(height * .81).toFixed(2)} · Blue ${(height * .0225).toFixed(3)}` : 'Same motion';
       observation = special ? 'The same release produces very different rebounds. Changing height preserves the surface-dependent ratios.' : 'Both drops behave the same. A visually distinct tile is not evidence of a new physical law.';
     } else if (sceneId === '02') {
@@ -152,7 +159,7 @@
       if (wall) art += polygon([point(3.05, 2.2), point(3.05, 3.8), point(3.05, 3.8, 1.2), point(3.05, 2.2, 1.2)], '#c3d0c7', 'stroke="#9fae9f"');
       else { art += sphere(3.2 + Math.min(2.4, after * .48), 3, .06, 'blue'); art += sphere(4.6, 1.4, .06, 'green'); art += annotation(433, 267, 'GREEN · UNINVOLVED'); }
       if (after > 0 && !wall) art += arrow(point(3.2 + Math.min(2.4, after * .48), 3, .28), point(3.2 + Math.min(2.4, after * .48) + .7, 3, .28));
-      state = wall ? 'Wall contact' : s < contact ? 'Approaching' : s < 3.5 ? 'In contact' : 'Contact has ended'; reading = !wall&&s>3.5?'Both velocities ×1.8':'No boost yet';
+      state = wall ? 'Wall contact' : s < contact ? 'Approaching' : s < 3.5 ? 'In contact' : 'Contact has ended'; reading = wall?'No boost':s>3.5?'Both velocities ×1.8':'No boost yet';
       observation = wall ? 'A wall collision does not trigger the programmed speed gain.' : 'The boost happens when ball–ball contact ends. Both participants’ remaining velocities are multiplied; green is unaffected.';
     } else if (sceneId === '12' || sceneId === '13') {
       const colors = sceneId === '12', hold = control === 'hold', wall = control === 'wall';
@@ -216,7 +223,7 @@
     view = next;
     $('#atlas-motion-view').hidden = !['motion','analysis'].includes(view);
     $('#analysis-formula').hidden=view!=='analysis';
-    if(view==='analysis')window.LongChangMath.render($('#analysis-formula'),id);
+    if(view==='analysis'){window.LongChangMath.render($('#analysis-formula'),id);$('#analysis-formula').prepend(modelNote);}
     $('#atlas-initial-view').hidden = view !== 'initial';
     $('#atlas-physics-view').hidden = view !== 'physics';
     $('.atlas-detail').dataset.view = view;
@@ -228,6 +235,16 @@
     document.dispatchEvent(new CustomEvent('longchang:atlas-view',{detail:{view,id}}));
     syncClock();
   }
+  function setParameter(next,{preview=false,activate=true}={}) {
+    const config=configs[id];
+    if(config.range){const [min,max,step]=config.range;next=clamp(Math.round(Number(next)/step)*step,min,max);next=Number(next.toFixed(3));if(!Number.isFinite(next))return;}
+    else{next=String(next);if(!config.options.some(([v])=>v===next))return;}
+    value=next;$('#atlas-parameter').value=value;
+    if(config.range)$('#atlas-parameter-value').textContent=`${Number(value).toFixed(1)} ${config.unit}`;
+    time=0;playing=!preview;touring=false;
+    if(view!=='analysis'&&activate)setView('analysis');else{render();syncClock();}
+  }
+  function replay(){time=0;playing=true;touring=false;render();syncClock();}
   function setup(scene, autoplay = true) {
     id = scene.id; value = configs[id].initial; time = 0;
     const config = configs[id];
@@ -237,13 +254,9 @@
     $('#atlas-canvas').setAttribute('aria-label', `${scene.name}. Idealized interactive illustration of the published law.`);
     const options = config.options?.map(([v, label]) => `<option value="${v}">${label}</option>`).join('');
     $('#atlas-controls').innerHTML = `<label for="atlas-parameter">${config.label}</label>` + (options ? `<select id="atlas-parameter">${options}</select>` : `<div class="atlas-range"><input id="atlas-parameter" type="range" min="${config.range[0]}" max="${config.range[1]}" step="${config.range[2]}" value="${value}"><output for="atlas-parameter" id="atlas-parameter-value">${Number(value).toFixed(1)} ${config.unit}</output></div>`);
-    modelNote.textContent='Explain: '+config.note;
+    modelNote.textContent='Interactive model · '+(window.ORACLE_CATALOG?.[id]?.model_note||config.note);
     $('#atlas-parameter').value = value;
-    $('#atlas-parameter').addEventListener(config.options ? 'change' : 'input', event => {
-      value = config.range ? Number(event.target.value) : event.target.value;
-      if (config.range) $('#atlas-parameter-value').textContent = `${Number(value).toFixed(1)} ${config.unit}`;
-      touring = false; time = 0; playing = true; setView('analysis'); render(); syncClock();
-    });
+    $('#atlas-parameter').addEventListener(config.options ? 'change' : 'input', event => setParameter(event.target.value));
     $('#atlas-evidence').hidden = !['06','07','14','15'].includes(id);
     playing = autoplay && !reduced.matches;
     setView(view); render(); syncClock();
@@ -252,7 +265,7 @@
   function tick(now) {
     frame = 0;
     if (!running()) return;
-    time += Math.min(.08, (now - previous) / 1000); previous = now;
+    time += Math.min(.08, (now - previous) / 1000) * playbackRate; previous = now;
     if (time >= duration) {
       if (touring) { window.showWorld(String(Number(id) % 15 + 1).padStart(2, '0')); playing = true; time = 0; }
       else { time = duration; playing = false; }
@@ -262,7 +275,7 @@
   }
   function syncClock() { cancelAnimationFrame(frame); frame = 0; if (running()) { previous = performance.now(); frame = requestAnimationFrame(tick); } }
   document.addEventListener('longchang:scene', event => setup(event.detail));
-  // The original scene thumbnails connect the illustrations to the paper.
+
   document.querySelectorAll('#scene-picker button').forEach(button => {
     const scene = window.LONGCHANG.scenes.find(s => s.id === button.dataset.scene);
     button.innerHTML = `<span class="scene-choice-number">${scene.id}</span><strong class="scene-choice-name">${scene.name}</strong><img class="scene-choice-symbol" src="assets/table1/scene-${scene.id}.svg" width="106" height="36" loading="lazy" decoding="async" alt="" aria-hidden="true">`;
@@ -273,7 +286,7 @@
   mobilePicker.addEventListener('change',()=>{window.showWorld(mobilePicker.value);if(view==='physics')window.LongChangPhysics?.play();});
   document.addEventListener('longchang:scene',event=>{mobilePicker.value=event.detail.id;});
   $('#atlas-play').addEventListener('click', () => { if (time >= duration) time = 0; playing = !playing; if (!playing) touring = false; render(); syncClock(); });
-  // Keep predicted readings outside the diagram, beside its playback controls.
+
   $('.atlas-playback').before($('.atlas-scene-readout'));
   $('.atlas-illustration-label').remove();
   $('#atlas-canvas').setAttribute('viewBox','0 0 640 410');
@@ -299,7 +312,10 @@
   window.showWorld(configs[requested] ? requested : '07');
 
   window.LongChangAtlas = Object.freeze({
-    duration, setView, currentScene:()=>id,
+    duration, setView, currentScene:()=>id, setParameter, replay,
+    getState:()=>({id,value,time,playing,gesture:configs[id].gesture,label:configs[id].label}),
+    pause(){playing=false;render();syncClock();},
+    restore(snapshot){if(snapshot.id!==id)return;setParameter(snapshot.value,{preview:true,activate:false});time=snapshot.time;playing=snapshot.playing;render();syncClock();},
     renderFrame(sceneId, seconds, option) {
       exportMode = true; cancelAnimationFrame(frame);
       if (sceneId !== id) window.showWorld(sceneId);

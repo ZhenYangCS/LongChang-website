@@ -44,16 +44,20 @@ def main():
         assert page.locator('.atlas-playback #atlas-controls').count()==1
         for i in range(1,16):
             page.evaluate('(id)=>showWorld(id)',f'{i:02}');page.evaluate('document.fonts.ready')
-            assert page.locator('#scene-law #analysis-model-note').is_visible()
-            assert page.locator('#scene-law #analysis-model-note').text_content().startswith('Explain: ')
+            assert page.locator('#analysis-formula #analysis-model-note').is_visible()
+            assert page.locator('#analysis-model-note').text_content().startswith('Interactive model · ')
+            assert page.locator('#full-rule-label').text_content()=='Scene rule'
             text=page.locator('#scene-law-text').text_content()
             assert '^' not in text and '_' not in text,(i,text)
             page.wait_for_function('!document.querySelector("#oracle-chart-wrap").hidden')
-            assert page.locator('#oracle-chart').is_visible() and page.locator('#physics-record').is_visible()
+            assert page.locator('#oracle-signal').text_content().startswith('Demo data · ')
+            assert page.locator('#oracle-chart').is_visible() and page.locator('#scene-law a[download]').count()==0
             assert page.locator('#scene-law summary').count()==0
             if i==8:
-                assert page.locator('#scene-law-text mfrac').count()==2 and page.locator('#scene-law-text msub').count()>=2
+                assert page.locator('#analysis-formula mfrac').count()==2 and page.locator('#analysis-formula msup').count()>=2
                 page.screenshot(path='/tmp/math-stix-08.png')
+            if i==12:
+                assert 'Red' in page.locator('#oracle-chart').text_content() and 'Blue' in page.locator('#oracle-chart').text_content()
         for width,height in [(1366,768),(1280,720),(390,844),(320,740)]:
             page.set_viewport_size({'width':width,'height':height})
             page.locator('[data-atlas-view=analysis]').click()

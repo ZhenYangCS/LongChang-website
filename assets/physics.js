@@ -1,4 +1,4 @@
-/* Fast first paint: posters now, video and measurements only on request. */
+
 (() => {
   'use strict';
   const $=s=>document.querySelector(s),items=window.SCENE_INDEX||[];if(!items.length)return;
@@ -11,7 +11,7 @@
   $('#oracle-chart-wrap').before($('.physics-readout'));
   const speedReadout=document.createElement('div');speedReadout.className='scene-speed-readout';speedReadout.hidden=true;
   speedReadout.innerHTML='<span class="speed-caption" title="Forward speed, in bricks per count">Forward speed</span><span class="speed-red"><i aria-hidden="true"></i><output id="speed-red-value" aria-label="Red ball forward speed"></output></span><span class="speed-blue"><i aria-hidden="true"></i><output id="speed-blue-value" aria-label="Blue ball forward speed"></output></span>';
-  law.append(measurements,$('#analysis-model-note'),$('.physics-downloads'));
+  law.append(measurements);
   $('.atlas-visual').append(law);$('.physics-playback').insertBefore(speedReadout,$('#physics-progress'));
   $('.atlas-playback').prepend($('#atlas-controls'));
   function syncView(mode){
@@ -75,7 +75,7 @@
   const clock=t=>`${Math.floor(t/60)}:${String(Math.floor(t%60)).padStart(2,'0')}`;
   async function sharpenPoster(){
     if(!demo||posterLoading||!posterVisible)return;posterLoading=true;const token=version,next=new Image();next.src=media().poster;
-    try{await next.decode();if(token===version&&!pending&&!image.hidden)image.src=next.src;}catch(_){/* Keep the embedded preview if the high-resolution image is unavailable. */}
+    try{await next.decode();if(token===version&&!pending&&!image.hidden)image.src=next.src;}catch(_){ }
   }
   new IntersectionObserver(entries=>{posterVisible=entries[0].isIntersecting;if(posterVisible)sharpenPoster();},{rootMargin:'300px'}).observe($('.physics-video-frame'));
   function loading(value){$('.physics-video-frame').setAttribute('aria-busy',String(value));playButton.textContent=value?'…':video.paused?'▶':'Ⅱ';overlay.textContent=value?'Loading…':'▶ Play';}
@@ -115,8 +115,7 @@
     $('.physics-video-frame').classList.remove('is-oracle','is-simple','is-clear');
     $('.physics-video-frame').classList.add(demo.presentation==='clear'?'is-clear':'is-simple');
     video.setAttribute('aria-label',`${demo.name}: demonstration of the hidden rule`);
-    $('#physics-download').href=demo.download_video||demo.video;$('#physics-record').href=demo.record;
-    $('#oracle-signal-download').hidden=true;readoutVisibility();progress();
+    readoutVisibility();progress();
     if($('.atlas-detail').dataset.view==='analysis')loadMeasurements();
   }
   function measuredRows(entry,sample){
@@ -158,17 +157,18 @@
       let item=list.children[i];if(!item){item=document.createElement('div');item.append(document.createElement('span'),document.createElement('strong'));list.append(item);}
       const nodes=item.children;if(nodes[0].textContent!==label)nodes[0].textContent=label;if(nodes[1].textContent!==value)nodes[1].textContent=value;
     });
-    const p=entry.plot,left=36,right=308,top=12,bottom=133,max=Math.max(.1,...p.series.flat()),min=Math.min(0,...p.series.flat());
+    const p=entry.plot,left=48,right=308,top=14,bottom=133,max=Math.max(.1,...p.series.flat()),min=entry.id==='12'?Math.min(...p.series.flat()):Math.min(0,...p.series.flat());
     const xy=(x,y)=>[left+x/entry.simulation_duration*(right-left),bottom-(y-min)/(max-min||1)*(bottom-top)];
     if(!$('#oracle-chart').dataset.drawn){let svg='';
-    for(const value of [min,min<0?0:(min+max)/2,max]){const y=xy(0,value)[1],label=Number(value.toPrecision(2));svg+=`<path d="M${left} ${y}H${right}" stroke="#e0e8e1"/><text x="29" y="${y+4}" text-anchor="end" fill="#71867c" font-size="12">${label}</text>`;}
+    const ticks=entry.id==='12'?[min,max]:[min,min<0?0:(min+max)/2,max];
+    for(const value of ticks){const y=xy(0,value)[1],label=entry.id==='12'?(value===min?'Blue':'Red'):Number(value.toPrecision(2));svg+=`<path d="M${left} ${y}H${right}" stroke="#e0e8e1"/><text x="40" y="${y+5}" text-anchor="end" fill="#71867c" font-size="16">${label}</text>`;}
     p.series.forEach((values,i)=>{const d=p.times.map((time,j)=>(j?'L':'M')+xy(time,values[j]).map(x=>x.toFixed(2)).join(' ')).join('');svg+=`<path d="${d}" stroke="${p.colors[i]}" stroke-width="2" fill="none"/>`;});
-    svg+=`<path id="oracle-cursor" d="M0 ${top}V${bottom}" stroke="#567a69" visibility="hidden"/><text x="${left}" y="153" fill="#71867c" font-size="12">0</text><text x="${right}" y="153" text-anchor="end" fill="#71867c" font-size="12">${entry.simulation_duration} s</text>`;
+    svg+=`<path id="oracle-cursor" d="M0 ${top}V${bottom}" stroke="#567a69" visibility="hidden"/><text x="${left}" y="153" fill="#71867c" font-size="14">0</text><text x="${right}" y="153" text-anchor="end" fill="#71867c" font-size="14">${entry.simulation_duration} s</text>`;
     $('#oracle-chart').setAttribute('viewBox','0 0 320 163');
     $('#oracle-chart').innerHTML=svg;$('#oracle-chart').dataset.drawn='true';}
     $('#oracle-cursor').setAttribute('transform',`translate(${xy(t,0)[0]},0)`);
     $('#oracle-chart-legend').replaceChildren(...p.labels.map((label,i)=>{const item=document.createElement('span');item.textContent=label.replace('Ordinary physics reference','Ordinary physics').replace('Oracle active','Altered rule');item.style.color=p.colors[i];return item;}));
-    $('#oracle-signal').textContent='Demo · '+entry.oracle.measure;
+    $('#oracle-signal').textContent='Demo data · '+entry.oracle.measure;
   }
   async function loadMeasurements(){
     if(!demo||details)return;const id=demo.id;detailAbort?.abort();detailAbort=new AbortController();

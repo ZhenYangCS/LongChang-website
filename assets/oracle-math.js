@@ -1,4 +1,4 @@
-/* Native MathML with a local mathematical font; no typesetting runtime or CDN. */
+
 (() => {
   'use strict';
   const row = (...parts) => `<mrow>${parts.join('')}</mrow>`;
@@ -15,7 +15,7 @@
   const equals = operator('='), v = variable('v'), m = variable('m'), t = variable('t');
   const g = sub(variable('g'), number(0)), vector = '<mi mathvariant="bold">v</mi>';
   const rebound = coefficient => row(sub(v, operator('↑')), equals, number(coefficient), abs(sub(v, operator('↓'))));
-  // Parts can wrap between formulas, never through a fraction or subscript.
+
   const formulas = {
     '01': [['', word('Ordinary physics')]],
     '02': [['', row(variable('F'), equals, frac(number(20), sup(variable('r'), number(2))), '<mspace width="1em"/>', parens(row(variable('r'), operator('≥'), number('0.5'))))]],
@@ -67,7 +67,7 @@
     while (remaining) {
       let best;
       for (const [source, expression] of matches) {
-        // Single-letter variables must not match letters inside English words.
+
         const index = source.length===1 ? remaining.search(new RegExp('\\b'+source+'\\b')) : remaining.indexOf(source);
         if (index>=0 && (!best || index<best.index || (index===best.index && source.length>best.source.length))) best={source,expression,index};
       }

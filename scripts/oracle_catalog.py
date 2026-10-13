@@ -43,10 +43,29 @@ PLAIN = {
  '15':('Red is pulled north, but pushing any object pauses that pull for ten seconds.','红球受到向北的拉力，但推动任意物体都会让这股力暂停十秒。')
 }
 
+# Edited explanations for the page; the complete paper laws remain in `law`.
+EXPLAIN = {
+ '01':('The gray tile follows ordinary physics.','Ordinary contact is simplified.'),
+ '02':('Free red spheres attract; blue spheres are unaffected. The force calculation uses a minimum distance of 0.5.','Equal masses; friction omitted.'),
+ '03':('Heavier free bodies fall more slowly. A mass-4 ball accelerates downward half as fast as a mass-1 ball.','Vertical flight; rebounds omitted.'),
+ '04':('Gravity cycles between 0.7 and 1.3 times its usual strength every six seconds.','Exact gravity cycle; contact simplified.'),
+ '05':('Red, blue, and the box get extra braking above speed 2.5. It switches off at or below 2.5.','Extra braking only; friction omitted.'),
+ '06':('Red and blue feel a force to the right of their horizontal motion. Its direction changes with their motion.','Side force only; friction omitted.'),
+ '07':('At impact, red tiles return 90% of vertical speed; blue tiles return 15%. Movable apparatus follows the same rule.','Ideal vertical bounces.'),
+ '08':('Every free body’s speed stays below 2.2. Larger pushes keep adding momentum, with diminishing speed gains.','Launch speed for a unit mass.'),
+ '09':('Entering gray multiplies both balls’ linear and angular velocities by 0.4; leaving multiplies them by 2.5. Height does not matter.','Boundary changes only; friction and gravity omitted.'),
+ '10':('Inside yellow, speeds below 0.35 get an eastward seed. Otherwise, velocity is multiplied by 1.0015 per step while below 6. Height does not matter.','Qualitative motion; per-step gain simplified.'),
+ '11':('When two experiment balls separate after contact, both remaining velocities are multiplied by 1.8. Walls, floors, and apparatus do not trigger it.','Staged collision; gain applied at separation.'),
+ '12':('Two free spheres swap colors once when contact begins. They must separate before another swap can occur.','Staged contacts; A and B keep their identities.'),
+ '13':('Every third contact between the original red and blue balls sets both upward speeds to 4. Sustained contact counts once; other objects do not count.','Staged contacts; original counting rule.'),
+ '14':('Each red launch schedules a copy 12 seconds later. Green’s velocity is replaced with the stored value, even if red is held.','Exact delay; ordinary slowing simplified.'),
+ '15':('Red’s northward force starts on. A nonzero launch of any movable object pauses it for 10 seconds; another launch restarts the timer.','Extra-force effect only; other motion omitted.')
+}
+
 
 def catalog():
     names,_=paper_scene_names();laws,_=paper_scene_laws()
-    return {id:dict(id=id,name=names[id],law=laws[id],plain=PLAIN[id][0],plain_zh=PLAIN[id][1],**entry) for id,entry in CATALOG.items()}
+    return {id:dict(id=id,name=names[id],law=laws[id],plain=PLAIN[id][0],plain_zh=PLAIN[id][1],explanation=EXPLAIN[id][0],model_note=EXPLAIN[id][1],**entry) for id,entry in CATALOG.items()}
 
 
 if __name__=='__main__':

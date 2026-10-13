@@ -1,5 +1,5 @@
-/* Browser implementation of scenes/base_15.json programs, using native MuJoCo
- * contacts, geometry, masses and integration. No staged animation trajectories. */
+
+
 import {getMujoco} from './mujoco-runtime.js';
 
 export async function createSceneSimulation(config,status=()=>{}) {
@@ -74,8 +74,8 @@ export async function createSceneSimulation(config,status=()=>{}) {
   }
   function step(external=false){
     if(!external){data.xfrc_applied.fill(0);data.qfrc_applied.fill(0);}rule();
-    // Match Workshop.apply: scene forces first, then a mass-scaled grip using
-    // the current gravity. Moving the hand never counts as a launch.
+
+
     if(grip){
       const b=bodies[grip.name],g=config.grip,desired=grip.target.map((x,k)=>(x-pos(b)[k])*8),length=Math.hypot(...desired);
       if(length>g.move_speed)for(let k=0;k<3;k++)desired[k]*=g.move_speed/length;

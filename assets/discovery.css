@@ -1,4 +1,4 @@
-/* A short case-study narrative, with complete records available on demand. */
+
 .case-studies .section-heading { margin-bottom:32px; }
 .case-studies .case-tabs button { padding:18px 20px; font-size:14px; gap:12px; justify-content:center; min-width:0; }
 .case-studies .case-tabs button[aria-selected=true] { background:#eaf1e8; }
@@ -150,7 +150,7 @@
   .archive-toggle,.case-record>summary>span,.evolution-details>summary>span { transition:none; }
 }
 
-/* Full records open from the scene atlas, outside the three-case presentation. */
+
 .exploration-dialog { width:min(1100px,calc(100% - 32px)); max-height:90svh; padding:24px; border:1px solid var(--line); border-radius:14px; color:var(--ink); background:var(--paper); }
 .exploration-dialog::backdrop { background:#142b35a8; }
 #exploration-close { display:block; margin:0 0 12px auto; width:36px; height:36px; border:0; border-radius:50%; background:var(--soft); color:var(--ink); font-size:24px; }

@@ -1,4 +1,4 @@
-/* Paint Figure 1 immediately; download physics only when requested. */
+
 (() => {
   const stage=document.querySelector('#room-stage'),still=document.querySelector('#room-still'),hint=document.querySelector('#room-hint');
   let world=null,loading=null,mode='push';

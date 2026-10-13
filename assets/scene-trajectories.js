@@ -1,4 +1,4 @@
-/* Motion guides projected from the same recorded states as the scene film. */
+
 (() => {
   'use strict';
   const video = document.getElementById('physics-video');
@@ -25,6 +25,8 @@
   let pending=null, cameraPromise=null, paths=[];
   let unit=1,geometryVersion=0,drawnGeometry=-1;
   let visibleBounds={left:0,top:0,right:1440,bottom:960};
+  let controls=[];
+  const cutouts=new Map();
   const cache=new Map();
   const dot=(a,b)=>a.reduce((sum,value,i)=>sum+value*b[i],0);
   const length=v=>Math.hypot(...v);
@@ -35,6 +37,7 @@
     if(!box.width)return;
     unit=1440/box.width;
     visibleBounds={left:Math.max(0,(frame.left-box.left)*unit),top:Math.max(0,(frame.top-box.top)*unit),right:Math.min(1440,(frame.right-box.left)*unit),bottom:Math.min(960,(frame.bottom-box.top)*unit)};
+    controls=[...media.parentElement.querySelectorAll('.scene-zoom-buttons,#scene-zoom-hint,.physics-view,#simple-phase')].map(node=>node.getBoundingClientRect()).filter(rect=>rect.width&&rect.height).map(rect=>({left:(rect.left-box.left)*unit,right:(rect.right-box.left)*unit,top:(rect.top-box.top)*unit,bottom:(rect.bottom-box.top)*unit}));
     svg.style.setProperty('--guide-unit',unit);
     geometryVersion++;
     if(recording)draw(frameIndex<0 ? video.currentTime : frameIndex/recording.fps);
@@ -82,10 +85,13 @@
   }
   function resetGuides() {
     frameIndex=-1;tracks.replaceChildren();vectors.replaceChildren();actions.replaceChildren();
-    mask.replaceChildren(maskBase);paths=[];svg.setAttribute('hidden','');
+    mask.replaceChildren(maskBase);cutouts.clear();paths=[];svg.setAttribute('hidden','');
   }
   function prepare(data,viewCamera) {
     recording=data;camera=viewCamera;
+    for(const name of Object.keys(data.timeline[0].objects)){
+      const cutout=make('circle',{r:6,fill:'black'});mask.append(cutout);cutouts.set(name,cutout);
+    }
     const history=new Map();
     for (const [index,frame] of (entry.proof ? [] : data.timeline).entries()) {
       for (const [name,object] of Object.entries(frame.objects)) {
@@ -98,13 +104,12 @@
     for (const [name,points] of history) {
       const path=make('path',{'data-object':name,class:'scene-motion-path',fill:'none'});
       const start=make('circle',{r:1.15,class:'scene-motion-origin'});
-      const cutout=make('circle',{r:6,fill:'black'});
-      tracks.append(path,start);mask.append(cutout);paths.push({name,points,path,start,cutout});
+      tracks.append(path,start);paths.push({name,points,path,start});
     }
     updateGeometry();updateLegend();draw();schedule();
   }
   async function load() {
-    // Baked films keep their paths; all films receive legible launch cues.
+
     if (!shown || !entry || recording || pending || !video.hasAttribute('src')) return;
     const token=generation,selected=entry;
     request=new AbortController();
@@ -146,7 +151,7 @@
     const end=add(position,scale(direction,size/magnitude));
     const a=project(position),projected=project(end),dx=projected[0]-a[0],dy=projected[1]-a[1],n=Math.hypot(dx,dy);
     if (n<.1) return;
-    // Direction is physical; annotation size stays readable on every screen.
+
     const visibleLength=Math.min(76*unit,Math.max(22*unit,n));
     const b=[a[0]+dx/n*visibleLength,a[1]+dy/n*visibleLength];
     arrowShape(a,b,stroke,kind);
@@ -166,26 +171,46 @@
     if(p[0]<box.left || p[0]>box.right || p[1]<box.top || p[1]>box.bottom)return;
     const room=(x,y)=>Math.min(x>0?(box.right-padding-p[0])/x:x<0?(box.left+padding-p[0])/x:Infinity,y>0?(box.bottom-padding-p[1])/y:y<0?(box.top+padding-p[1])/y:Infinity);
     const behind=room(-dx,-dy),ahead=room(dx,dy);
-    let a,b;
+    const overlap=(a,b)=>a.left<b.right+4*unit&&a.right>b.left-4*unit&&a.top<b.bottom+4*unit&&a.bottom>b.top-4*unit;
+    const arrows=[];
     if(behind>=46*unit){
       const distance=Math.min(76*unit,behind);
-      a=[p[0]-dx*distance,p[1]-dy*distance];b=[p[0]-dx*10*unit,p[1]-dy*10*unit];
-    }else{
-      const distance=Math.min(76*unit,ahead);if(distance<34*unit)return;
-      a=[p[0]+dx*10*unit,p[1]+dy*10*unit];b=[p[0]+dx*distance,p[1]+dy*distance];
+      arrows.push([[p[0]-dx*distance,p[1]-dy*distance],[p[0]-dx*10*unit,p[1]-dy*10*unit]]);
     }
+    if(ahead>=46*unit){
+      const distance=Math.min(76*unit,ahead);
+      arrows.push([[p[0]+dx*10*unit,p[1]+dy*10*unit],[p[0]+dx*distance,p[1]+dy*distance]]);
+    }
+    if(!arrows.length)return;
+    const obstruction=([a,b])=>controls.filter(rect=>overlap({left:Math.min(a[0],b[0])-5*unit,right:Math.max(a[0],b[0])+5*unit,top:Math.min(a[1],b[1])-5*unit,bottom:Math.max(a[1],b[1])+5*unit},rect)).length;
+    arrows.sort((a,b)=>obstruction(a)-obstruction(b));
+    const [a,b]=arrows[0];
     const cue=make('g',{class:'scene-action-cue','data-object':name});actions.append(cue);
-    arrowShape(a,b,'#8a4d16','action',cue);
+    const arrow=make('g',{mask:'url(#scene-trail-objects)'});cue.append(arrow);
+    arrowShape(a,b,'#8a4d16','action',arrow);
     const text=command==='PUSH'?'Push':'Throw',width=(text==='Push'?43:51)*unit,height=24*unit;
-    const middle=[(a[0]+b[0])/2,(a[1]+b[1])/2];
     const bodies=Object.values(frame.objects).map(object=>{const point=project(object.position);return {left:point[0]-10*unit,right:point[0]+10*unit,top:point[1]-10*unit,bottom:point[1]+10*unit};});
-    const overlaps=(a,b)=>a.left<b.right+4*unit&&a.right>b.left-4*unit&&a.top<b.bottom+4*unit&&a.bottom>b.top-4*unit;
-    const candidates=[-21,21,-38,38].map(offset=>{
-      const x=Math.max(box.left+padding+width/2,Math.min(box.right-padding-width/2,middle[0]-dy*offset*unit));
-      const y=Math.max(box.top+padding+height/2,Math.min(box.bottom-padding-height/2,middle[1]+dx*offset*unit));
-      return {x,y,left:x-width/2,right:x+width/2,top:y-height/2,bottom:y+height/2};
-    });
-    const label=candidates.find(candidate=>![...bodies,...occupied].some(other=>overlaps(candidate,other)))||candidates[0];
+    const labelOffset=Math.abs(dy)*width/2+Math.abs(dx)*height/2+8*unit;
+    const candidates=[];
+    for(const fraction of [.5,.25,.75,0,1]){
+      const middle=[a[0]+(b[0]-a[0])*fraction,a[1]+(b[1]-a[1])*fraction];
+      for(const extra of [0,18,36])for(const side of [-1,1]){
+        const offset=side*(labelOffset+extra*unit);
+        const x=Math.max(box.left+padding+width/2,Math.min(box.right-padding-width/2,middle[0]-dy*offset));
+        const y=Math.max(box.top+padding+height/2,Math.min(box.bottom-padding-height/2,middle[1]+dx*offset));
+        const candidate={x,y,left:x-width/2,right:x+width/2,top:y-height/2,bottom:y+height/2};
+        let crossesArrow=false;
+        for(let i=0;i<=20;i++){
+          const px=a[0]+(b[0]-a[0])*i/20,py=a[1]+(b[1]-a[1])*i/20;
+          if(px>candidate.left-4*unit&&px<candidate.right+4*unit&&py>candidate.top-4*unit&&py<candidate.bottom+4*unit)crossesArrow=true;
+        }
+        candidate.penalty=100*(Number(crossesArrow)+controls.filter(rect=>overlap(candidate,rect)).length)+50*occupied.filter(rect=>overlap(candidate,rect)).length+10*bodies.filter(rect=>overlap(candidate,rect)).length;
+        candidate.distance=extra+Math.abs(fraction-.5)*12;
+        candidates.push(candidate);
+      }
+    }
+    candidates.sort((a,b)=>a.penalty-b.penalty||a.distance-b.distance);
+    const label=candidates[0];
     occupied.push(label);
     const background=make('rect',{x:label.left,y:label.top,width,height,rx:5*unit,class:'scene-action-badge'});
     const caption=make('text',{x:label.x,y:label.y,class:'scene-motion-action-label'});caption.textContent=text;
@@ -202,6 +227,10 @@
     }
     frameIndex=index;drawnGeometry=geometryVersion;svg.dataset.frame=String(index);svg.dataset.scene=entry.id;svg.dataset.status=entry.proof?'baked':'ready';
     vectors.replaceChildren();actions.replaceChildren();
+    for(const [name,cutout] of cutouts){
+      const object=frame.objects[name];if(!object)continue;const point=project(object.position);
+      cutout.setAttribute('cx',point[0]);cutout.setAttribute('cy',point[1]);
+    }
     for (const item of paths) {
       const object=frame.objects[item.name];
       if (!object) {item.path.setAttribute('d','');continue;}
@@ -211,7 +240,6 @@
       item.path.setAttribute('d',coordinates.map((point,i)=>(i?'L':'M')+point.join(',')).join(''));
       item.path.setAttribute('stroke',stroke);
       item.start.setAttribute('cx',coordinates[0][0]);item.start.setAttribute('cy',coordinates[0][1]);item.start.setAttribute('fill',stroke);
-      item.cutout.setAttribute('cx',current[0]);item.cutout.setAttribute('cy',current[1]);
       vector(object.position,object.velocity,Math.min(.9,length(object.velocity)*.2),stroke,'motion');
       const force=frame.oracle?.forces?.[item.name];
       if (force && length(force)>.05) vector(object.position,force,Math.min(.85,.22+length(force)*.07),'#347b69','force');
@@ -219,8 +247,8 @@
     const occupied=[];
     for (const event of recording.events || []) {
       const elapsed=frame.time-(event.actual_time??event.time);
-      // Short cues mark the intervention, while its trajectory remains visible.
-      const next=(recording.events||[]).find(other=>other.command&&(other.actual_time??other.time)>(event.actual_time??event.time)+.002);
+
+      const next=(recording.events||[]).find(other=>(other.actual_time??other.time)>(event.actual_time??event.time)+.002);
       const cueDuration=Math.min(recording.simulation_duration/recording.duration*Math.min(4.8,Math.max(1.4,video.playbackRate*1.1)),next?(next.actual_time??next.time)-(event.actual_time??event.time):Infinity);
       if (elapsed<0 || elapsed>cueDuration || !event.command) continue;
       actionCue(event,frame,occupied);
