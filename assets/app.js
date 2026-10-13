@@ -20,7 +20,7 @@
       const i = tabs.indexOf(document.activeElement);
       if (i < 0) return;
       event.preventDefault();
-      const step=grid&&['ArrowUp','ArrowDown'].includes(event.key)?5:1;
+      const step=grid&&['ArrowUp','ArrowDown'].includes(event.key)?3:1;
       const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (i + (['ArrowRight','ArrowDown'].includes(event.key) ? step : -step) + tabs.length) % tabs.length;
       choose(tabs[next]);
       tabs[next].focus();

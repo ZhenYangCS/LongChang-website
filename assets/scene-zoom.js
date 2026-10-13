@@ -2,7 +2,8 @@
 window.createSceneZoom = (frame, video, poster) => {
   'use strict';
   const layer=document.createElement('div');layer.className='physics-media';
-  layer.append(poster,video);frame.prepend(layer);
+  const background=document.createElement('img');background.className='physics-room-background';background.alt='';background.loading='lazy';background.decoding='async';background.hidden=true;
+  layer.append(background,poster,video);frame.prepend(layer);
   const toggle=document.createElement('button');toggle.id='physics-view';toggle.className='physics-view';
   toggle.innerHTML='<span class="room-context"><img loading="lazy" alt="Full room"><span class="focus-rectangle"></span></span><span class="view-label">Detail ↗</span>';
   const controls=document.createElement('div');controls.className='scene-zoom-tools';controls.hidden=true;
@@ -10,7 +11,7 @@ window.createSceneZoom = (frame, video, poster) => {
   frame.append(toggle,controls);frame.tabIndex=0;
   const rect=toggle.querySelector('.focus-rectangle'),out=controls.querySelector('#scene-zoom-out'),inside=controls.querySelector('#scene-zoom-in'),resetButton=controls.querySelector('#scene-zoom-reset');
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-  const pointers=new Map();let editing=false,scale=1,cx=.5,cy=.5,width=0,height=0,fitWidth=0,fitHeight=0,aspect=1.5;
+  const pointers=new Map();let editing=false,scale=1,cx=.5,cy=.5,width=0,height=0,fitWidth=0,fitHeight=0,aspect=1.5,focus=[.5,.5],crop=[0,0,1440,960],fitFocus=false,useDetail=false;
   function paint(){
     if(!width||!height)return;
     const w=fitWidth*scale,h=fitHeight*scale;
@@ -26,6 +27,7 @@ window.createSceneZoom = (frame, video, poster) => {
   function resize(){
     width=frame.clientWidth;height=frame.clientHeight;
     fitWidth=Math.min(width,height*aspect);fitHeight=fitWidth/aspect;
+    if(fitFocus&&width&&height){scale=clamp(Math.min(width/(fitWidth*(crop[2]-crop[0])/1440),height/(fitHeight*(crop[3]-crop[1])/960)),1,6);[cx,cy]=focus;fitFocus=false;}
     layer.style.width=fitWidth+'px';layer.style.height=fitHeight+'px';paint();
   }
   function mode(value){
@@ -40,7 +42,8 @@ window.createSceneZoom = (frame, video, poster) => {
     for(const id of pointers.keys())if(frame.hasPointerCapture(id))frame.releasePointerCapture(id);
     pointers.clear();frame.classList.remove('is-panning');
   }
-  function reset(){clearPointers();scale=1;cx=cy=.5;mode(false);resize();}
+  function reset(){clearPointers();fitFocus=false;scale=1;cx=cy=.5;mode(false);resize();}
+  function showDetail(){mode(true);fitFocus=true;resize();}
   function zoom(next,x=width/2,y=height/2){
     if(!fitWidth||!fitHeight)return;
     next=clamp(next,1,6);
@@ -55,7 +58,7 @@ window.createSceneZoom = (frame, video, poster) => {
     return p.length>1?{x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2,d:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)}:{...p[0],d:0};
   }
   toggle.addEventListener('click',()=>{
-    if(editing){reset();return;}mode(true);resize();zoom(2);frame.focus({preventScroll:true});
+    if(editing){reset();return;}showDetail();frame.focus({preventScroll:true});
   });
   out.addEventListener('click',()=>zoom(scale/1.25));inside.addEventListener('click',()=>zoom(scale*1.25));resetButton.addEventListener('click',reset);
   frame.addEventListener('wheel',e=>{
@@ -85,9 +88,19 @@ window.createSceneZoom = (frame, video, poster) => {
     else{cx+=({'ArrowLeft':-48,'ArrowRight':48}[e.key]||0)/(fitWidth*scale);cy+=({'ArrowUp':-48,'ArrowDown':48}[e.key]||0)/(fitHeight*scale);paint();}
   });
   new ResizeObserver(resize).observe(frame);
-  video.addEventListener('loadedmetadata',()=>{if(video.videoWidth&&video.videoHeight){aspect=video.videoWidth/video.videoHeight;resize();}});
+  video.addEventListener('loadedmetadata',()=>{if(video.videoWidth&&video.videoHeight){aspect=useDetail?1.5:video.videoWidth/video.videoHeight;resize();}});
   // Custom playback controls remain reachable below the frame in fullscreen.
   document.addEventListener('fullscreenchange',resize);
   reset();
-  return {setScene(scene){aspect=1.5;if(scene.context_poster)toggle.querySelector('img').src=scene.context_poster;reset();}};
+  return {setScene(scene){
+    aspect=1.5;crop=scene.detail_crop||[0,0,1440,960];focus=[(crop[0]+crop[2])/2880,(crop[1]+crop[3])/1920];
+    useDetail=Boolean(scene.room_background&&scene.detail_video);background.hidden=!useDetail;
+    if(useDetail)background.src=scene.room_background;
+    const [l,t,r,b]=useDetail?crop:[0,0,1440,960];
+    // The HD clip occupies its exact window in the full-room image. All moving
+    // bodies stay in this window, so exploring the room needs only one decoder.
+    for(const element of [video,poster])Object.assign(element.style,{inset:'auto',left:l/1440*100+'%',top:t/960*100+'%',width:(r-l)/1440*100+'%',height:(b-t)/960*100+'%'});
+    if(scene.context_poster)toggle.querySelector('img').src=scene.context_poster;
+    reset();showDetail();
+  }};
 };

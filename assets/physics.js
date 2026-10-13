@@ -3,14 +3,27 @@
   'use strict';
   const $=s=>document.querySelector(s),items=window.SCENE_INDEX||[];if(!items.length)return;
   const video=$('#physics-video'),image=$('#studio-poster'),playButton=$('#physics-play'),speed=$('#physics-speed');
-  let demo=null,wants=false,touring=false,byTour=false,shown=false,source=false,version=0,timer=0,details=null,detailAbort=null,posterVisible=false,posterLoading=false,pending=null,progressFrame=0;
+  let demo=null,wants=false,shown=false,source=false,version=0,timer=0,details=null,detailAbort=null,posterVisible=false,posterLoading=false,pending=null,progressFrame=0;
   const measurements=$('#oracle-measurements'),law=$('#scene-law');
   const foot=document.createElement('div');foot.className='scene-foot';
+  const speedReadout=document.createElement('div');speedReadout.className='scene-speed-readout';speedReadout.hidden=true;
+  speedReadout.innerHTML='<span class="speed-caption" title="Forward speed, in bricks per count">Forward speed</span><span class="speed-red"><i aria-hidden="true"></i><output id="speed-red-value" aria-label="Red ball forward speed"></output></span><span class="speed-blue"><i aria-hidden="true"></i><output id="speed-blue-value" aria-label="Blue ball forward speed"></output></span>';
   law.addEventListener('toggle',()=>{measurements.open=law.open;});
   law.append(measurements);foot.append(law,$('.physics-downloads'));$('.atlas-body').after(foot);
+  foot.insertBefore(speedReadout,$('.physics-downloads'));
   foot.append($('#atlas-controls'));
   function syncView(mode){
-    law.hidden=mode!=='physics';$('.physics-downloads').hidden=mode!=='physics';$('#atlas-controls').hidden=true;
+    law.hidden=mode!=='physics';$('.physics-downloads').hidden=mode!=='physics';$('#atlas-controls').hidden=mode!=='analysis';
+    readoutVisibility();
+  }
+  function readoutVisibility(){
+    const enabled=Boolean(demo?.speed_trace)&&$('.atlas-detail').dataset.view==='physics';speedReadout.hidden=!enabled;
+    foot.classList.toggle('has-speed-readout',enabled);$('#atlas-physics-view').classList.toggle('has-speed-readout',enabled);
+  }
+  function measuredSpeed(){
+    const trace=demo?.speed_trace;if(!trace)return;
+    const values=trace.values[Math.min(trace.values.length-1,Math.max(0,Math.floor((video.currentTime||0)*trace.fps)))];
+    for(const [i,color] of ['red','blue'].entries()){const output=$(`#speed-${color}-value`),value=values[i].toFixed(1);if(output.textContent!==value)output.textContent=value;}
   }
   const navigation=$('.atlas-bottomline>div');navigation.className='atlas-navigation';$('.atlas-topline').prepend(navigation);
   $('#oracle-chapters').hidden=true;$('#oracle-kind').hidden=true;$('#atlas-model-note').hidden=true;
@@ -19,7 +32,7 @@
   const frame=$('.physics-video-frame');
   const zoom=window.createSceneZoom(frame,video,image);
   video.controls=false;video.preload='none';
-  const media=()=>({url:demo.video,hash:demo.video_sha256,poster:demo.studio_poster,preview:demo.preview});
+  const media=()=>demo.room_background&&demo.detail_video?{url:demo.detail_video,hash:demo.detail_video_sha256,poster:demo.detail_poster,preview:demo.detail_preview}:{url:demo.video,hash:demo.video_sha256,poster:demo.studio_poster,preview:demo.preview};
   function poster(){image.src=media().preview||media().poster;image.hidden=false;posterLoading=false;sharpenPoster();}
   function armTimeout(){clearTimeout(timer);timer=setTimeout(()=>{if(pending||(wants&&video.readyState<2))fail();},20000);}
   function loadSource(time=0){
@@ -33,6 +46,7 @@
   function animateProgress(){
     progressFrame=0;if(video.paused||!source)return;
     $('#physics-progress').value=Math.round(video.currentTime/demo.duration*1000);
+    measuredSpeed();
     progressFrame=video.requestVideoFrameCallback?video.requestVideoFrameCallback(animateProgress):requestAnimationFrame(animateProgress);
   }
   function cancelProgress(){if(progressFrame){if(video.cancelVideoFrameCallback)video.cancelVideoFrameCallback(progressFrame);else cancelAnimationFrame(progressFrame);}progressFrame=0;}
@@ -42,7 +56,6 @@
     try{await next.decode();if(token===version&&!pending&&!image.hidden)image.src=next.src;}catch(_){/* Keep the embedded preview if the high-resolution image is unavailable. */}
   }
   new IntersectionObserver(entries=>{posterVisible=entries[0].isIntersecting;if(posterVisible)sharpenPoster();},{rootMargin:'300px'}).observe($('.physics-video-frame'));
-  function tourLabel(){$('#atlas-tour').textContent=touring?'Ⅱ Pause tour':'▶ Play all 15 scenes';$('#atlas-tour').setAttribute('aria-pressed',String(touring));}
   function loading(value){$('.physics-video-frame').setAttribute('aria-busy',String(value));playButton.textContent=value?'…':video.paused?'▶':'Ⅱ';overlay.textContent=value?'Loading…':'▶ Play';}
   function stop(){wants=false;video.pause();cancelProgress();clearTimeout(timer);loading(false);progress();}
   function fail(){pending=null;stop();video.removeAttribute('src');video.load();source=false;image.hidden=false;overlay.hidden=false;overlay.textContent='↻ Retry';$('#physics-error').textContent='Video unavailable. Tap Retry.';$('#physics-error').hidden=false;}
@@ -58,6 +71,7 @@
   function simTime(){const map=demo.time_map;for(let i=0;i<map.length-1;i++){const [a,x]=map[i],[b,y]=map[i+1];if(video.currentTime<=b)return x+(y-x)*(video.currentTime-a)/(b-a);}return map.at(-1)[1];}
   function progress(){
     if(!demo)return;
+    measuredSpeed();
     $('#physics-progress').value=Math.round(video.currentTime/demo.duration*1000);
     $('#physics-clock').textContent=`${clock(video.currentTime)} / ${clock(demo.duration)}`;
     playButton.textContent=video.paused?'▶':'Ⅱ';playButton.setAttribute('aria-label',video.paused?'Play scene video':'Pause scene video');
@@ -76,7 +90,7 @@
     $('.physics-video-frame').classList.add(demo.presentation==='clear'?'is-clear':'is-simple');
     video.setAttribute('aria-label',`${demo.name}: demonstration of the hidden rule`);
     law.open=false;measurements.open=false;$('#physics-download').href=demo.download_video||demo.video;$('#physics-record').href=demo.record;
-    $('#oracle-signal-download').hidden=true;progress();tourLabel();
+    $('#oracle-signal-download').hidden=true;readoutVisibility();progress();
   }
   function plot(){
     const t=simTime(),entry=details,sample=entry.timeline[Math.min(entry.timeline.length-1,Math.floor(video.currentTime*entry.fps))];
@@ -94,13 +108,13 @@
     try{const response=await fetch(demo.details,{signal:detailAbort.signal});if(!response.ok)throw Error();const data=await response.json();if(id!==demo.id)return;details=data;$('#oracle-chart').dataset.drawn='';$('#oracle-chart-wrap').hidden=false;plot();}
     catch(e){if(e.name!=='AbortError')$('#physics-sample-label').textContent='Measurements unavailable. Reopen to retry.';}
   });
-  playButton.addEventListener('click',()=>{if(video.paused&&!wants)start();else{touring=false;stop();tourLabel();}});
+  playButton.addEventListener('click',()=>{if(video.paused&&!wants)start();else{stop();}});
   overlay.addEventListener('click',start);
-  $('#physics-reset').addEventListener('click',()=>{touring=false;stop();if(source){pending=null;video.currentTime=0;}poster();overlay.hidden=false;progress();tourLabel();});
+  $('#physics-reset').addEventListener('click',()=>{stop();if(source){pending=null;video.currentTime=0;}poster();overlay.hidden=false;progress();});
   $('#physics-progress').addEventListener('input',event=>{
-    const destination=Number(event.target.value)/1000*demo.duration;touring=false;stop();
+    const destination=Number(event.target.value)/1000*demo.duration;stop();
     if(!source)loadSource(destination);else{pending={time:destination};video.currentTime=destination;}
-    overlay.hidden=true;progress();tourLabel();
+    overlay.hidden=true;progress();
   });
   speed.addEventListener('change',()=>{video.playbackRate=Number(speed.value);});
   video.addEventListener('loadedmetadata',()=>{video.playbackRate=Number(speed.value);if(pending)video.currentTime=pending.time;progress();});
@@ -109,13 +123,17 @@
   video.addEventListener('waiting',()=>{if(wants){loading(true);armTimeout();}});
   video.addEventListener('pause',()=>{cancelProgress();progress();});video.addEventListener('timeupdate',progress);video.addEventListener('seeked',()=>{if(pending)ready();else progress();});
   video.addEventListener('error',()=>{if(source)fail();});
-  video.addEventListener('ended',()=>{wants=false;if(touring){byTour=true;window.showWorld(String(Number(demo.id)%15+1).padStart(2,'0'));byTour=false;start();}else{overlay.hidden=false;overlay.textContent='↺ Replay';progress();}});
+  video.addEventListener('ended',()=>{wants=false;overlay.hidden=false;overlay.textContent='↺ Replay';progress();});
   $('#physics-fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('#atlas-physics-view').requestFullscreen();}catch(_){start();video.controls=true;}});
-  document.addEventListener('fullscreenchange',()=>{video.controls=false;});
-  document.addEventListener('longchang:atlas-view',e=>{shown=e.detail.view==='physics';syncView(e.detail.view);if(shown)select(e.detail.id);else{touring=false;stop();tourLabel();}});
-  document.addEventListener('longchang:scene',e=>{if(!byTour)touring=false;select(e.detail.id);tourLabel();});
+  document.addEventListener('fullscreenchange',()=>{
+    video.controls=false;
+    if(document.fullscreenElement===$('#atlas-physics-view'))$('.physics-playback').insertBefore(speedReadout,$('#physics-progress'));
+    else foot.insertBefore(speedReadout,$('.physics-downloads'));
+  });
+  document.addEventListener('longchang:atlas-view',e=>{shown=e.detail.view==='physics';syncView(e.detail.view);if(shown)select(e.detail.id);else{stop();}});
+  document.addEventListener('longchang:scene',e=>select(e.detail.id));
   new IntersectionObserver(e=>{if(!e[0].isIntersecting&&source)stop();},{threshold:0}).observe($('#atlas-physics-view'));
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
-  window.LongChangPhysics=Object.freeze({play:start,toggleTour(){touring=!touring;if(touring){byTour=true;window.showWorld('01');byTour=false;start();}else stop();tourLabel();}});
+  window.LongChangPhysics=Object.freeze({play:start});
   shown=$('.atlas-detail').dataset.view==='physics';syncView($('.atlas-detail').dataset.view);select(window.LongChangAtlas.currentScene());
 })();

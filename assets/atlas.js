@@ -219,23 +219,22 @@
     $('#atlas-canvas').innerHTML = result.svg;
     updateText('#atlas-state-label', result.state);
     updateText('#atlas-value', result.reading);
-    if(view === 'motion') updateText('#atlas-observation', result.observation);
+    if(view === 'analysis') updateText('#atlas-observation', result.observation);
     $('#atlas-play').textContent = playing ? 'II' : '▶';
     $('#atlas-play').setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} scene illustration`);
     $('#atlas-progress').value = Math.round(time * 100);
     updateText('#atlas-time', `${time.toFixed(1)} / 8.0 s`);
-    if(view !== 'physics') {
-      $('#atlas-tour').setAttribute('aria-pressed', String(touring));
-      $('#atlas-tour').textContent = touring ? 'II Pause scene tour' : '▶ Play all 15 scenes';
-    }
+
   }
   function setView(next) {
     view = next;
-    $('#atlas-motion-view').hidden = view !== 'motion';
+    $('#atlas-motion-view').hidden = !['motion','analysis'].includes(view);
+    $('#analysis-formula').hidden=view!=='analysis';
+    $('#analysis-formula').textContent=window.ORACLE_CATALOG?.[id]?.formula||'';
     $('#atlas-initial-view').hidden = view !== 'initial';
     $('#atlas-physics-view').hidden = view !== 'physics';
     $('.atlas-detail').dataset.view = view;
-    $('.atlas-playback').hidden = view !== 'motion';
+    $('.atlas-playback').hidden = view !== 'analysis';
     $('#atlas-trigger-text').textContent = configs[id].trigger;
     $('#atlas-model-note').textContent = configs[id].note;
     render();
@@ -252,17 +251,18 @@
     $('#atlas-canvas').setAttribute('aria-label', `${scene.name}. Idealized interactive illustration of the published law.`);
     const options = config.options?.map(([v, label]) => `<option value="${v}">${label}</option>`).join('');
     $('#atlas-controls').innerHTML = `<label for="atlas-parameter">${config.label}</label>` + (options ? `<select id="atlas-parameter">${options}</select>` : `<div class="atlas-range"><input id="atlas-parameter" type="range" min="${config.range[0]}" max="${config.range[1]}" step="${config.range[2]}" value="${value}"><output for="atlas-parameter" id="atlas-parameter-value">${Number(value).toFixed(1)} ${config.unit}</output></div>`);
+    const assumptions=document.createElement('details');assumptions.className='analysis-assumptions';assumptions.innerHTML='<summary>Assumptions</summary><p></p>';assumptions.querySelector('p').textContent=config.note;$('#atlas-controls').append(assumptions);
     $('#atlas-parameter').value = value;
     $('#atlas-parameter').addEventListener(config.options ? 'change' : 'input', event => {
       value = config.range ? Number(event.target.value) : event.target.value;
       if (config.range) $('#atlas-parameter-value').textContent = `${Number(value).toFixed(1)} ${config.unit}`;
-      touring = false; time = 0; playing = true; setView('motion'); render(); syncClock();
+      touring = false; time = 0; playing = true; setView('analysis'); render(); syncClock();
     });
     $('#atlas-evidence').hidden = !['06','07','14','15'].includes(id);
     playing = autoplay && !reduced.matches;
     setView(view); render(); syncClock();
   }
-  function running() { return !window.LongChangSceneLive && !exportMode && !document.hidden && !$('#motion-dialog').open && visible && playing && view === 'motion'; }
+  function running() { return !exportMode && !document.hidden && !$('#motion-dialog').open && visible && playing && view === 'analysis'; }
   function tick(now) {
     frame = 0;
     if (!running()) return;
@@ -287,15 +287,11 @@
   mobilePicker.addEventListener('change',()=>{window.showWorld(mobilePicker.value);if(view==='physics')window.LongChangPhysics?.play();});
   document.addEventListener('longchang:scene',event=>{mobilePicker.value=event.detail.id;});
   $('#atlas-play').addEventListener('click', () => { if (time >= duration) time = 0; playing = !playing; if (!playing) touring = false; render(); syncClock(); });
+  $('#analysis-fullscreen').addEventListener('click',async()=>{if(document.fullscreenElement)await document.exitFullscreen();else await $('.atlas-visual').requestFullscreen();});
+  document.addEventListener('fullscreenchange',()=>{const c=$('#atlas-controls');if(document.fullscreenElement===$('.atlas-visual')&&view==='analysis')$('.atlas-playback').append(c);else if($('.scene-foot'))$('.scene-foot').append(c);});
   $('#atlas-reset').addEventListener('click', () => { time = 0; playing = false; touring = false; render(); syncClock(); });
   $('#atlas-progress').addEventListener('input', event => { time = Number(event.target.value) / 100; playing = false; touring = false; render(); syncClock(); });
-  $('#atlas-tour').addEventListener('click', () => {
-    if(window.LongChangPhysics) { if(view!=='physics')setView('physics');window.LongChangPhysics.toggleTour();return; }
-    touring = !touring;
-    if (touring) { setView('motion'); window.showWorld('01'); playing = true; }
-    else playing = false;
-    render(); syncClock();
-  });
+
   function changeScene(direction) { touring = false; window.showWorld(String((Number(id) - 1 + direction + 15) % 15 + 1).padStart(2, '0')); }
   $('#atlas-prev').addEventListener('click', () => changeScene(-1));
   $('#atlas-next').addEventListener('click', () => changeScene(1));
@@ -320,7 +316,7 @@
       if (sceneId !== id) window.showWorld(sceneId);
       if (option !== undefined) { value = option; $('#atlas-parameter').value = option; }
       time = clamp(seconds, 0, duration); playing = false; touring = false;
-      document.body.classList.add('atlas-export'); setView('motion'); render();
+      document.body.classList.add('atlas-export'); setView('analysis'); render();
     }
   });
 })();

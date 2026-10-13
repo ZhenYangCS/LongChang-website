@@ -38,13 +38,13 @@ def main():
             if entry.get('detail_video'):
                 reader=imageio_ffmpeg.read_frames(str(SITE/entry['detail_video']));meta=next(reader);reader.close()
                 assert meta['fps']==60 and meta['size']==(1600,800),(id,meta)
-                detail_path=Path('/tmp/longchang-sealed-scenes')/id/'detail/job.json' if entry.get('render_revision')=='sealed-v1' else Path('/tmp/longchang-detail-views')/id/'job.json'
+                detail_path=Path('/tmp/longchang-unified-scenes')/id/'detail/job.json' if entry.get('render_revision')=='unified-v1' else Path('/tmp/longchang-detail-views')/id/'job.json'
                 detail=json.loads(detail_path.read_text())
-                if entry.get('render_revision')=='sealed-v1':
-                    room=json.loads((Path('/tmp/longchang-sealed-scenes')/id/'room/job.json').read_text())
+                if entry.get('render_revision')=='unified-v1':
+                    room=json.loads((Path('/tmp/longchang-unified-scenes')/id/'room/job.json').read_text())
                     assert room['frames']==job['frames'] and room['enclosed'] and detail['enclosed']
                 assert detail['frames']==job['frames'] and detail['radii']==job['radii']
-                assert detail['display_bounds']==job['display_bounds']
+                assert detail['display_bounds']==json.loads((SITE/'data/shared-room.json').read_text())['bounds']
                 assert len(detail['frames'])/meta['fps']==entry['duration']
     print('PASS: 60 fps uses original 500 Hz states, without artificial holds or synthesized trajectories.')
     print('PASS: collisions stay in one continuous run; separate trials fade explicitly instead of teleporting.')

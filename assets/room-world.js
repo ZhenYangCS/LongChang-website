@@ -25,7 +25,9 @@ export async function createRoom(stage,status,options={}) {
   const scene=new T.Scene(),env=new RoomEnvironment(),pmrem=new T.PMREMGenerator(renderer);
   scene.environment=pmrem.fromScene(env,.04).texture;scene.environmentIntensity=.65;env.dispose();pmrem.dispose();
   const ceiling=live?simulation.config.physics_bounds[4]:5.8,roomCenter=live?ceiling/2:2.9;
-  const camera=new T.OrthographicCamera(-6,6,6,-6,.1,100);camera.up.set(0,0,1);camera.position.set(11.86,-14.134,live?roomCenter+12.882:14.882);camera.lookAt(0,0,roomCenter);
+  const camera=new T.OrthographicCamera(-6,6,6,-6,.1,100);camera.up.set(0,0,1);
+  const lookTarget=live?new T.Vector3().fromArray(simulation.config.camera.position).addScaledVector(new T.Vector3().fromArray(simulation.config.camera.forward),30):new T.Vector3(0,0,roomCenter);
+  if(live)camera.position.fromArray(simulation.config.camera.position);else camera.position.set(11.86,-14.134,14.882);camera.lookAt(lookTarget);
   scene.add(new T.HemisphereLight(0xe9f5ff,0xa1aaa9,1.6));
   const key=new T.DirectionalLight(0xfff2dc,3.3);key.position.set(-3,-4,10);key.castShadow=true;
   key.shadow.mapSize.set(1024,1024);Object.assign(key.shadow.camera,{left:-6,right:6,top:6,bottom:-6});key.shadow.normalBias=.018;key.shadow.bias=-.0002;key.shadow.radius=4;scene.add(key);
@@ -51,14 +53,14 @@ export async function createRoom(stage,status,options={}) {
     if(matid>=0){const accessor=model.mat(matid);materialName=accessor.name;accessor.delete();}
     else materialName=name==='floor'?'floor_mat':geomColor(i)+(model.geom_bodyid[i]>0?'_enamel':'_tile');
     let geometry;
-    if(model.geom_type[i]===0)geometry=new T.BoxGeometry(12.08,12.08,.16);
+    if(model.geom_type[i]===0)geometry=new T.BoxGeometry(12,12,.034);
     else if(model.geom_type[i]===6)geometry=new RoundedBoxGeometry(s[0]*2,s[1]*2,s[2]*2,2,Math.min(.025,Math.min(...s)*.22));
     else if(model.geom_type[i]===2)geometry=new T.SphereGeometry(s[0],40,24);
     else if(model.geom_type[i]===3){geometry=new T.CapsuleGeometry(s[0],s[1]*2,5,16);geometry.rotateX(Math.PI/2);}else continue;
     if(geometry.index)geometry=geometry.toNonIndexed();
     const r=data.geom_xmat,o=i*9,p=data.geom_xpos;
     matrix.set(r[o],r[o+1],r[o+2],p[i*3],r[o+3],r[o+4],r[o+5],p[i*3+1],r[o+6],r[o+7],r[o+8],p[i*3+2],0,0,0,1);
-    if(live&&name==='floor')matrix.elements[14]=-.08;
+    if(live&&name==='floor')matrix.elements[14]=-.017;
     const body=model.geom_bodyid[i],dynamic=model.body_dofnum[body]>0,glass=materialName==='glass';
     const cast=!glass&&!name.startsWith('corner_')&&!name.startsWith('edge_')&&!name.startsWith('floor');
     const local=dynamic?bodyMatrix(body).invert().multiply(matrix):matrix;
@@ -75,15 +77,20 @@ export async function createRoom(stage,status,options={}) {
   if(live){
     // Glass inner faces coincide with the native walls and ceiling.
     const add=(geometry,material)=>{const m=new T.Mesh(geometry,material);scene.add(m);meshes.push(m);return m;};
-    const base=add(new T.BoxGeometry(12.3,12.3,.16),materials.base_trim);base.position.z=-.24;
+    const base=add(new T.BoxGeometry(12.08,12.08,.15),materials.metal);base.position.z=-.095;
     const panes=[],rails=[],z=ceiling;
     for(const sign of [-1,1]){
-      panes.push(new T.BoxGeometry(.025,12.05,z).translate(sign*6.0125,0,z/2),new T.BoxGeometry(12.05,.025,z).translate(0,sign*6.0125,z/2));
-      rails.push(new T.BoxGeometry(.027,12,.027).translate(sign*6,0,z),new T.BoxGeometry(12,.027,.027).translate(0,sign*6,z));
-      for(const other of [-1,1])rails.push(new T.BoxGeometry(.027,.027,z).translate(sign*6,other*6,z/2));
+      panes.push(new T.BoxGeometry(.024,12.024,z).translate(sign*6.012,0,z/2),new T.BoxGeometry(12.024,.024,z).translate(0,sign*6.012,z/2));
+      rails.push(new T.BoxGeometry(.0104,12,.0104).translate(sign*6,0,z),new T.BoxGeometry(12,.0104,.0104).translate(0,sign*6,z));
+      for(const other of [-1,1])rails.push(new T.BoxGeometry(.016,.016,z).translate(sign*6,other*6,z/2));
     }
     const glass=add(mergeGeometries(panes),materials.glass);glass.renderOrder=2;add(mergeGeometries(rails),materials.frame);
-    const roof=add(new T.BoxGeometry(12.05,12.05,.025),new T.MeshBasicMaterial({color:0xb8dce5,transparent:true,opacity:.09,depthWrite:false,side:T.DoubleSide}));roof.name='Native ceiling glass';roof.position.z=z+.0125;roof.renderOrder=2;
+    const roof=add(new T.BoxGeometry(12,12,.024),new T.MeshBasicMaterial({color:0xb8dce5,transparent:true,opacity:.09,depthWrite:false,side:T.DoubleSide}));roof.name='Native ceiling glass';roof.position.z=z+.012;roof.renderOrder=2;
+    // Subpixel metal rails need a continuous outline at small display sizes.
+    const edgePoints=[];
+    for(const x of [-6,6])for(const y of [-6,6])edgePoints.push(new T.Vector3(x,y,0),new T.Vector3(x,y,z));
+    for(const height of [0,z])for(const side of [-6,6])edgePoints.push(new T.Vector3(-6,side,height),new T.Vector3(6,side,height),new T.Vector3(side,-6,height),new T.Vector3(side,6,height));
+    const outline=new T.LineSegments(new T.BufferGeometry().setFromPoints(edgePoints),new T.LineBasicMaterial({color:0x8aabb6,transparent:true,opacity:.65,depthWrite:false}));outline.renderOrder=3;scene.add(outline);
     for(const g of [...panes,...rails])g.dispose();
   }
   let renderMs=0,physicsMs=0;
@@ -139,10 +146,11 @@ export async function createRoom(stage,status,options={}) {
       shadow.position.set(p.x+.24*height,p.y+.3*height,.009);const size=(radius*2.5+height*.38);shadow.scale.set(size,size,1);shadow.material.opacity=.8*Math.exp(-height*.9);
     }
   }
-  const orbit=new OrbitControls(camera,canvas);orbit.target.set(0,0,roomCenter);orbit.update();orbit.saveState();orbit.enablePan=false;orbit.minZoom=.7;orbit.maxZoom=live?5:2;orbit.enableDamping=false;orbit.enabled=false;if(live)orbit.maxPolarAngle=Math.PI/2-.05;orbit.addEventListener('change',draw);
+  const orbit=new OrbitControls(camera,canvas);orbit.target.copy(lookTarget);orbit.update();orbit.saveState();orbit.enablePan=false;orbit.minZoom=.7;orbit.maxZoom=live?5:2;orbit.enableDamping=false;orbit.enabled=false;if(live)orbit.maxPolarAngle=Math.PI/2-.05;orbit.addEventListener('change',draw);
   const ray=new T.Raycaster(),pointer=new T.Vector2();let mode='push',drag=null,forces=[],frame=0,last=0,until=0,visible=true,active=false,selected=bodyIds.red_ball?'red_ball':Object.keys(bodyIds)[0];
+  orbit.zoomToCursor=live;
   const pointers=new Set();
-  const physicsStep=model.opt.timestep;
+  const physicsStep=model.opt.timestep;let playbackRate=options.speed??(live?4:1);
   let accumulated=0,frameAverage=16.7,qualitySamples=0,quietSince=null;
   const arrow=new T.ArrowHelper(new T.Vector3(0,1,0),new T.Vector3(),0,0x387f68,.22,.13);arrow.visible=false;scene.add(arrow);
   function setRay(e){const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(pointer,camera);}
@@ -155,7 +163,7 @@ export async function createRoom(stage,status,options={}) {
       qualitySamples=0;
     }
     const physicsStart=performance.now();
-    accumulated=Math.min(.05,accumulated+Math.min(.05,elapsed/1000));
+    accumulated=Math.min(.05*playbackRate,accumulated+Math.min(.05,elapsed/1000)*playbackRate);
     while(accumulated>=physicsStep){
       data.xfrc_applied.fill(0);data.qfrc_applied.fill(0);forces=forces.filter(f=>data.time<f.end);
       for(const f of forces){const o=f.body*6;for(let k=0;k<3;k++)data.xfrc_applied[o+k]+=f.force[k];const center=new T.Vector3().fromArray(data.xpos,f.body*3),torque=f.point.clone().sub(center).cross(new T.Vector3(...f.force));for(let k=0;k<3;k++)data.xfrc_applied[o+3+k]+=torque.getComponent(k);}
@@ -185,13 +193,24 @@ export async function createRoom(stage,status,options={}) {
     const plane=new T.Plane().setFromNormalAndCoplanarPoint(mode==='drag'?camera.getWorldDirection(new T.Vector3()):new T.Vector3(0,0,1),hit.point);
     const q=data.xquat,rotation=new T.Quaternion(q[body*4+1],q[body*4+2],q[body*4+3],q[body*4]);
     drag={kind:mode,pointer:e.pointerId,body,point:hit.point.clone(),target:hit.point.clone(),plane,localOffset:hit.point.clone().sub(new T.Vector3().fromArray(data.xpos,body*3)).applyQuaternion(rotation.invert()),startX:e.clientX,startY:e.clientY};
+    if(mode==='drag'&&model.body_dofnum[body]===6){
+      const center=new T.Vector3().fromArray(data.xpos,body*3),screen=center.clone().project(camera),higher=center.clone().add(new T.Vector3(0,0,1)).project(camera),height=canvas.getBoundingClientRect().height;
+      drag.lift={center,right:new T.Vector3(1,0,0).applyQuaternion(camera.quaternion),pixelsPerUnit:height/(camera.top-camera.bottom)*camera.zoom,pixelsPerZ:Math.max(1,Math.abs(higher.y-screen.y)*height/2)};
+      drag.floorPlane=new T.Plane().setFromNormalAndCoplanarPoint(new T.Vector3(0,0,1),hit.point);
+    }
     if(live&&mode==='drag'){const center=new T.Vector3().fromArray(data.xpos,body*3);if(center.z>simulation.config.grip.reach_height+.04){releaseDrag();status('Object is above hand reach. Wait for it to fall.');return;}drag.centerOffset=hit.point.clone().sub(center);simulation.setGrip(selected,center.toArray());}
     status(`${labels[selected]||selected.replaceAll('_',' ')} · ${mode==='push'?'release to push':'release to drop'}`);if(mode==='drag')wake(20);
   });
   canvas.addEventListener('pointermove',e=>{
-    if(!drag||drag.pointer!==e.pointerId)return;setRay(e);const p=ray.ray.intersectPlane(drag.plane,new T.Vector3());if(!p)return;
+    if(!drag||drag.pointer!==e.pointerId)return;setRay(e);let p;
+    if(drag.lift&&!e.shiftKey){
+      const lift=drag.lift,center=lift.center.clone().addScaledVector(lift.right,(e.clientX-drag.startX)/lift.pixelsPerUnit);
+      center.z-=(e.clientY-drag.startY)/lift.pixelsPerZ;
+      p=center.add(drag.point.clone().sub(lift.center));
+    }else p=ray.ray.intersectPlane(drag.lift?drag.floorPlane:drag.plane,new T.Vector3());
+    if(!p)return;
     const limit=live?5.8:3.7;p.x=T.MathUtils.clamp(p.x,-limit,limit);p.y=T.MathUtils.clamp(p.y,-limit,limit);p.z=T.MathUtils.clamp(p.z,.15,live?simulation.config.grip.reach_height:5.4);drag.target=p;
-    if(live&&drag.kind==='drag'){const target=p.clone().sub(drag.centerOffset);target.z=Math.min(target.z,simulation.config.grip.reach_height);simulation.setGrip(selected,target.toArray());}
+    if(live&&drag.kind==='drag'){const target=p.clone().sub(drag.centerOffset);simulation.setGrip(selected,simulation.clampGripTarget(selected,target.toArray()));}
     if(drag.kind==='push'){const d=p.clone().sub(drag.point);d.z=0;arrow.position.copy(drag.point);if(d.length()>.01){arrow.setDirection(d.clone().normalize());arrow.setLength(Math.min(d.length(),2.5),.22,.13);}arrow.visible=d.length()>.04;draw();}
   });
   canvas.addEventListener('pointerup',e=>{
@@ -203,10 +222,10 @@ export async function createRoom(stage,status,options={}) {
   canvas.addEventListener('lostpointercapture',e=>{pointers.delete(e.pointerId);if(drag?.pointer===e.pointerId){releaseDrag();draw();}});
   canvas.addEventListener('keydown',e=>{if(e.key==='Escape'){reset();return;}const d={ArrowUp:[0,2,0],ArrowDown:[0,-2,0],ArrowLeft:[-2,0,0],ArrowRight:[2,0,0],' ':[0,0,3]};if(d[e.key]){e.preventDefault();push(selected,d[e.key]);}});
   function reset(){cancelAnimationFrame(frame);frame=0;active=false;quietSince=null;releaseDrag();forces=[];until=0;accumulated=0;arrow.visible=false;if(live)simulation.reset();else{mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);}renderer.shadowMap.needsUpdate=true;draw();setMode(mode);}
-  function setMode(value){if(value!==mode)releaseDrag();mode=value;orbit.enabled=live||value==='view';orbit.enableRotate=value==='view';orbit.enablePan=live&&value==='view';canvas.style.cursor=value==='view'?'grab':'crosshair';const zoom=matchMedia('(pointer:coarse)').matches?'pinch to zoom':'scroll to zoom';status(value==='view'?`Drag to rotate · ${zoom}`:value==='drag'?'Drag an object · release to drop':live?`Drag to push · ${zoom}`:'Drag to push · tap to nudge');}
+  function setMode(value){if(value!==mode)releaseDrag();mode=value;orbit.enabled=live||value==='view';orbit.enableRotate=value==='view';orbit.enablePan=live&&value==='view';canvas.style.cursor=value==='view'?'grab':'crosshair';const touch=matchMedia('(pointer:coarse)').matches,zoom=touch?'pinch to zoom':'scroll to zoom';status(value==='view'?`Drag to rotate · ${zoom}`:value==='drag'?(touch?'Drag up to lift · release to drop':'Drag up to lift · Shift-drag to slide'):live?`Drag to push · ${zoom}`:'Drag to push · tap to nudge');}
   function resize(){
     if(disposed)return;const r=stage.getBoundingClientRect();if(!r.width||!r.height)return;let half=5.8;
-    if(live){const right=new T.Vector3(1,0,0).applyQuaternion(camera.quaternion),up=new T.Vector3(0,1,0).applyQuaternion(camera.quaternion),us=[],vs=[];for(const x of [-6.2,6.2])for(const y of [-6.2,6.2])for(const z of [-.3,ceiling+.04]){const p=new T.Vector3(x,y,z);us.push(p.dot(right));vs.push(p.dot(up));}half=Math.max((Math.max(...vs)-Math.min(...vs))/2,(Math.max(...us)-Math.min(...us))/2/r.width*r.height)*1.06;}
+    if(live)half=simulation.config.camera.span/2*Math.max(1,1.5/(r.width/r.height));
     camera.top=half;camera.bottom=-half;camera.left=-half*r.width/r.height;camera.right=half*r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false);draw();
   }
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(stage);
@@ -223,5 +242,5 @@ export async function createRoom(stage,status,options={}) {
     renderer.dispose();renderer.forceContextLoss();canvas.remove();if(live)simulation.destroy();else{data.delete();model.delete();}
   }
   stage.append(canvas);resize();setMode(mode);
-  return {setMode,reset,push,pause,play:()=>wake(),isRunning:()=>active,destroy,getRenderInfo:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,pixelRatio:renderer.getPixelRatio(),frameMs:frameAverage,renderMs,physicsMs,softShadows,room:live?{bounds:simulation.config.physics_bounds,roofBottom:new T.Box3().setFromObject(scene.getObjectByName('Native ceiling glass')).min.z}:null}),getState:()=>({time:data.time,mode,selected,scene:simulation?.config.id,oracle:simulation?.info(),qvel:Array.from(data.qvel),colors:live?Object.fromEntries(Object.values(simulation.bodies).map(b=>[b.name,Array.from(model.geom_rgba.subarray(b.g*4,b.g*4+4))])):{},qpos:Array.from(data.qpos),positions:Object.fromEntries(Object.entries(bodyIds).map(([n,b])=>[n,Array.from(data.xpos.slice(b*3,b*3+3))])),contacts:data.ncon}),project:name=>{const p=(name in geomIds?new T.Vector3().fromArray(data.geom_xpos,geomIds[name]*3):new T.Vector3().fromArray(data.xpos,bodyIds[name]*3)).project(camera),r=stage.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
+  return {setMode,reset,push,pause,setSpeed(value){if([.5,1,2,4].includes(value))playbackRate=value;},play:()=>wake(),isRunning:()=>active,destroy,getRenderInfo:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,pixelRatio:renderer.getPixelRatio(),frameMs:frameAverage,renderMs,physicsMs,softShadows,room:live?{bounds:simulation.config.physics_bounds,camera:simulation.config.camera,roofBottom:new T.Box3().setFromObject(scene.getObjectByName('Native ceiling glass')).min.z}:null}),getState:()=>({time:data.time,rate:playbackRate,mode,selected,scene:simulation?.config.id,oracle:simulation?.info(),qvel:Array.from(data.qvel),colors:live?Object.fromEntries(Object.values(simulation.bodies).map(b=>[b.name,Array.from(model.geom_rgba.subarray(b.g*4,b.g*4+4))])):{},qpos:Array.from(data.qpos),positions:Object.fromEntries(Object.entries(bodyIds).map(([n,b])=>[n,Array.from(data.xpos.slice(b*3,b*3+3))])),contacts:data.ncon}),project:name=>{const p=(Array.isArray(name)?new T.Vector3().fromArray(name):name in geomIds?new T.Vector3().fromArray(data.geom_xpos,geomIds[name]*3):new T.Vector3().fromArray(data.xpos,bodyIds[name]*3)).project(camera),r=stage.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
 }

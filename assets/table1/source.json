@@ -1,7 +1,7 @@
 {
   "source": "ACL/secs/02_introduction.tex",
   "table": "tab:scene-overview",
-  "source_sha256": "ad02ce8e9acfc85b27a844d4768fa1be970263b7e3b9a2fd04993dfdc227bf25",
-  "symbols_sha256": "39254c2f58b98ff8ff55a6a55276451a8bd5528b9bfde4e7fd6178ae18b7cb3d",
+  "source_sha256": "ed26d5713d02357a9476b13451ced50b62d3549f3bfa906d958b6548866ad584",
+  "symbols_sha256": "22dc2bb0d900af12c5cadfead2a5a0157c7751dfc90efe74748c83adad33b0cf",
   "description": "Exact mechanism drawings from Table 1; titles are populated from the same paper scene catalogue."
 }

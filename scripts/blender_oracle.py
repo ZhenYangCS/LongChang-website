@@ -66,6 +66,10 @@ def setup(job):
     for axis,side in [('x',xmin),('x',xmax),('y',ymin),('y',ymax)]:
         position=(side,cy,height/2) if axis=='x' else (cx,side,height/2)
         scale=(thick,hy,height/2) if axis=='x' else (hx,thick,height/2)
+        if job.get('enclosed'):
+            sign=-1 if side==(xmin if axis=='x' else ymin) else 1
+            position=(side+sign*thick,cy,height/2) if axis=='x' else (cx,side+sign*thick,height/2)
+            scale=(thick,hy+thick,height/2) if axis=='x' else (hx+thick,thick,height/2)
         obj=box('Optical glass '+axis+str(side),position,scale,mats['glass'],.003)
         obj.visible_shadow=False
     # Fine enclosure edges preserve the Figure 1 silhouette without heavy rails.

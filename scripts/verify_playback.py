@@ -17,6 +17,7 @@ def main():
  with sync_playwright() as p:
   browser=p.chromium.launch(headless=True,args=['--no-sandbox','--enable-unsafe-swiftshader'])
   page=browser.new_page(viewport={'width':1366,'height':768});errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.goto(args.url+'/#worlds');page.wait_for_load_state('networkidle')
+  page.locator('#physics-speed').select_option('1')
   for scene,framing in [('07','detail'),('10','detail'),('13','detail'),('13','room')]:
    page.evaluate('(id)=>showWorld(id)',scene)
    if page.locator('.physics-video-frame').get_attribute('data-framing')!=framing:page.locator('#physics-view').click()

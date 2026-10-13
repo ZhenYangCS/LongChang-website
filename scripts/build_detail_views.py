@@ -10,6 +10,7 @@ from PIL import Image,ImageDraw,ImageFont
 import build_smooth_demos as smooth
 from launch_cues import add_launch_cues
 from render_clear_scenes import ROOM_BOUNDS,room_camera
+import story_overlays
 
 SITE=Path(__file__).resolve().parents[1]
 CACHE=Path('/tmp/longchang-detail-views')
@@ -29,8 +30,9 @@ def focus_crop(job):
             p=np.array(obj['position']);r=job['radii'][name]
             for shift in [[-r,0,0],[r,0,0],[0,0,-r],[0,0,r]]:points.append(project(base,1440,960,p+shift))
             points.append(project(base,1440,960,[p[0],p[1],0]))
+    points.extend(project(base,1440,960,p) for p in story_overlays.focus_points(job))
     points=np.array(points);lo=points.min(0)-38;hi=points.max(0)+38
-    width=min(1440,max(hi[0]-lo[0],(hi[1]-lo[1])*2,380));height=width/2
+    width=min(1440,max(hi[0]-lo[0],(hi[1]-lo[1])*2,job.get('minimum_focus_width',380)));height=width/2
     cx,cy=(lo+hi)/2;cx=np.clip(cx,width/2,1440-width/2);cy=np.clip(cy,height/2,960-height/2)
     crop=[float(cx-width/2),float(cy-height/2),float(cx+width/2),float(cy+height/2)]
     camera=copy.deepcopy(base)
@@ -71,9 +73,9 @@ def place(canvas,sprite,x,y):
 def compose(job,background,sprites,index):
     frame=job['frames'][index];w,h=job['width'],job['height'];camera=job['camera'];ppu=h/camera['span']
     im=background.copy();draw=ImageDraw.Draw(im)
-    if job['id']=='10':
+    if job['id']=='10' and not job.get('story'):
         outline=[project(camera,w,h,p) for p in [(-2,-2,.006),(2,-2,.006),(2,2,.006),(-2,2,.006),(-2,-2,.006)]]
-        draw.line([tuple(p) for p in outline],fill='#c6a147',width=3)
+        draw.line([tuple(p) for p in outline],fill='#c6a147',width=max(1,round(ppu*.015)))
     # Projected soft shadows provide depth without changing any object state.
     shadow_layer=Image.new('RGBA',im.size)
     for name,obj in frame['objects'].items():
@@ -86,33 +88,34 @@ def compose(job,background,sprites,index):
             dd.ellipse((sw/2-sw*scale/2,sh/2-sh*scale/2,sw/2+sw*scale/2,sh/2+sh*scale/2),fill=(50,70,77,alpha))
         shadow_layer.alpha_composite(disc,(round(center[0]-sw/2),round(center[1]-sh/2)))
     im=Image.alpha_composite(im,shadow_layer)
-    if job['id']=='10':
+    if job.get('story'):im=story_overlays.underlay(im,job,index,project)
+    if job['id']=='10' and not job.get('story'):
         draw=ImageDraw.Draw(im)
         for name,color in [('red_ball','#bd7464'),('blue_ball','#7399b9')]:
             p=frame['objects'][name]['position'];floor=project(camera,w,h,[p[0],p[1],.008]);center=project(camera,w,h,p)
             # Show the footprint beneath an airborne ball, where the rule acts.
             for fraction in np.arange(0,1,.1):
                 a=center+(floor-center)*fraction;b=center+(floor-center)*min(1,fraction+.045)
-                draw.line([tuple(a),tuple(b)],fill=color,width=2)
-            draw.ellipse((floor[0]-8,floor[1]-4,floor[0]+8,floor[1]+4),fill=color)
+                draw.line([tuple(a),tuple(b)],fill=color,width=max(1,round(ppu*.01)))
+            marker=ppu*.04
+            draw.ellipse((floor[0]-marker,floor[1]-marker/2,floor[0]+marker,floor[1]+marker/2),fill=color)
             start=max(0,index-60);points=[tuple(project(camera,w,h,f['objects'][name]['position'])) for f in job['frames'][start:index+1:4]]
-            if len(points)>1:draw.line(points,fill=color,width=3)
+            if len(points)>1:draw.line(points,fill=color,width=max(1,round(ppu*.015)))
     ordered=sorted(frame['objects'].items(),key=lambda pair:np.dot(np.asarray(pair[1]['position'])-camera['position'],camera['forward']),reverse=True)
     for name,obj in ordered:
         c=obj['color'];color=['red','green','blue'][int(np.argmax(c[:3]))] if max(c[:3])-min(c[:3])>.15 else 'gray'
         size=max(8,round(job['radii'][name]*2.4*ppu));key=(color,size)
         if key not in sprites:sprites[key]=sprites[color].convert('RGBa').resize((size,size),Image.Resampling.LANCZOS)
         p=project(camera,w,h,obj['position']);place(im,sprites[key],p[0],p[1])
-    draw=ImageDraw.Draw(im);font=ImageFont.truetype(str(SITE/'assets/fonts/type-0.ttf'),46 if job['id']=='10' else 34)
-    if job['id'] in ['10','12']:
+    if job.get('story'):im=story_overlays.above(im,job,index,project)
+    draw=ImageDraw.Draw(im);font=ImageFont.truetype(str(SITE/'assets/fonts/type-0.ttf'),34)
+    if job['id']=='12':
         for n,(name,obj) in enumerate(frame['objects'].items()):
             p=project(camera,w,h,obj['position']);r=job['radii'][name]*ppu
-            text=f"{obj['velocity'][0]:.1f}" if job['id']=='10' else 'AB'[n]
-            color=('#ae574a' if name=='red_ball' else '#426f99') if job['id']=='10' else '#446d60'
+            text='AB'[n];color='#446d60'
             tw=draw.textlength(text,font=font);x=p[0];y=p[1]-r-36
             draw.rounded_rectangle((x-tw/2-10,y-27,x+tw/2+10,y+28),radius=8,fill='#f8fbf9')
             draw.text((x,y),text,font=font,fill=color,anchor='mm')
-    if job['id']=='10':draw.text((30,h-42),'Forward speed',font=ImageFont.truetype(str(SITE/'assets/fonts/type-0.ttf'),28),fill='#638276')
     if frame.get('fade',0)>0:
         im=Image.blend(im,Image.new('RGBA',im.size,'#f5f8f7'),frame['fade'])
         if frame['fade']>.95:ImageDraw.Draw(im).text((w/2,h/2),'Next trial',font=font,fill='#648375',anchor='mm')

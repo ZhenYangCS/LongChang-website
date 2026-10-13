@@ -21,7 +21,7 @@ def main():
     (folder/'room-signature.json').write_text(json.dumps(signature,sort_keys=True))
     mats['gray_enamel'].node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=studio.linear((.38,.47,.51))
     mats['yellow_tile'].node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=studio.linear((.96,.72,.12))
-    scene.cycles.samples=256;scene.cycles.adaptive_threshold=.008;scene.cycles.adaptive_min_samples=64
+    scene.cycles.samples=job.get('samples',256);scene.cycles.adaptive_threshold=.008;scene.cycles.adaptive_min_samples=min(64,scene.cycles.samples)
     scene.render.film_transparent=True
     if job.get('sprites'):
         for obj in scene.objects:

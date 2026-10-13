@@ -14,8 +14,8 @@ def main():
     for entry in entries:
         id=entry['id'];cache=Path('/tmp/longchang-smooth-scenes') if entry.get('fps')==60 else CACHE
         folder=Path('/tmp/longchang-detail-views/native/10') if id=='10' and entry.get('detail_video') else cache/id
-        sealed=entry.get('render_revision')=='sealed-v1'
-        if sealed:folder=Path('/tmp/longchang-sealed-scenes')/id/'room'
+        sealed=entry.get('render_revision')=='unified-v1'
+        if sealed:folder=Path('/tmp/longchang-unified-scenes')/id/'room'
         job=json.loads((folder/'job.json').read_text());source=json.loads((SOURCE/id/'studio-job.json').read_text())
         signature_folder=Path('/tmp/longchang-detail-views')/id/'room' if entry.get('detail_video') else cache/id
         if sealed:signature_folder=folder
@@ -40,7 +40,7 @@ def main():
             from build_detail_views import focus_crop,project
             crop,camera=focus_crop(job)
             assert crop==entry['detail_crop'] and camera==entry['detail_camera']
-            detail_path=Path('/tmp/longchang-sealed-scenes')/id/'detail/job.json' if sealed else Path('/tmp/longchang-detail-views')/id/'job.json'
+            detail_path=Path('/tmp/longchang-unified-scenes')/id/'detail/job.json' if sealed else Path('/tmp/longchang-detail-views')/id/'job.json'
             detail=json.loads(detail_path.read_text())
             if sealed:assert detail['enclosed']
             assert detail['display_bounds']==common['bounds']

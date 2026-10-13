@@ -19,7 +19,7 @@ SOURCE=Path('/tmp/longchang-oracle-studio/production')
 
 # One actual room, not scene-dependent normalization. Camera, walls, plinth,
 # tile scale and lighting are identical in all fifteen films.
-ROOM_BOUNDS=[-4.5,4.5,-3.6,3.6,2.8]
+ROOM_BOUNDS=[-6.,6.,-6.,6.,12.]
 
 
 def room_camera():

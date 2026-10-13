@@ -94,6 +94,11 @@ export async function createSceneSimulation(config,status=()=>{}) {
   }
   reset();
   return {mj,model,data,config,bodies,reset,step,launch,rule,
+    clampGripTarget(name,target){
+      const b=bodies[name],r=model.geom_size.subarray(b.g*3,b.g*3+3),rotation=data.geom_xmat.subarray(b.g*9,b.g*9+9);
+      const extent=model.geom_type[b.g]===2?[r[0],r[0],r[0]]:[0,1,2].map(i=>[0,1,2].reduce((v,k)=>v+Math.abs(rotation[i*3+k])*r[k],0));
+      return Array.from(target,(v,k)=>Math.max((k===2?0:-6)+extent[k],Math.min(k===2?Math.min(config.grip.reach_height,12-extent[k]):6-extent[k],v)));
+    },
     setGrip(name,target){if(!bodies[name])throw Error('Unknown object');grip={name,target:Array.from(target)};},
     releaseGrip(){grip=null;},
     info:()=>({count,quietUntil,pending:pending.map(e=>e.time),held:grip?.name||null,gripTarget:grip?.target||null}),destroy(){data.delete();model.delete();}};

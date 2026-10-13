@@ -327,6 +327,9 @@
 /* One continuous video; zoom and pan only change its display transform. */
 .physics-video-frame { overflow:hidden; }
 .physics-media { position:absolute; left:0; top:0; transform-origin:0 0; pointer-events:none; }
+.physics-room-background { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; }
+.physics-media>video { z-index:1; }
+.physics-media>.studio-poster { z-index:2; }
 .physics-video-frame .physics-media>video,.physics-video-frame .physics-media>.studio-poster { position:absolute; inset:0; width:100%; height:100%; max-height:none; object-fit:fill; aspect-ratio:auto; }
 .physics-video-frame[data-framing=detail] { cursor:grab; touch-action:none; }
 .physics-video-frame[data-framing=detail] .physics-media { will-change:transform; }
@@ -371,3 +374,75 @@
   #scene-live-hint { font-size:9px; }
 }
 #scene-live-controls.fullscreen-controls { flex-shrink:0; height:42px; align-items:center; border-top:1px solid #dce5db; background:#fbfcfa; }
+.scene-workspace .physics-playback,.scene-workspace .scene-live-playback { height:42px; min-height:42px; padding:7px 10px; }
+#physics-speed,#scene-live-speed { height:28px; font:11px var(--sans); padding:3px 4px; border:1px solid #ccd9d1; border-radius:5px; background:#fbfdfa; color:#456753; cursor:pointer; }
+.atlas-visual:fullscreen .scene-live-playback,#atlas-physics-view:fullscreen .physics-playback { height:52px; min-height:52px; padding:10px 20px; }
+.atlas-visual:fullscreen #scene-live-controls.fullscreen-controls { width:auto; height:auto; border:0; background:none; margin-right:auto; }
+.atlas-visual:fullscreen #scene-live-hint { display:none; }
+@media(max-width:560px) {
+  #scene-live-controls.fullscreen-controls button { padding-inline:8px; }
+}
+.atlas-toolbar { justify-content:flex-end; gap:20px; }
+.atlas-toolbar>a { padding:6px 0; font:10px/1.5 var(--sans); color:#577562; }
+.atlas-toolbar>a:hover { color:#285442; }
+.scene-workspace .scene-foot.has-speed-readout { grid-template-columns:auto minmax(0,1fr) auto; gap:10px; align-items:center; }
+.scene-speed-readout { display:flex; align-items:center; justify-content:center; gap:12px; white-space:nowrap; font:11px var(--sans); font-variant-numeric:tabular-nums; }
+.speed-caption { color:#728b7b; font-size:10px; }
+.scene-speed-readout>span:not(.speed-caption) { display:flex; align-items:center; gap:5px; }
+.scene-speed-readout i { width:5px; height:5px; border-radius:50%; background:currentColor; }
+.speed-red { color:#b3594b; }
+.speed-blue { color:#416f9e; }
+#atlas-physics-view:fullscreen .scene-speed-readout { margin-inline:5px; }
+@media(max-width:560px) {
+  .scene-workspace .scene-foot.has-speed-readout { padding:10px; gap:8px; }
+  .scene-speed-readout { gap:7px; font-size:10px; }
+  .speed-caption { max-width:38px; white-space:normal; text-align:center; font-size:9px; line-height:1.1; }
+  .scene-workspace .scene-foot.has-speed-readout .physics-downloads { gap:9px; font-size:9px; }
+  #atlas-physics-view.has-speed-readout:fullscreen #physics-clock { display:none; }
+}
+/* Compact five-by-three choices sit directly beside the scene. */
+@media(min-width:801px) {
+  .scene-workspace { grid-template-columns:clamp(250px,24vw,300px) minmax(0,1fr); gap:8px; }
+  .scene-workspace .scene-index { align-self:stretch; height:100%; min-height:0; }
+  .scene-workspace .scene-picker { flex:1; min-height:0; grid-template-columns:repeat(3,minmax(0,1fr)); grid-template-rows:repeat(5,minmax(0,1fr)); gap:4px; padding:4px; }
+  .scene-workspace .scene-picker button { padding:16px 4px 6px; gap:2px; }
+  .scene-workspace .scene-choice-number { top:6px; left:6px; }
+  .scene-workspace .scene-choice-name { font-size:10px; line-height:1.3; min-height:28px; overflow-wrap:anywhere; }
+  .scene-workspace .scene-picker .scene-choice-symbol { height:22px; }
+  .scene-workspace .world-law[open] { width:clamp(250px,24vw,300px); }
+}
+@media(min-width:1100px) {
+  .scene-workspace .atlas-topline { position:absolute; left:calc(clamp(250px,24vw,300px) + 18px); right:10px; top:13px; min-height:0; padding:0; border:0; background:none; z-index:2; pointer-events:none; }
+  .scene-workspace .atlas-topline button { pointer-events:auto; }
+  .scene-workspace .atlas-copy,.scene-workspace .atlas-detail[data-view=physics] .atlas-copy { padding:16px 16px 12px; }
+  .scene-workspace .atlas-copy h3 { max-width:calc(100% - 200px); }
+}
+@media(min-width:801px) and (max-width:1100px) {
+  .scene-workspace .scene-choice-name { font-size:9px; }
+}
+@media(min-width:801px) and (max-height:700px) {
+  .scene-workspace .scene-picker button { padding:13px 4px 4px; }
+  .scene-workspace .scene-choice-name { min-height:23px; font-size:9px; }
+  .scene-workspace .scene-picker .scene-choice-symbol { height:18px; }
+}
+/* Distinct, readable video, live-physics and mathematical views. */
+.scene-workspace .atlas-view-switch { padding:3px; gap:3px; border-color:#c4d7ca; background:#eaf1eb; }
+.scene-workspace .atlas-view-switch button { font:600 12px/1.3 var(--sans); padding:7px 11px; color:#466555; }
+.scene-workspace .atlas-view-switch button[aria-pressed=true] { background:#38664f; color:white; box-shadow:none; }
+.analysis-formula { flex-shrink:0; padding:8px 16px; font:16px/1.4 'Oracle Math',var(--sans); color:#3e6951; background:#f1f6ef; text-align:center; }
+.scene-workspace .atlas-detail[data-view=analysis] #scene-live-stage { display:none; }
+.scene-workspace .atlas-detail[data-view=analysis] #atlas-canvas { display:block!important; }
+.scene-workspace .atlas-detail[data-view=analysis] .atlas-scene-readout { display:flex!important; }
+.scene-workspace .atlas-detail[data-view=analysis] .atlas-illustration-label { display:block!important; }
+.scene-workspace .atlas-detail[data-view=analysis] .atlas-playback { display:flex!important; flex-shrink:0; height:42px; }
+.scene-workspace .atlas-detail[data-view=analysis] #atlas-controls { display:flex!important; flex:1; }
+.scene-workspace .atlas-detail[data-view=analysis] .scene-foot { display:flex; align-items:center; }
+.analysis-assumptions { flex-shrink:0; font-size:10px; color:#627d6a; }
+.analysis-assumptions[open] { position:absolute; z-index:8; left:0; bottom:0; width:clamp(250px,24vw,300px); padding:16px; border:1px solid #cbdccf; border-radius:7px; background:#f8fcf8; box-shadow:0 -6px 24px #33593d18; }
+.analysis-assumptions p { font:12px/1.7 var(--sans); margin-top:12px; }
+.atlas-visual:fullscreen .atlas-playback #atlas-controls { max-width:440px; }
+@media(max-width:800px) {
+  .scene-workspace .atlas-view-switch button { padding:7px 9px; font-size:11px; }
+  .analysis-assumptions[open] { width:100%; }
+  .atlas-visual:fullscreen .atlas-playback #atlas-progress,.atlas-visual:fullscreen .atlas-playback #atlas-time { display:none; }
+}

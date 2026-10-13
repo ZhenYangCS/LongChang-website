@@ -4,7 +4,7 @@
   const stage=document.createElement('div');stage.id='scene-live-stage';
   const poster=document.createElement('img');poster.className='scene-live-poster';poster.alt='Scene preview';stage.append(poster);host.prepend(stage);
   const playback=document.createElement('div');playback.className='scene-live-playback';playback.hidden=true;
-  playback.innerHTML='<button id="scene-live-play" class="round-control" aria-label="Pause live physics">Ⅱ</button><span id="scene-live-hint" role="status"></span><span id="scene-live-clock">0.0 s</span><button id="scene-live-fullscreen" class="round-control" aria-label="Expand live physics">⛶</button>';
+  playback.innerHTML='<button id="scene-live-play" class="round-control" aria-label="Pause live physics">Ⅱ</button><span id="scene-live-hint" role="status"></span><span id="scene-live-clock">0.0 s</span><select id="scene-live-speed" aria-label="Live physics speed"><option value="0.5">0.5×</option><option value="1">1×</option><option value="2">2×</option><option value="4" selected>4×</option></select><button id="scene-live-fullscreen" class="round-control" aria-label="Expand live physics">⛶</button>';
   host.after(playback);
   const controls=document.createElement('div');controls.id='scene-live-controls';controls.hidden=true;
   controls.innerHTML='<div class="room-tools" role="group" aria-label="Interact with the scene"><button data-scene-mode="push" aria-pressed="true">Push</button><button data-scene-mode="drag" aria-pressed="false">Drag</button><button data-scene-mode="view" aria-pressed="false">Rotate</button><button id="scene-live-reset" aria-label="Reset the scene">↺</button></div>';
@@ -25,7 +25,7 @@
       if(!response.ok)throw Error('Scene unavailable');const config=await response.json();if(token!==version)return;
       const simulation=await createSceneSimulation(config,text=>{if(token===version)status(text);});
       if(token!==version){simulation.destroy();return;}
-      const next=await createRoom(stage,status,{simulation,onFrame:time=>{clock(time);if(world)playLabel();}});
+      const next=await createRoom(stage,status,{simulation,speed:Number($('#scene-live-speed').value),onFrame:time=>{clock(time);if(world)playLabel();}});
       if(token!==version){next.destroy();return;}
       world=next;worldId=id;window.SceneRoom=world;poster.hidden=true;world.setMode(mode);if(visible)world.play();playLabel();
     }catch(error){if(token===version){status('Could not load. Tap Push to retry.');console.warn('Live scene:',error.message);}}
@@ -40,6 +40,7 @@
     if(world)world.setMode(mode);else open();
   }));
   $('#scene-live-play').addEventListener('click',()=>{if(!world){open();return;}if(world.isRunning())world.pause();else world.play();playLabel();});
+  $('#scene-live-speed').addEventListener('change',()=>world?.setSpeed(Number($('#scene-live-speed').value)));
   $('#scene-live-reset').addEventListener('click',()=>{world?.reset();clock(0);playLabel();});
   stage.addEventListener('pointerup',()=>{queueMicrotask(playLabel);});
   $('#scene-live-fullscreen').addEventListener('click',async()=>{
@@ -47,7 +48,7 @@
   });
   document.addEventListener('fullscreenchange',()=>{
     const full=document.fullscreenElement===$('.atlas-visual');
-    (full?$('.atlas-visual'):$('.scene-foot')).append(controls);controls.classList.toggle('fullscreen-controls',full);
+    if(full)playback.insertBefore(controls,$('#scene-live-clock'));else $('.scene-foot').append(controls);controls.classList.toggle('fullscreen-controls',full);
   });
   document.addEventListener('longchang:scene',()=>{
     if(worldId!==window.LongChangAtlas.currentScene()){destroy();lastClock=-1;clock(0);if(visible)open();}

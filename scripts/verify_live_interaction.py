@@ -41,8 +41,8 @@ def main():
         page.mouse.up();assert page.evaluate('SceneRoom.getState().oracle.held') is None
         page.locator('#scene-live-reset').click();page.locator('[data-scene-mode=push]').click();page.locator('#scene-live-stage canvas').focus();page.keyboard.press('ArrowRight')
         page.wait_for_function('document.querySelector("#scene-live-play").getAttribute("aria-label")==="Pause live physics"')
-        page.locator('#atlas-tour').click();assert page.locator('#scene-detail').get_attribute('data-view')=='physics'
-        page.wait_for_function('!document.querySelector("#physics-video").paused');page.locator('#atlas-tour').click()
+        page.locator('[data-atlas-view=physics]').click();page.locator('#physics-play').click();assert page.locator('#atlas-tour').count()==0
+        page.wait_for_function('!document.querySelector("#physics-video").paused');page.locator('#physics-play').click()
         page.locator('[data-room-mode=push]').click();page.wait_for_function('!!window.RoomDemo')
         wasm=page.evaluate('performance.getEntriesByType("resource").filter(r=>r.name.includes(".wasm")).length');assert wasm==1,wasm
         print('PASS: real push, lift/drop, rotate, pause/resume, fullscreen controls, fresh scene state and one shared WASM download.',flush=True)

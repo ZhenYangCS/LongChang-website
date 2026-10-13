@@ -1,0 +1,1096 @@
+{
+  "checked_at": "2026-10-13T07:13:41.042698+00:00",
+  "native_mujoco": "3.12.0",
+  "browser_mujoco": "3.15.0",
+  "scenes": 15,
+  "experiments": 69,
+  "trace_interval_seconds": 0.05,
+  "max_abs_qpos_error": 1.0862788446530658e-09,
+  "max_abs_qvel_error": 6.432782793753505e-09,
+  "discrete_state_mismatches": 0,
+  "default_playback_rate": 4,
+  "physics_timestep": 0.002,
+  "room_bounds": [
+    -6,
+    6,
+    -6,
+    6,
+    12
+  ],
+  "watch_try_it_projection_error_px": 0.4163,
+  "video_playback_sample": {
+    "seconds": 2.0002000007629395,
+    "presented": 120,
+    "presentation_fps": 59.9940005770564,
+    "decoded": 480,
+    "dropped": 0,
+    "stalls": 0,
+    "p95_ms": 16.666000000000167,
+    "max_ms": 16.677999999999884,
+    "width": 1600,
+    "height": 800,
+    "rate": 4,
+    "source": "assets/videos/unified-detail/scene-15.mp4?v=feae3f38d4ee"
+  },
+  "source_sha256": {
+    "../scenes/base_15.json": "a14ee80c208d27dc53c0f011bef179c6484a7a1e37b6b0d715525bca731ee818",
+    "../longchang/world.py": "474bdc12bd0d9b7c9ab2d5c372cdadc872ff198deaf98ce72514811c04bb44e1",
+    "../longchang/tools.py": "c15242705f38742914a71bfda01185e1ebb35e4776f5db7bacdf9a6e83795f7f",
+    "assets/scene-physics.js": "f18114fdc290ec028f32173263a6f244ec08431da08cda40bbed08d5f32820c9",
+    "assets/room-world.js": "d7a74f0ec216ac611d7d1dadc289f06351c58d3e0230a6f6162995b8df993bc5",
+    "data/shared-room.json": "18a1f42fddc80bcca584e3b20c83be265a7816681b05960b407af2a2ccdac6f8"
+  },
+  "experiments_checked": [
+    {
+      "id": "01",
+      "label": "prepared demonstration",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "01",
+      "label": "move, hold, release and relaunch",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "01",
+      "label": "free motion seed 101",
+      "positionError": 1.5543122344752192e-15,
+      "velocityError": 4.929390229335695e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "01",
+      "label": "free motion seed 307",
+      "positionError": 6.480926906249351e-15,
+      "velocityError": 1.603162047558726e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "02",
+      "label": "prepared demonstration",
+      "positionError": 3.3306690738754696e-16,
+      "velocityError": 2.4490080369022634e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "02",
+      "label": "move, hold, release and relaunch",
+      "positionError": 8.992806499463768e-15,
+      "velocityError": 9.969802761133906e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "02",
+      "label": "free motion seed 101",
+      "positionError": 3.4861002973229915e-14,
+      "velocityError": 9.9298347322474e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "02",
+      "label": "free motion seed 307",
+      "positionError": 6.661338147750939e-15,
+      "velocityError": 1.1102230246251565e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "03",
+      "label": "prepared demonstration",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "03",
+      "label": "move, hold, release and relaunch",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "03",
+      "label": "free motion seed 101",
+      "positionError": 7.771561172376096e-16,
+      "velocityError": 3.1086244689504383e-15,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "03",
+      "label": "free motion seed 307",
+      "positionError": 1.1032841307212493e-14,
+      "velocityError": 2.1049828546892968e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "04",
+      "label": "prepared demonstration",
+      "positionError": 1.829518058369983e-18,
+      "velocityError": 1.7152046826244908e-17,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "04",
+      "label": "move, hold, release and relaunch",
+      "positionError": 5.421010862427522e-20,
+      "velocityError": 1.3877787807814457e-17,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "04",
+      "label": "free motion seed 101",
+      "positionError": 4.579669976578771e-15,
+      "velocityError": 9.564571357145724e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "04",
+      "label": "free motion seed 307",
+      "positionError": 4.773959005888173e-15,
+      "velocityError": 9.325873406851315e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "05",
+      "label": "prepared demonstration",
+      "positionError": 8.715250743307479e-15,
+      "velocityError": 3.197442310920451e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "05",
+      "label": "move, hold, release and relaunch",
+      "positionError": 1.4016565685892601e-15,
+      "velocityError": 1.687538997430238e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "05",
+      "label": "free motion seed 101",
+      "positionError": 3.191891195797325e-15,
+      "velocityError": 1.5987211554602254e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "05",
+      "label": "free motion seed 307",
+      "positionError": 3.1086244689504383e-15,
+      "velocityError": 7.899529759234672e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "06",
+      "label": "prepared demonstration",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "06",
+      "label": "move, hold, release and relaunch",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "06",
+      "label": "free motion seed 101",
+      "positionError": 8.881784197001252e-15,
+      "velocityError": 2.859934511434403e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "06",
+      "label": "free motion seed 307",
+      "positionError": 1.7208456881689926e-14,
+      "velocityError": 7.105427357601002e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "07",
+      "label": "prepared demonstration",
+      "positionError": 6.661338147750939e-16,
+      "velocityError": 1.5785983631388945e-15,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "07",
+      "label": "move, hold, release and relaunch",
+      "positionError": 8.326672684688674e-17,
+      "velocityError": 1.5785983631388945e-15,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "07",
+      "label": "free motion seed 101",
+      "positionError": 8.826273045769994e-15,
+      "velocityError": 7.016609515630989e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "07",
+      "label": "free motion seed 307",
+      "positionError": 8.670841822322473e-14,
+      "velocityError": 5.74651437545981e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "08",
+      "label": "prepared demonstration",
+      "positionError": 1.0125233984581428e-13,
+      "velocityError": 2.3803181647963356e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "08",
+      "label": "move, hold, release and relaunch",
+      "positionError": 1.6431300764452317e-14,
+      "velocityError": 4.440892098500626e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "08",
+      "label": "free motion seed 101",
+      "positionError": 1.9872645196095107e-13,
+      "velocityError": 2.2311041902867146e-12,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "08",
+      "label": "free motion seed 307",
+      "positionError": 6.666889262874065e-14,
+      "velocityError": 5.622169396701793e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "09",
+      "label": "prepared demonstration",
+      "positionError": 8.881784197001252e-16,
+      "velocityError": 1.0658141036401503e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "09",
+      "label": "move, hold, release and relaunch",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "09",
+      "label": "free motion seed 101",
+      "positionError": 1.3739009929736312e-15,
+      "velocityError": 3.952393967665557e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "09",
+      "label": "free motion seed 307",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "10",
+      "label": "prepared demonstration",
+      "positionError": 2.7755575615628914e-16,
+      "velocityError": 1.1102230246251565e-15,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "10",
+      "label": "move, hold, release and relaunch",
+      "positionError": 0,
+      "velocityError": 5.551115123125783e-17,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "10",
+      "label": "free motion seed 101",
+      "positionError": 3.885780586188048e-16,
+      "velocityError": 9.992007221626409e-16,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "10",
+      "label": "free motion seed 307",
+      "positionError": 1.2975731600306517e-15,
+      "velocityError": 1.3766765505351941e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "11",
+      "label": "prepared demonstration",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "11",
+      "label": "move, hold, release and relaunch",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "11",
+      "label": "free motion seed 101",
+      "positionError": 9.83935155574045e-15,
+      "velocityError": 3.6770586575585185e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "11",
+      "label": "free motion seed 307",
+      "positionError": 9.298117831235686e-15,
+      "velocityError": 3.197442310920451e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "12",
+      "label": "prepared demonstration",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "12",
+      "label": "move, hold, release and relaunch",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "12",
+      "label": "free motion seed 101",
+      "positionError": 2.8033131371785203e-15,
+      "velocityError": 2.4868995751603507e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "12",
+      "label": "free motion seed 307",
+      "positionError": 1.3433698597964394e-14,
+      "velocityError": 1.341149413747189e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "13",
+      "label": "prepared demonstration",
+      "positionError": 1.4876988529977098e-14,
+      "velocityError": 3.907985046680551e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 3,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "13",
+      "label": "move, hold, release and relaunch",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "13",
+      "label": "free motion seed 101",
+      "positionError": 7.438494264988549e-15,
+      "velocityError": 1.8474111129762605e-13,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "13",
+      "label": "free motion seed 307",
+      "positionError": 1.2240208846492351e-14,
+      "velocityError": 4.3076653355456074e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "14",
+      "label": "prepared demonstration",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "14",
+      "label": "move, hold, release and relaunch",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "14",
+      "label": "free motion seed 101",
+      "positionError": 2.3869795029440866e-15,
+      "velocityError": 2.1316282072803006e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [
+          12.5
+        ],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "14",
+      "label": "free motion seed 307",
+      "positionError": 5.329070518200751e-15,
+      "velocityError": 2.1316282072803006e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [
+          12.5
+        ],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "15",
+      "label": "prepared demonstration",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 15.999999999999561,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "15",
+      "label": "move, hold, release and relaunch",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 12.999999999999892,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "15",
+      "label": "free motion seed 101",
+      "positionError": 5.717648576819556e-15,
+      "velocityError": 7.993605777301127e-14,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 11.700000000000001,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "15",
+      "label": "free motion seed 307",
+      "positionError": 1.3145040611561853e-13,
+      "velocityError": 2.1458390619955026e-12,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 11.700000000000001,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "03",
+      "label": "stationary heavy-ball grip",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": "blue_ball",
+        "gripTarget": [
+          0.55,
+          0,
+          1.8
+        ]
+      }
+    },
+    {
+      "id": "04",
+      "label": "grip through an entire gravity cycle",
+      "positionError": 0,
+      "velocityError": 6.776263578034403e-19,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": "red_ball",
+        "gripTarget": [
+          -0.55,
+          0,
+          1.5
+        ]
+      }
+    },
+    {
+      "id": "07",
+      "label": "swap the balls between tiles",
+      "positionError": 3.3306690738754696e-16,
+      "velocityError": 1.5785983631388945e-15,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "10",
+      "label": "blue enters yellow; red stays outside",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "12",
+      "label": "simultaneous three-body contacts",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "13",
+      "label": "wall contact does not count",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "14",
+      "label": "queued 3D copies survive holding red",
+      "positionError": 1.0862788446530658e-09,
+      "velocityError": 6.432782793753505e-09,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "15",
+      "label": "zero pushes and hand movement do not restart pause",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 10,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    },
+    {
+      "id": "01",
+      "label": "native ceiling collision",
+      "positionError": 0,
+      "velocityError": 0,
+      "colorError": 0,
+      "stateError": 0,
+      "info": {
+        "count": 0,
+        "quietUntil": 0,
+        "pending": [],
+        "held": null,
+        "gripTarget": null
+      }
+    }
+  ],
+  "watch_default_framing": "detail",
+  "try_it_default_framing": "room",
+  "projection_comparison_framing": "whole room",
+  "presentation_checked_at": "2026-10-13T08:01:37.741068+00:00"
+}

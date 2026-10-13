@@ -17,11 +17,12 @@ def main():
         assert page.evaluate('performance.getEntriesByType("resource").filter(r=>/\\.(mp4|wasm)/.test(r.name)).length')==0
         assert page.locator('#scene-tab-07').get_attribute('aria-selected')=='true'
         assert page.locator('[data-atlas-view=initial]').count()==0
+        assert page.locator('#physics-speed').input_value()=='4' and page.locator('#scene-live-speed').input_value()=='4'
         assert page.locator('.atlas-copy').inner_text().strip().count('\n')<=2
         assert page.locator('#scene-picker .scene-choice-symbol').count()==15
         left=page.locator('.scene-index').bounding_box();right=page.locator('#scene-detail').bounding_box()
         assert left['x']+left['width']<right['x']
-        assert abs(left['height']-right['height'])<1
+        assert abs(left['height']-right['height'])<1 and right['width']>left['width']*1.5
         print('PASS: first load completes with no video or physics download.',flush=True)
         for i in range(1,16):
             id=f'{i:02}';page.locator('#scene-tab-'+id).click()
@@ -35,13 +36,13 @@ def main():
             page.locator('.physics-video-frame').scroll_into_view_if_needed()
             rule=page.locator('#oracle-plain').bounding_box();art=page.locator('.physics-video-frame').bounding_box()
             assert rule['y']+rule['height']<=art['y']
-            if args.require_hd:assert page.locator('#physics-video').evaluate('(v)=>v.videoWidth')==1440
-            assert page.locator('.physics-video-frame').get_attribute('data-framing')=='room'
+            if args.require_hd:assert page.locator('#physics-video').evaluate('(v)=>v.videoWidth')==1600
+            assert page.locator('.physics-video-frame').get_attribute('data-framing')=='detail'
             for rate in ['0.5','1','2','4']:
                 page.locator('#physics-speed').select_option(rate)
                 assert page.locator('#physics-video').evaluate('(v)=>v.playbackRate')==float(rate)
             left=page.locator('.scene-index').bounding_box();right=page.locator('#scene-detail').bounding_box()
-            assert abs(left['height']-right['height'])<1
+            assert abs(left['height']-right['height'])<1 and right['width']>left['width']*1.5
             page.locator('#physics-play').click();assert page.locator('#physics-video').evaluate('(v)=>v.paused')
             page.locator('#physics-progress').evaluate('e=>{e.value=650;e.dispatchEvent(new Event("input",{bubbles:true}));}')
             page.wait_for_function('()=>{const v=document.querySelector("#physics-video");return !v.seeking&&Math.abs(v.currentTime/v.duration-.65)<.02;}')
@@ -49,7 +50,7 @@ def main():
         page.locator('#physics-speed').select_option('1')
         t=page.locator('#physics-video').evaluate('(v)=>v.currentTime')
         source=page.locator('#physics-video').evaluate('(v)=>v.currentSrc')
-        for mode in ['detail','room']:
+        for mode in ['room','detail']:
             page.locator('#physics-view').click()
             assert page.locator('.physics-video-frame').get_attribute('data-framing')==mode
             assert page.locator('#physics-video').evaluate('(v)=>v.currentSrc')==source
@@ -63,10 +64,9 @@ def main():
         page.locator('#scene-law > summary').click()
         page.wait_for_function('document.querySelector("#oracle-chart path")!==null')
         assert page.locator('#physics-values').inner_text()
-        page.locator('#atlas-tour').click();page.wait_for_function('!document.querySelector("#physics-video").paused')
-        page.locator('#physics-video').evaluate('(v)=>v.currentTime=v.duration-.03');page.wait_for_function('LongChangAtlas.currentScene()==="02"')
-        page.locator('#atlas-tour').click()
-        print('PASS: 15 names, concise summaries and folded full rules, framing switch, playback rates, seek, fullscreen, measurements and tour.',flush=True)
+        page.locator('#scene-law > summary').click()
+        assert page.locator('#atlas-tour').count()==0 and page.locator('.atlas-toolbar a').count()==2
+        print('PASS: 15 names, concise summaries and folded full rules, framing switch, playback rates, seek, fullscreen, measurements and grouped downloads.',flush=True)
         # Both views reserve the same space, including their bottom controls.
         for mode in ['physics','motion']:
             page.locator('[data-atlas-view='+mode+']').click()
@@ -89,8 +89,8 @@ def main():
             assert box['y']>70 and box['y']+box['height']<=height,(width,height,box)
             tabs=page.locator('#scene-picker button').all()
             positions=[tab.bounding_box() for tab in tabs]
-            assert len({round(b['x']) for b in positions})==5
-            assert len({round(b['y']) for b in positions})==3
+            assert len({round(b['x']) for b in positions})==3
+            assert len({round(b['y']) for b in positions})==5
             assert all(page.locator('#scene-tab-'+f'{i:02}').is_visible() for i in range(1,16))
             for i in range(1,16):
                 page.evaluate('(id)=>showWorld(id)',f'{i:02}')

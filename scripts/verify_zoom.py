@@ -22,8 +22,8 @@ def main():
         browser=p.chromium.launch(headless=True,args=['--no-sandbox','--enable-unsafe-swiftshader'])
         page=browser.new_page(viewport={'width':1366,'height':768});page.on('pageerror',lambda e:errors.append(str(e)))
         page.goto(args.url+'/#worlds');page.wait_for_load_state('networkidle')
-        assert scale(page)==1
-        page.locator('#physics-view').click();assert scale(page)==2
+        assert scale(page)>1 and page.locator('.physics-video-frame').get_attribute('data-framing')=='detail'
+        while scale(page)>2.5:page.locator('#scene-zoom-out').click()
         assert not page.locator('#physics-video').get_attribute('src'),'Zooming a poster should not download a movie'
         frame=box(page,'.physics-video-frame');x=frame['x']+frame['width']/2+15;y=frame['y']+frame['height']/2+8
         page.locator('#scene-zoom-in').click();page.locator('#scene-zoom-in').click()
@@ -58,12 +58,14 @@ def main():
         page.locator('#physics-fullscreen').click();page.wait_for_function('!document.fullscreenElement')
         page.locator('.physics-video-frame').focus();page.keyboard.press('0');assert scale(page)==1
         page.locator('#physics-view').click();page.locator('.physics-video-frame').focus();page.keyboard.press('+');assert scale(page)>2
-        page.locator('#scene-tab-10').click();assert scale(page)==1
+        page.locator('#scene-tab-10').click();assert scale(page)>1
         page.locator('#physics-play').click()
         print('PASS: zoom preserves source, time, pause state and playback rate; fullscreen controls, keyboard and scene reset work.',flush=True)
 
         phone=browser.new_page(viewport={'width':390,'height':844},is_mobile=True,has_touch=True)
-        phone.on('pageerror',lambda e:errors.append(str(e)));phone.goto(args.url+'/#worlds');phone.locator('#physics-view').tap()
+        phone.on('pageerror',lambda e:errors.append(str(e)));phone.goto(args.url+'/#worlds');phone.wait_for_function('Number(document.querySelector(".physics-video-frame").dataset.zoom)>1')
+        while scale(phone)>2.1:phone.locator('#scene-zoom-out').tap()
+        before_pinch=scale(phone)
         phone.locator('.physics-video-frame').scroll_into_view_if_needed();frame=box(phone,'.physics-video-frame')
         x=frame['x']+frame['width']/2;y=frame['y']+frame['height']/2
         cdp=phone.context.new_cdp_session(phone)
@@ -71,7 +73,7 @@ def main():
         def pair(d):return [{'id':1,'x':x-d,'y':y},{'id':2,'x':x+d,'y':y}]
         touch('touchStart',pair(25))
         for d in [30,35,40,45,50]:touch('touchMove',pair(d))
-        touch('touchEnd',[]);assert 3.8<scale(phone)<4.2,scale(phone)
+        touch('touchEnd',[]);assert abs(scale(phone)/before_pinch-2)<.1,scale(phone)
         before=box(phone,'.physics-media');touch('touchStart',[{'id':1,'x':x,'y':y}])
         for d in [10,20,30,40]:touch('touchMove',[{'id':1,'x':x-d,'y':y+10}])
         touch('touchCancel',[]);after=box(phone,'.physics-media')
