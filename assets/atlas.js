@@ -262,7 +262,7 @@
     playing = autoplay && !reduced.matches;
     setView(view); render(); syncClock();
   }
-  function running() { return !exportMode && !document.hidden && !$('#motion-dialog').open && visible && playing && view === 'motion'; }
+  function running() { return !window.LongChangSceneLive && !exportMode && !document.hidden && !$('#motion-dialog').open && visible && playing && view === 'motion'; }
   function tick(now) {
     frame = 0;
     if (!running()) return;

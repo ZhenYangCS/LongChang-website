@@ -9,13 +9,10 @@
   law.addEventListener('toggle',()=>{measurements.open=law.open;});
   law.append(measurements);foot.append(law,$('.physics-downloads'));$('.atlas-body').after(foot);
   foot.append($('#atlas-controls'));
-  const originalLink=document.createElement('a');originalLink.className='original-download';originalLink.textContent='Image ↓';originalLink.setAttribute('download','');foot.append(originalLink);
-  const originalCaption=document.createElement('p');originalCaption.className='original-caption';originalCaption.textContent='Recorded initial layout';$('#atlas-initial-view').after(originalCaption);
   function syncView(mode){
-    law.hidden=mode!=='physics';$('.physics-downloads').hidden=mode!=='physics';$('#atlas-controls').hidden=mode!=='motion';
-    originalLink.hidden=originalCaption.hidden=mode!=='initial';originalLink.href=$('#scene-image').src;
+    law.hidden=mode!=='physics';$('.physics-downloads').hidden=mode!=='physics';$('#atlas-controls').hidden=true;
   }
-  const navigation=$('.atlas-bottomline>div');navigation.className='atlas-navigation';$('.atlas-topline .world-meta').after(navigation);
+  const navigation=$('.atlas-bottomline>div');navigation.className='atlas-navigation';$('.atlas-topline').prepend(navigation);
   $('#oracle-chapters').hidden=true;$('#oracle-kind').hidden=true;$('#atlas-model-note').hidden=true;
   $('[data-atlas-view="physics"]').hidden=false;
   const overlay=document.createElement('button');overlay.id='scene-play-overlay';overlay.className='scene-play-overlay';overlay.textContent='▶ Play';overlay.setAttribute('aria-label','Play scene video');$('.physics-video-frame').append(overlay);

@@ -43,8 +43,6 @@
     const scene = data.scenes.find(s=>s.id===button.dataset.scene);
     selectTab(button);
     $('#scene-detail').setAttribute('aria-labelledby',button.id);
-    $('#scene-number').textContent = `WORLD ${scene.id} / 15`;
-    $('#scene-family').textContent = scene.family;
     $('#scene-name').textContent = scene.name;
     $('#scene-description').textContent = scene.description;
     $('#scene-image').src = scene.image;

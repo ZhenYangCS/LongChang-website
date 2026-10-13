@@ -16,6 +16,8 @@ def main():
         assert page.evaluate('document.readyState')=='complete'
         assert page.evaluate('performance.getEntriesByType("resource").filter(r=>/\\.(mp4|wasm)/.test(r.name)).length')==0
         assert page.locator('#scene-tab-07').get_attribute('aria-selected')=='true'
+        assert page.locator('[data-atlas-view=initial]').count()==0
+        assert page.locator('.atlas-copy').inner_text().strip().count('\n')<=2
         assert page.locator('#scene-picker .scene-choice-symbol').count()==15
         left=page.locator('.scene-index').bounding_box();right=page.locator('#scene-detail').bounding_box()
         assert left['x']+left['width']<right['x']
@@ -28,7 +30,7 @@ def main():
             assert not page.locator('#oracle-chapters').is_visible()
             assert not page.locator('#atlas-model-note').is_visible()
             assert not page.locator('#scene-law').evaluate('(e)=>e.open')
-            assert page.locator('.full-rule').is_visible() and page.locator('#scene-law-text').inner_text()
+            assert not page.locator('.full-rule').is_visible() and page.locator('#scene-law-text').text_content()
             assert len(page.locator('#oracle-plain').inner_text().split())<20
             page.locator('.physics-video-frame').scroll_into_view_if_needed()
             rule=page.locator('#oracle-plain').bounding_box();art=page.locator('.physics-video-frame').bounding_box()
@@ -64,17 +66,18 @@ def main():
         page.locator('#atlas-tour').click();page.wait_for_function('!document.querySelector("#physics-video").paused')
         page.locator('#physics-video').evaluate('(v)=>v.currentTime=v.duration-.03');page.wait_for_function('LongChangAtlas.currentScene()==="02"')
         page.locator('#atlas-tour').click()
-        print('PASS: 15 names, always-visible full rules, framing switch, playback rates, seek, fullscreen, measurements and tour.',flush=True)
-        # All three views reserve the same space, including their bottom controls.
-        for mode in ['physics','motion','initial']:
+        print('PASS: 15 names, concise summaries and folded full rules, framing switch, playback rates, seek, fullscreen, measurements and tour.',flush=True)
+        # Both views reserve the same space, including their bottom controls.
+        for mode in ['physics','motion']:
             page.locator('[data-atlas-view='+mode+']').click()
             for i in range(1,16):
                 page.evaluate('(id)=>showWorld(id)',f'{i:02}')
                 panel=page.locator('#scene-detail').bounding_box();art=page.locator('#atlas-'+mode+'-view').bounding_box();dock=page.locator('.scene-foot').bounding_box()
                 assert art['height']>180 and art['y']+art['height']<=dock['y']+.5,(mode,i,art,dock)
                 assert abs(dock['y']+dock['height']-(panel['y']+panel['height']-1))<1,(mode,i)
-                if mode=='motion':assert page.locator('#atlas-parameter').is_visible()
-                if mode=='initial':assert page.locator('.original-download').is_visible()
+                if mode=='motion':
+                    page.wait_for_function('(id)=>window.SceneRoom?.getState().scene===id',arg=f'{i:02}',timeout=60000)
+                    assert page.locator('#scene-live-controls').is_visible()
         page.locator('[data-atlas-view=physics]').click()
         page.locator('#replay-play').click();page.wait_for_function('!document.querySelector("#success-video").paused')
         page.locator('#replay-speed').select_option('2');assert page.locator('#success-video').evaluate('(v)=>v.playbackRate')==2
@@ -91,7 +94,7 @@ def main():
             assert all(page.locator('#scene-tab-'+f'{i:02}').is_visible() for i in range(1,16))
             for i in range(1,16):
                 page.evaluate('(id)=>showWorld(id)',f'{i:02}')
-                assert page.locator('.full-rule').evaluate('(e)=>e.scrollHeight<=e.clientHeight+1')
+                assert not page.locator('.full-rule').is_visible()
                 assert page.locator('.physics-video-frame').bounding_box()['height']>=170
         for width in [1440,1024,768,390,360,320]:
             page.set_viewport_size({'width':width,'height':900})

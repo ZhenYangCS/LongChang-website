@@ -43,7 +43,7 @@ def main():
         for number in range(1,16):
             page.locator(f'#scene-tab-{number:02}').click()
             page.wait_for_function('document.querySelector("#scene-image").complete && document.querySelector("#scene-image").naturalWidth>0')
-            assert f'{number:02}' in page.locator('#scene-number').inner_text()
+            assert page.locator(f'#scene-tab-{number:02}').get_attribute('aria-selected')=='true'
         page.locator('#scene-law summary').click()
         assert '10 seconds' in page.locator('#scene-law-text').inner_text()
         page.locator('#scene-law summary').click()
