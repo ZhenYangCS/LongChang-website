@@ -9,20 +9,19 @@
   const measurementNote=document.createElement('p');measurementNote.className='measurement-note';measurementNote.hidden=true;
   $('#physics-values').before(measurementHeading);$('#physics-values').after(measurementNote);
   $('#oracle-chart-wrap').before($('.physics-readout'));
-  const foot=document.createElement('div');foot.className='scene-foot';
   const speedReadout=document.createElement('div');speedReadout.className='scene-speed-readout';speedReadout.hidden=true;
   speedReadout.innerHTML='<span class="speed-caption" title="Forward speed, in bricks per count">Forward speed</span><span class="speed-red"><i aria-hidden="true"></i><output id="speed-red-value" aria-label="Red ball forward speed"></output></span><span class="speed-blue"><i aria-hidden="true"></i><output id="speed-blue-value" aria-label="Blue ball forward speed"></output></span>';
-  law.addEventListener('toggle',()=>{measurements.open=law.open;});
-  law.append(measurements);foot.append(law,$('.physics-downloads'));$('.atlas-body').after(foot);
-  foot.insertBefore(speedReadout,$('.physics-downloads'));
-  foot.append($('#atlas-controls'));
+  law.append(measurements,$('#analysis-model-note'),$('.physics-downloads'));
+  $('.atlas-visual').append(law);$('.physics-playback').insertBefore(speedReadout,$('#physics-progress'));
+  $('.atlas-playback').prepend($('#atlas-controls'));
   function syncView(mode){
-    law.hidden=mode!=='physics';$('.physics-downloads').hidden=mode!=='physics';$('#atlas-controls').hidden=mode!=='analysis';
+    law.hidden=mode!=='analysis';$('#atlas-controls').hidden=mode!=='analysis';
+    if(mode==='analysis')loadMeasurements();
     readoutVisibility();
   }
   function readoutVisibility(){
     const enabled=Boolean(demo?.speed_trace)&&$('.atlas-detail').dataset.view==='physics';speedReadout.hidden=!enabled;
-    foot.classList.toggle('has-speed-readout',enabled);$('#atlas-physics-view').classList.toggle('has-speed-readout',enabled);
+    $('#atlas-physics-view').classList.toggle('has-speed-readout',enabled);
   }
   function measuredSpeed(){
     const trace=demo?.speed_trace;if(!trace)return;
@@ -102,7 +101,7 @@
     playButton.textContent=video.paused?'▶':'Ⅱ';playButton.setAttribute('aria-label',video.paused?'Play scene video':'Pause scene video');
     let phase='';for(const [t,text]of demo.phases){if(t>video.currentTime)break;phase=text;}
     $('#simple-phase').textContent=phase;$('#simple-phase').hidden=Boolean(demo.proof)||!image.hidden||!phase;
-    if(details&&measurements.open)plot();
+    if(details&&$('.atlas-detail').dataset.view==='analysis')plot();
   }
   function select(id){
     const next=items.find(d=>d.id===id);if(!next)return;
@@ -116,8 +115,9 @@
     $('.physics-video-frame').classList.remove('is-oracle','is-simple','is-clear');
     $('.physics-video-frame').classList.add(demo.presentation==='clear'?'is-clear':'is-simple');
     video.setAttribute('aria-label',`${demo.name}: demonstration of the hidden rule`);
-    law.open=false;measurements.open=false;$('#physics-download').href=demo.download_video||demo.video;$('#physics-record').href=demo.record;
+    $('#physics-download').href=demo.download_video||demo.video;$('#physics-record').href=demo.record;
     $('#oracle-signal-download').hidden=true;readoutVisibility();progress();
+    if($('.atlas-detail').dataset.view==='analysis')loadMeasurements();
   }
   function measuredRows(entry,sample){
     const labels={
@@ -158,18 +158,23 @@
       let item=list.children[i];if(!item){item=document.createElement('div');item.append(document.createElement('span'),document.createElement('strong'));list.append(item);}
       const nodes=item.children;if(nodes[0].textContent!==label)nodes[0].textContent=label;if(nodes[1].textContent!==value)nodes[1].textContent=value;
     });
-    const p=entry.plot,left=35,right=625,top=15,bottom=135,max=Math.max(.1,...p.series.flat()),min=Math.min(0,...p.series.flat());
+    const p=entry.plot,left=36,right=308,top=12,bottom=133,max=Math.max(.1,...p.series.flat()),min=Math.min(0,...p.series.flat());
     const xy=(x,y)=>[left+x/entry.simulation_duration*(right-left),bottom-(y-min)/(max-min||1)*(bottom-top)];
-    if(!$('#oracle-chart').dataset.drawn){let svg='';p.series.forEach((values,i)=>{const d=p.times.map((time,j)=>(j?'L':'M')+xy(time,values[j]).map(x=>x.toFixed(2)).join(' ')).join('');svg+=`<path d="${d}" stroke="${p.colors[i]}" stroke-width="2" fill="none"/>`;});
-    svg+=`<path id="oracle-cursor" d="M0 ${top}V${bottom}" stroke="#567a69"/><text x="${left}" y="158" fill="#71867c" font-size="10">0</text><text x="${right}" y="158" text-anchor="end" fill="#71867c" font-size="10">${entry.simulation_duration} s</text>`;
+    if(!$('#oracle-chart').dataset.drawn){let svg='';
+    for(const value of [min,min<0?0:(min+max)/2,max]){const y=xy(0,value)[1],label=Number(value.toPrecision(2));svg+=`<path d="M${left} ${y}H${right}" stroke="#e0e8e1"/><text x="29" y="${y+4}" text-anchor="end" fill="#71867c" font-size="12">${label}</text>`;}
+    p.series.forEach((values,i)=>{const d=p.times.map((time,j)=>(j?'L':'M')+xy(time,values[j]).map(x=>x.toFixed(2)).join(' ')).join('');svg+=`<path d="${d}" stroke="${p.colors[i]}" stroke-width="2" fill="none"/>`;});
+    svg+=`<path id="oracle-cursor" d="M0 ${top}V${bottom}" stroke="#567a69" visibility="hidden"/><text x="${left}" y="153" fill="#71867c" font-size="12">0</text><text x="${right}" y="153" text-anchor="end" fill="#71867c" font-size="12">${entry.simulation_duration} s</text>`;
+    $('#oracle-chart').setAttribute('viewBox','0 0 320 163');
     $('#oracle-chart').innerHTML=svg;$('#oracle-chart').dataset.drawn='true';}
-    $('#oracle-cursor').setAttribute('transform',`translate(${xy(t,0)[0]},0)`);$('#oracle-chart-legend').textContent=p.labels.join(' / ');$('#oracle-signal').textContent=entry.oracle.measure;
+    $('#oracle-cursor').setAttribute('transform',`translate(${xy(t,0)[0]},0)`);
+    $('#oracle-chart-legend').replaceChildren(...p.labels.map((label,i)=>{const item=document.createElement('span');item.textContent=label.replace('Ordinary physics reference','Ordinary physics').replace('Oracle active','Altered rule');item.style.color=p.colors[i];return item;}));
+    $('#oracle-signal').textContent='Demo · '+entry.oracle.measure;
   }
-  measurements.addEventListener('toggle',async()=>{
-    if(!measurements.open||details)return;const id=demo.id;detailAbort=new AbortController();
+  async function loadMeasurements(){
+    if(!demo||details)return;const id=demo.id;detailAbort?.abort();detailAbort=new AbortController();
     try{const response=await fetch(demo.details,{signal:detailAbort.signal});if(!response.ok)throw Error();const data=await response.json();if(id!==demo.id)return;details=data;$('#oracle-chart').dataset.drawn='';$('#oracle-chart-wrap').hidden=false;plot();}
-    catch(e){if(e.name!=='AbortError')$('#physics-sample-label').textContent='Measurements unavailable. Reopen to retry.';}
-  });
+    catch(e){if(e.name!=='AbortError'){ $('#oracle-chart-wrap').hidden=false;$('#oracle-signal').textContent='Demo data could not load. Select Explain to retry.'; }}
+  }
   playButton.addEventListener('click',()=>{if(video.paused&&!wants)start();else{stop();}});
   overlay.addEventListener('click',start);
   $('#physics-reset').addEventListener('click',()=>{stop();if(source){pending=null;video.currentTime=0;}poster();overlay.hidden=false;progress();});
@@ -189,8 +194,6 @@
   $('#physics-fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('#atlas-physics-view').requestFullscreen();}catch(_){start();video.controls=true;}});
   document.addEventListener('fullscreenchange',()=>{
     video.controls=false;
-    if(document.fullscreenElement===$('#atlas-physics-view'))$('.physics-playback').insertBefore(speedReadout,$('#physics-progress'));
-    else foot.insertBefore(speedReadout,$('.physics-downloads'));
   });
   document.addEventListener('longchang:atlas-view',e=>{shown=e.detail.view==='physics';syncView(e.detail.view);if(shown)select(e.detail.id);else{stop();}});
   document.addEventListener('longchang:scene',e=>select(e.detail.id));

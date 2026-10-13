@@ -37,7 +37,7 @@ def main():
         page.locator('[data-scene-mode=view]').click();assert page.evaluate('SceneRoom.getState().mode')=='view'
         before=page.evaluate('SceneRoom.project("gray_ball_1")');r=page.locator('#scene-live-stage').bounding_box();x=r['x']+r['width']/2;y=r['y']+r['height']/2
         page.mouse.move(x,y);page.mouse.down();page.mouse.move(x+55,y+20,steps=8);page.mouse.up();after=page.evaluate('SceneRoom.project("gray_ball_1")');assert math.hypot(after['x']-before['x'],after['y']-before['y'])>3
-        page.locator('#scene-live-fullscreen').click();page.wait_for_function('!document.fullscreenElement');assert page.locator('.scene-foot #scene-live-controls').count()==1
+        page.locator('#scene-live-fullscreen').click();page.wait_for_function('!document.fullscreenElement');assert page.locator('.scene-live-playback #scene-live-controls').count()==1
         for id in ['12','13','10','07']:
             page.evaluate('(id)=>showWorld(id)',id);page.wait_for_function('(id)=>window.SceneRoom?.getState().scene===id',arg=id)
             assert page.locator('#scene-live-stage canvas').count()==1

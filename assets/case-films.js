@@ -10,12 +10,10 @@
 
   for (const film of films) {
     const video = film.querySelector('video');
+    video.controls = false;
     const start = film.querySelector('.case-film-start');
     const status = film.querySelector('.case-film-status');
     const retry = status.querySelector('button');
-    const chapters = [...film.querySelectorAll('[data-film-seek]')];
-    const caption = film.querySelector('.case-film-caption');
-    let pendingTime = null;
     let playRequested = false;
     let loadFailed = false;
     let loadingTimer;
@@ -38,15 +36,10 @@
       start.hidden = true;
     }
 
-    function progress() {
-      const current = chapters.filter(button => Number(button.dataset.filmSeek) <= video.currentTime + .05).at(-1) || chapters[0];
-      chapters.forEach(button => button.setAttribute('aria-pressed', String(button === current)));
-      caption.textContent = current.dataset.filmCaption;
-    }
-
     function play() {
       if (film.closest('.case-panel').hidden || document.hidden) return;
       playRequested = true;
+      video.controls = true;
       start.hidden = true;
       videos.forEach(other => { if (other !== video) other.pause(); });
       if (video.error) video.load();
@@ -70,19 +63,9 @@
 
     start.addEventListener('click', play);
     retry.addEventListener('click', () => { clearStatus(); video.load(); play(); });
-    chapters.forEach(button => button.addEventListener('click', () => {
-      pendingTime = Number(button.dataset.filmSeek);
-      if (video.readyState >= 1) {
-        video.currentTime = pendingTime;
-        pendingTime = null;
-      }
-      play();
-    }));
-    video.addEventListener('loadedmetadata', () => {
-      if (pendingTime !== null) {
-        video.currentTime = Math.min(pendingTime, Math.max(0, video.duration - .05));
-        pendingTime = null;
-      }
+    document.addEventListener('longchang:case-select', event => {
+      if(event.detail!==film.dataset.film)return;
+      video.pause();video.currentTime=0;play();
     });
     video.addEventListener('playing', () => {
       if (film.closest('.case-panel').hidden || document.hidden) { video.pause(); return; }
@@ -96,11 +79,9 @@
       playRequested = false;
       if (loadFailed) clearTimeout(loadingTimer); else clearStatus();
     });
-    video.addEventListener('ended', () => { start.hidden = false; progress(); });
+    video.addEventListener('ended', () => { start.hidden = false; });
     video.addEventListener('error', failed);
-    video.addEventListener('timeupdate', progress);
     observer.observe(video);
-    progress();
   }
   document.addEventListener('visibilitychange', () => { if (document.hidden) pauseAll(); });
   document.addEventListener('longchang:presentation-open', pauseAll);

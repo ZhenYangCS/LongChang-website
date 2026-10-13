@@ -61,18 +61,19 @@ def main():
         page.wait_for_function('!document.querySelector("#physics-video").paused')
         page.locator('#physics-play').click()
         page.locator('#physics-fullscreen').click();page.wait_for_function('Boolean(document.fullscreenElement)');page.evaluate('document.exitFullscreen()')
-        page.locator('#scene-law > summary').click()
+        page.locator('[data-atlas-view=analysis]').click()
         page.wait_for_function('document.querySelector("#oracle-chart path")!==null')
-        assert page.locator('#physics-values').inner_text()
-        page.locator('#scene-law > summary').click()
-        assert page.locator('#atlas-tour').count()==0 and page.locator('.atlas-toolbar a').count()==1
+        assert page.locator('#scene-law-text').is_visible()
+        page.locator('[data-atlas-view=physics]').click()
+        assert page.locator('#atlas-tour').count()==0 and page.locator('.atlas-toolbar').count()==0
+        assert page.locator('#scene-law .physics-downloads').count()==1
         print('PASS: 15 names, concise summaries and folded full rules, framing switch, playback rates, seek, fullscreen, measurements and grouped downloads.',flush=True)
         # Both views reserve the same space, including their bottom controls.
         for mode in ['physics','motion']:
             page.locator('[data-atlas-view='+mode+']').click()
             for i in range(1,16):
                 page.evaluate('(id)=>showWorld(id)',f'{i:02}')
-                panel=page.locator('#scene-detail').bounding_box();art=page.locator('#atlas-'+mode+'-view').bounding_box();dock=page.locator('.scene-foot').bounding_box()
+                panel=page.locator('#scene-detail').bounding_box();art=page.locator('.physics-video-frame' if mode=='physics' else '#scene-live-stage').bounding_box();dock=page.locator('.physics-playback' if mode=='physics' else '.scene-live-playback').bounding_box()
                 assert art['height']>180 and art['y']+art['height']<=dock['y']+.5,(mode,i,art,dock)
                 assert abs(dock['y']+dock['height']-(panel['y']+panel['height']-1))<1,(mode,i)
                 if mode=='motion':

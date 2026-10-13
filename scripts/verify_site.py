@@ -129,7 +129,7 @@ def main():
     for filename in ['longchang-original-physics.mp4','longchang-physics-demonstrations.zip']:
         assert (SITE/'downloads'/filename).stat().st_size>1000,filename
     print('PASS: local links, scene assets, fonts, source hashes and anonymous data exports.')
-    print('PASS: all 540 labels, all nine model metrics, 168 heatmap cells and 13/36 control rejections.')
+    print('PASS: all 540 labels, all nine model metrics, 168 model–scene results and 13/36 control rejections.')
     print('PASS: all 12 featured video chapters come from four verified C+S-successful Astra runs.')
     print('PASS: both motion films and all 15 animated scene figures are available.')
     print('PASS: all 15 original-physics demonstrations, source hashes and canonical ACL names match.')

@@ -1,0 +1,35 @@
+/* Three comparable demos; one shared playback control. */
+.evolution-compact > .section { padding-block:64px; }
+.evolution-compact .section-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:18px; }
+#evolution-play { flex:none; padding:10px 16px; border:1px solid #afc6b6; border-radius:7px; color:var(--teal); background:#f8fbf8; font-size:12px; }
+#evolution-play:hover { background:#e7efe8; }
+.evolution-origin { margin-bottom:24px; font-size:13px; color:var(--muted); }
+.evolution-demos { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+.evolution-demo { min-width:0; overflow:hidden; border:1px solid #d4dfd5; border-radius:12px; background:#fff; }
+.evolution-video { aspect-ratio:4/3; background:#f4f7f4; }
+.evolution-video video { width:100%; height:100%; object-fit:contain; }
+.evolution-demo figcaption { padding:19px 22px 23px; }
+.evolution-demo figcaption > span { color:var(--teal); font-size:9px; letter-spacing:.09em; text-transform:uppercase; }
+.evolution-demo h3 { margin-top:8px; font:400 26px/1.3 var(--serif); }
+.evolution-demo p { margin-top:8px; font-size:12px; line-height:1.7; color:var(--muted); }
+.evolution-demo-note { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px 22px; margin-top:18px; font-size:11px; color:var(--muted); }
+.evolution-compact .evolution-details { margin-top:20px; }
+.evo-rule-details { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px; margin-block:8px 24px; }
+.evo-rule-details p { font-size:12px; line-height:1.8; }
+.evo-rule-details strong { display:block; margin-bottom:5px; color:var(--ink); }
+@media(max-width:850px) {
+  .evolution-demos { gap:12px; }
+  .evolution-demo figcaption { padding:15px 13px 18px; }
+  .evolution-demo h3 { font-size:22px; }
+  .evolution-demo p { font-size:11px; }
+}
+@media(max-width:600px) {
+  .evolution-compact > .section { padding-block:52px; }
+  .evolution-compact .section-heading { align-items:flex-start; flex-direction:column; gap:18px; }
+  .evolution-origin { font-size:12px; }
+  .evolution-demos { grid-template-columns:1fr; gap:18px; }
+  .evolution-demo figcaption { padding:16px 18px 20px; }
+  .evolution-demo h3 { font-size:25px; }
+  .evolution-demo p { font-size:12px; }
+  .evo-rule-details { grid-template-columns:1fr; gap:18px; }
+}

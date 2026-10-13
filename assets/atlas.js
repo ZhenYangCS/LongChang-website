@@ -31,6 +31,7 @@
   let visible = false, frame = 0, previous = 0, lastDraw = 0, exportMode = false, view = window.SCENE_INDEX?.length ? 'physics' : 'motion';
   let initialPreview = false;
   const duration = 8;
+  const modelNote=document.createElement('p');modelNote.id='analysis-model-note';modelNote.className='model-note';$('#scene-law').append(modelNote);
 
   const sphere = (x, y, z, color, label = '') => ball(uid, x, y, Math.max(0, z), color, label);
   const arrow = (a, b, color = '#3b837b') => line(a, b, color, `stroke-width="2" marker-end="url(#${uid}-arrow)"`);
@@ -236,7 +237,7 @@
     $('#atlas-canvas').setAttribute('aria-label', `${scene.name}. Idealized interactive illustration of the published law.`);
     const options = config.options?.map(([v, label]) => `<option value="${v}">${label}</option>`).join('');
     $('#atlas-controls').innerHTML = `<label for="atlas-parameter">${config.label}</label>` + (options ? `<select id="atlas-parameter">${options}</select>` : `<div class="atlas-range"><input id="atlas-parameter" type="range" min="${config.range[0]}" max="${config.range[1]}" step="${config.range[2]}" value="${value}"><output for="atlas-parameter" id="atlas-parameter-value">${Number(value).toFixed(1)} ${config.unit}</output></div>`);
-    const assumptions=document.createElement('details');assumptions.className='analysis-assumptions';assumptions.innerHTML='<summary>About this model</summary><div><strong>Simplified to show the rule</strong><p></p></div>';assumptions.querySelector('p').textContent=config.note;$('#atlas-controls').append(assumptions);
+    modelNote.textContent='Explain: '+config.note;
     $('#atlas-parameter').value = value;
     $('#atlas-parameter').addEventListener(config.options ? 'change' : 'input', event => {
       value = config.range ? Number(event.target.value) : event.target.value;
@@ -277,7 +278,6 @@
   $('.atlas-illustration-label').remove();
   $('#atlas-canvas').setAttribute('viewBox','0 0 640 410');
   $('#analysis-fullscreen').addEventListener('click',async()=>{if(document.fullscreenElement)await document.exitFullscreen();else await $('.atlas-visual').requestFullscreen();});
-  document.addEventListener('fullscreenchange',()=>{const c=$('#atlas-controls');if(document.fullscreenElement===$('.atlas-visual')&&view==='analysis')$('.atlas-playback').append(c);else if($('.scene-foot'))$('.scene-foot').append(c);});
   $('#atlas-reset').addEventListener('click', () => { time = 0; playing = false; touring = false; render(); syncClock(); });
   $('#atlas-progress').addEventListener('input', event => { time = Number(event.target.value) / 100; playing = false; touring = false; render(); syncClock(); });
 

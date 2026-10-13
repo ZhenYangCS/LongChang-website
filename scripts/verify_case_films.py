@@ -1,4 +1,4 @@
-"""Check recorded-film provenance, chapter playback and responsive presentation."""
+"""Check recorded-film provenance, minimal case selection and playback."""
 import argparse
 import hashlib
 import json
@@ -28,6 +28,8 @@ def main():
         page.goto(args.url,wait_until='domcontentloaded')
         page.evaluate('document.fonts.ready')
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>/case-(question|color|tool)\\.mp4/.test(r.name))')
+        assert page.locator('#explore .case-tabs button').count()==3
+        assert page.locator('#explore details, #explore [data-film-seek], #explore a').count()==0
         for case in manifest['cases']:
             key=case['id']
             page.locator(f'#{key}-tab').click()
@@ -36,21 +38,13 @@ def main():
             video=film.locator('video')
             expect(panel).to_be_visible()
             assert page.locator('.case-panel[hidden] video').evaluate_all('(vs)=>vs.every(v=>v.paused)')
-            # Seeking an unloaded film must land in the requested chapter.
-            if key=='tool':
-                film.locator('[data-film-seek="14"]').click()
-                page.wait_for_function('document.querySelector("#case-tool-video").currentTime>=14')
-            else:
-                film.locator('.case-film-start').click()
+            # Selecting a case starts the complete film without a second choice.
             page.wait_for_function('(key)=>{const v=document.getElementById(`case-${key}-video`);return !v.paused&&v.currentTime>.1}',arg=key)
             assert video.evaluate('(v,d)=>Math.abs(v.duration-d)<.1',case['duration'])
             assert video.evaluate('v=>v.videoWidth===1280&&v.videoHeight===720')
             for chapter in case['chapters']:
-                button=film.locator(f'[data-film-seek="{chapter["start"]}"]')
-                button.focus()
-                button.press('Enter')
+                video.evaluate('(v,t)=>{v.currentTime=t}',chapter['start'])
                 page.wait_for_function('([key,t])=>{const v=document.getElementById(`case-${key}-video`);return !v.paused&&Math.abs(v.currentTime-t)<.75}',arg=[key,chapter['start']])
-                expect(button).to_have_attribute('aria-pressed','true')
             video.evaluate('v=>v.pause()')
             video.evaluate('v=>v.currentTime=v.duration*.5')
             page.wait_for_timeout(100)
@@ -86,7 +80,6 @@ def main():
         broken.route('**/case-color.mp4',lambda route:route.abort())
         broken.goto(args.url,wait_until='domcontentloaded')
         broken.locator('#color-tab').click()
-        broken.locator('#color-case .case-film-start').click()
         retry=broken.locator('#color-case .case-film-status button')
         expect(retry).to_be_visible()
         broken.unroute('**/case-color.mp4')
@@ -95,7 +88,7 @@ def main():
         expect(broken.locator('#color-case .case-film-status')).to_be_hidden()
         browser.close()
     assert not errors,errors
-    print('PASS: source/video hashes; three films and nine chapters; play, pause, seek, fullscreen, offscreen/tab pause, retry; lazy loading and 320–1440 px layouts; no JavaScript errors.')
+    print('PASS: source/video hashes; three case choices with immediate full-film playback; native seek, pause, fullscreen, offscreen/tab pause and retry; no extra case controls; lazy loading and 320–1440 px layouts.')
 
 
 if __name__=='__main__':main()

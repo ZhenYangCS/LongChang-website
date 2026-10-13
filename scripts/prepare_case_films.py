@@ -206,6 +206,8 @@ def main():
     parser.add_argument('--force',action='store_true')
     args=parser.parse_args()
     sources, cases = plans()
+    manifest_path=SITE/'data/case-films.json'
+    previous={case['id']:case for case in json.loads(manifest_path.read_text())['cases']} if manifest_path.exists() else {}
     records = {}
     for name, src in sources.items():
         assert digest(ROOT/src['path']) == src['sha256'], name
@@ -216,6 +218,10 @@ def main():
         poster=SITE/f"assets/images/case-{case['id']}.webp"
         selected = not args.only or case['id'] in args.only
         render = selected and (args.force or args.preview or not dest.exists())
+        if not render and dest.exists() and case['id'] in previous:
+            # Keep the fitted cameras and timings attached to cached media.
+            manifest.append(previous[case['id']])
+            continue
         entry=dict(id=case['id'],title=case['title'],scene=case['scene'],
                    video=str(dest.relative_to(SITE)),poster=str(poster.relative_to(SITE)),chapters=[])
         elapsed=0
@@ -260,7 +266,7 @@ def main():
     if not args.preview:
         output=dict(method='Nearest archived states; no physics steps or pose interpolation. Chapters are edited selections. Split-screen tracks are retimed independently; counters show original simulation time.',
                     width=WIDTH,height=HEIGHT,fps=FPS,sources=sources,cases=manifest)
-        (SITE/'data/case-films.json').write_text(json.dumps(output,indent=2)+'\n')
+        manifest_path.write_text(json.dumps(output,indent=2)+'\n')
 
 
 if __name__=='__main__':main()

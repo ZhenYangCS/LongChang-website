@@ -26,27 +26,41 @@ def main():
         page.goto(args.url)
         page.evaluate('document.fonts.ready')
         assert not page.locator("#successful-explorations").evaluate("e=>e.open")
-        assert page.locator('#model-chart tbody tr').count()==12
-        assert page.locator('.heat-cell').count()==168
+        assert page.locator('#model-chart .result-row').count()==12
+        assert page.locator('.result-scene').count()==14
+        assert page.locator('#result-details').count()==0
+        assert page.locator('.result-control strong').inner_text()=='0 / 3'
         assert page.locator('#scene-picker button').count()==15
         assert page.locator('#model-chart [data-result-metric]').count()==36
-        assert not page.locator('#result-details').evaluate('(e)=>e.open')
-        page.locator('#result-details > summary').click()
-        for metric in ['C','S','D']:
-            page.locator(f'[data-heat="{metric}"]').click()
-            assert page.locator('.heat-cell').count()==168
-        page.locator('.heat-cell').first.focus()
-        assert page.locator('#chart-tooltip').is_visible()
-        assert 'GPT-6-Astra' in page.locator('#chart-tooltip').inner_text()
-        page.keyboard.press('Escape')
-        assert not page.locator('#chart-tooltip').is_visible()
+        page.locator('[data-result-view="S"]').click()
+        page.locator('#results-sort').select_option('score')
+        assert page.locator('.result-lane:visible').count()==12
+        assert page.locator('.result-model-name').nth(1).inner_text()=='GPT-5.6-Luna'
+        page.locator('[data-model="Claude-Opus-5"]').click()
+        assert page.locator('#result-model-title').inner_text()=='Claude-Opus-5'
+        assert page.locator('.result-score.result-C dd > span').inner_text()=='7 / 42 runs'
+        assert page.locator('.result-score.result-S dd > span').inner_text()=='0 / 42 runs'
+        page.locator('[data-model="Claude-Opus-5"]').press('Home')
+        assert page.locator('#result-model-title').inner_text()=='GPT-6-Astra'
+        page.locator('[data-result-view="D"]').click()
+        page.locator('[data-result-scene="07"]').click()
+        assert page.locator('#successful-explorations').evaluate('e=>e.open')
+        assert page.locator('#success-tab-07').get_attribute('aria-selected')=='true'
+        page.locator('#successful-explorations > summary').click()
+        page.locator('[data-result-view="all"]').click()
+        page.locator('#results-sort').select_option('paper')
+        page.locator('[data-model="GLM-5.3"]').click()
+        assert page.locator('.result-control strong').inner_text()=='3 / 3'
+        page.locator('[data-model="GPT-6-Astra"]').click()
+        assert 'Support: 3/3' in page.locator('.result-scene').first.get_attribute('title')
+        assert page.locator('.result-data-link').get_attribute('href')=='downloads/model-results.csv'
         for number in range(1,16):
             page.locator(f'#scene-tab-{number:02}').click()
             page.wait_for_function('id=>document.querySelector("#scene-name").textContent===window.LONGCHANG.scenes.find(s=>s.id===id).name',arg=f"{number:02}")
             assert page.locator(f'#scene-tab-{number:02}').get_attribute('aria-selected')=='true'
-        page.locator('#scene-law > summary').click()
+        page.locator('[data-atlas-view=analysis]').click()
         assert '10-second pause' in page.locator('#scene-law-text').inner_text()
-        page.locator('#scene-law > summary').click()
+        page.locator('[data-atlas-view=physics]').click()
         page.locator('#successful-explorations > summary').click()
         for scene in ['07','06','14','15']:
             page.locator('#success-tab-'+scene).click()
@@ -66,7 +80,7 @@ def main():
                 assert page.locator('#success-video').evaluate('(v)=>Math.abs(v.currentTime/v.duration-.7)<.03')
                 page.locator('#replay-reset').click()
                 assert page.locator('#replay-progress').input_value()=='0'
-        # Closing the archive pauses playback; heatmap links reopen the right run.
+        # Closing the archive pauses playback; model details reopen the right run.
         page.locator('#replay-play').click()
         page.wait_for_function('!document.querySelector("#success-video").paused')
         page.locator('#successful-explorations > summary').click()
@@ -75,8 +89,8 @@ def main():
         assert 'judge' in page.locator('#fw-detail-description').inner_text()
         page.locator('#fw-play').click();page.wait_for_timeout(100)
         page.locator('#fw-play').click()
-        page.locator('[data-heat="D"]').click()
-        page.locator('[data-success-scene="07"]').click()
+        page.locator('[data-result-view="D"]').click()
+        page.locator('[data-result-scene="07"]').click()
         assert page.locator('#success-tab-07').get_attribute('aria-selected')=='true'
         page.locator('#tool-tab').click()
         assert page.locator('#tool-case').is_visible()
@@ -85,10 +99,8 @@ def main():
         assert page.locator('#color-case').is_visible()
         page.locator('#controlled-details > summary').click()
         page.locator('#controlled-details .full-results > summary').click()
-        assert page.locator('#full-results-table tbody tr').count()==12
         assert page.locator('#controlled-table tbody tr').count()==9
         page.locator('#controlled-details > summary').click()
-        page.locator('#result-details > summary').click()
         page.locator('[data-chapter="0"]').click()
         page.locator('.success-evidence .note-details summary').click()
         assert 'red' in page.locator('#success-note').inner_text().lower()
@@ -120,13 +132,13 @@ def main():
         # Local-file operation also works with the network disabled.
         context=browser.new_context(offline=True)
         offline=context.new_page();offline.goto((SITE/'index.html').as_uri())
-        assert offline.locator('#model-chart tbody tr').count()==12
+        assert offline.locator('#model-chart .result-row').count()==12
         assert offline.locator('#scene-picker button').count()==15
         context.close();browser.close()
     assert not errors,errors
     print(json.dumps({'status':'PASS','checks':['12 successful-run video chapters: play, pause, seek, reset',
         'three case studies, folded records and animated framework',
-        'all scene and metric switches','keyboard tabs and heatmap tooltips','full tables and downloads',
+        'all scene and metric switches','keyboard tabs and model details','controlled table and data downloads',
         '320–1440 px overflow','mobile touch layout','reduced motion','offline local-file operation',
         'no JavaScript errors'],'screenshots':str(args.screenshots)},indent=2))
 

@@ -8,7 +8,7 @@
   host.after(playback);
   const controls=document.createElement('div');controls.id='scene-live-controls';controls.hidden=true;
   controls.innerHTML='<div class="room-tools" role="group" aria-label="Interact with the scene"><button data-scene-mode="push" aria-pressed="true">Push</button><button data-scene-mode="drag" aria-pressed="false">Drag</button><button data-scene-mode="view" aria-pressed="false">Rotate</button><button id="scene-live-reset" aria-label="Reset the scene">↺</button></div>';
-  $('.scene-foot').append(controls);
+  playback.insertBefore(controls,$('#scene-live-hint'));
   let world=null,worldId=null,mode='push',version=0,loading=false,visible=false,lastClock=-1;
   const status=text=>{$('#scene-live-hint').textContent=text;};
   function clock(time){const now=Math.floor(time*10);if(now!==lastClock){lastClock=now;$('#scene-live-clock').textContent=(now/10).toFixed(1)+' s';}}
@@ -45,10 +45,6 @@
   stage.addEventListener('pointerup',()=>{queueMicrotask(playLabel);});
   $('#scene-live-fullscreen').addEventListener('click',async()=>{
     try{if(document.fullscreenElement)await document.exitFullscreen();else await $('.atlas-visual').requestFullscreen();}catch(_){status('Use Rotate, then scroll to zoom.');}
-  });
-  document.addEventListener('fullscreenchange',()=>{
-    const full=document.fullscreenElement===$('.atlas-visual');
-    if(full)playback.insertBefore(controls,$('#scene-live-clock'));else $('.scene-foot').append(controls);controls.classList.toggle('fullscreen-controls',full);
   });
   document.addEventListener('longchang:scene',()=>{
     if(worldId!==window.LongChangAtlas.currentScene()){destroy();lastClock=-1;clock(0);if(visible)open();}

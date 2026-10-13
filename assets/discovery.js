@@ -102,20 +102,15 @@
   keyboardTabs($('#success-picker'),chooseDiscovery);keyboardTabs($('#success-chapters'),chooseChapter);
   window.showDiscovery=id=>{
     const b=$(`#success-tab-${id}`);if(!b)return;chooseDiscovery(b);
+    const dialog=$('#exploration-dialog');if(dialog&&!dialog.open)dialog.showModal();
     const archive=$('#successful-explorations');archive.open=true;
+    for(let parent=archive.parentElement;parent;parent=parent.parentElement){if(parent.tagName==='DETAILS')parent.open=true;}
     archive.scrollIntoView({behavior:reduced?'instant':'smooth',block:'start'});
     b.focus({preventScroll:true});
   };
-  // A successful heatmap cell can open the corresponding evidence story.
-  $('#heatmap').addEventListener('click',e=>{
-    const b=e.target.closest('.heat-cell');if(!b||b.dataset.level==='0')return;
-    const label=b.getAttribute('aria-label')||'';
-    const scene=label.match(/Scene (\d+)/)?.[1];
-    if(label.startsWith('GPT-6-Astra')&&label.includes('Discovery:')&&cases.some(c=>c.id===scene))window.showDiscovery(scene);
-  });
-  const label=$('.heatmap-key-note');if(label)label.textContent='Select an Astra discovery to open its experiment';
-
   $('#successful-explorations').addEventListener('toggle',e=>{if(!e.target.open)pauseVideo();});
+  $('#exploration-close')?.addEventListener('click',()=>$('#exploration-dialog').close());
+  $('#exploration-dialog')?.addEventListener('close',pauseVideo);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)pauseVideo();});
   document.addEventListener('longchang:presentation-open',pauseVideo);
   document.addEventListener('longchang:case-film-play',pauseVideo);

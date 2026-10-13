@@ -27,33 +27,33 @@ def main():
                 control.evaluate('e=>{e.value=e.max;e.dispatchEvent(new Event("input",{bubbles:true}));}')
             assert page.locator('#scene-detail').get_attribute('data-view')=='analysis'
             page.locator('#atlas-progress').evaluate('e=>{e.value=650;e.dispatchEvent(new Event("input",{bubbles:true}));}')
-            assert page.locator('#atlas-time').inner_text()=='6.5 / 8.0 s'
+            assert page.locator('#atlas-time').text_content()=='6.5 / 8.0 s'
             assert not any(s in page.locator('#atlas-canvas').inner_html() for s in ['NaN','undefined'])
             page.locator('#atlas-play').click();page.wait_for_function('Number(document.querySelector("#atlas-progress").value)>650')
             page.locator('#atlas-play').click();t=page.locator('#atlas-progress').input_value();page.wait_for_timeout(50)
             assert page.locator('#atlas-progress').input_value()==t
             page.locator('#atlas-reset').click();assert page.locator('#atlas-progress').input_value()=='0'
-            page.locator('.analysis-assumptions summary').click();assert page.locator('.analysis-assumptions p').is_visible()
-            assert page.locator('.analysis-assumptions summary').inner_text()=='About this model'
-            page.locator('.analysis-assumptions summary').click()
+            assert page.locator('.analysis-assumptions').count()==0
+            assert not page.locator('#atlas-progress').is_visible() and not page.locator('.scene-foot').is_visible()
+            assert page.locator('.atlas-playback #atlas-parameter').is_visible()
         assert page.evaluate('document.fonts.check(\'22px "STIX Two Math"\')')
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>/\\.(wasm|mp4)/.test(r.name))')
         page.locator('#analysis-fullscreen').click();page.wait_for_function('!!document.fullscreenElement')
         assert page.locator('.atlas-playback #atlas-controls').count()==1 and page.locator('#atlas-parameter').is_visible()
         page.locator('#analysis-fullscreen').click();page.wait_for_function('!document.fullscreenElement')
-        assert page.locator('.scene-foot #atlas-controls').count()==1
-        page.locator('[data-atlas-view=physics]').click()
+        assert page.locator('.atlas-playback #atlas-controls').count()==1
         for i in range(1,16):
-            page.evaluate('(id)=>showWorld(id)',f'{i:02}');page.locator('#scene-law > summary').click();page.evaluate('document.fonts.ready')
+            page.evaluate('(id)=>showWorld(id)',f'{i:02}');page.evaluate('document.fonts.ready')
+            assert page.locator('#scene-law #analysis-model-note').is_visible()
+            assert page.locator('#scene-law #analysis-model-note').text_content().startswith('Explain: ')
             text=page.locator('#scene-law-text').text_content()
             assert '^' not in text and '_' not in text,(i,text)
-            page.wait_for_function('document.querySelector("#physics-values strong")!==null')
-            assert page.locator('#physics-values span').first.evaluate('e=>getComputedStyle(e).fontSize')==page.locator('#physics-values strong').first.evaluate('e=>getComputedStyle(e).fontSize')=='12px'
-            assert not any(t in page.locator('#physics-values').inner_text() for t in ['Waiting for impact','speed returned','v_z'])
+            page.wait_for_function('!document.querySelector("#oracle-chart-wrap").hidden')
+            assert page.locator('#oracle-chart').is_visible() and page.locator('#physics-record').is_visible()
+            assert page.locator('#scene-law summary').count()==0
             if i==8:
                 assert page.locator('#scene-law-text mfrac').count()==2 and page.locator('#scene-law-text msub').count()>=2
                 page.screenshot(path='/tmp/math-stix-08.png')
-            page.locator('#scene-law > summary').click()
         for width,height in [(1366,768),(1280,720),(390,844),(320,740)]:
             page.set_viewport_size({'width':width,'height':height})
             page.locator('[data-atlas-view=analysis]').click()
@@ -61,9 +61,9 @@ def main():
                 page.evaluate('(id)=>showWorld(id)',f'{i:02}')
                 assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,i)
                 assert page.locator('#analysis-formula').evaluate('e=>e.scrollWidth<=e.clientWidth+1'),(width,i)
-            page.locator('[data-atlas-view=physics]').click();page.evaluate('showWorld("08")');page.locator('#scene-law > summary').click()
+            page.evaluate('showWorld("08")')
             assert page.locator('#scene-law').evaluate('e=>e.scrollWidth<=e.clientWidth+1')
-            page.locator('#scene-law > summary').click()
+            page.locator('[data-atlas-view=physics]').click();assert not page.locator('#scene-law').is_visible()
         page.set_viewport_size({'width':1366,'height':768});page.evaluate('showWorld("07")');page.locator('[data-atlas-view=analysis]').click();page.locator('#atlas-reset').click();page.screenshot(path=str(Path(__file__).resolve().parents[1]/'math-preview.png'))
         page.locator('[data-atlas-view=motion]').click();page.wait_for_function('window.SceneRoom?.getState().scene==="07"')
         page.locator('#scene-live-reset').click()
@@ -72,6 +72,6 @@ def main():
         assert page.evaluate('SceneRoom.getState().time')==time
         browser.close()
     assert not errors,errors
-    print('PASS: all 15 Math formulas, parameters, playback, seek/reset, assumptions, fullscreen and view transitions; full rules have semantic fractions/subscripts; local font, lazy media, and 320–1366 px layout.')
+    print('PASS: all 15 Explain formulas, parameters, play/reset, fullscreen and view transitions; rules, recorded plots and sources are integrated without extra disclosures; local mathematical font, lazy media, and 320–1366 px layout.')
 
 if __name__=='__main__':main()
