@@ -8,7 +8,6 @@ from matplotlib import font_manager
 import numpy as np
 
 SITE=Path(__file__).resolve().parents[1]
-CACHE=Path('/tmp/longchang-oracle-studio/production')
 
 
 def main():
@@ -18,9 +17,9 @@ def main():
         'axes.labelcolor':'#647f82','text.color':'#29474c','xtick.color':'#789294',
         'ytick.color':'#789294','figure.facecolor':'#f8faf8','axes.facecolor':'#f8faf8'})
     out=SITE/'downloads/oracle-signals';out.mkdir(exist_ok=True)
-    for i in range(1,16):
-        id=f'{i:02}';data=json.loads((CACHE/id/'composition.json').read_text())
-        oracle,plot,spec=data['oracle'],data['plot'],data['spec']
+    entries=json.loads((SITE/'data/physics.js').read_text().removeprefix('window.PHYSICS_DEMOS = ').rstrip(';\n'))
+    for data in entries:
+        id=data['id'];oracle,plot,spec=data['oracle'],data['plot'],data
         fig,ax=plt.subplots(figsize=(9.5,4.5));fig.subplots_adjust(left=.11,right=.965,top=.73,bottom=.24)
         fig.text(.07,.91,f"{id} / {oracle['name']}",fontsize=19)
         fig.text(.07,.83,oracle['formula'],fontsize=12,color='#467b70')

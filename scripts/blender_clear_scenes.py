@@ -9,6 +9,8 @@ from blender_oracle import setup
 
 def main():
     job=json.loads(Path(sys.argv[1]).read_text());folder=Path(job['output']);frames=folder/'frames';frames.mkdir(exist_ok=True)
+    start_index=int(sys.argv[2]) if len(sys.argv)>2 else 0
+    end_index=int(sys.argv[3]) if len(sys.argv)>3 else len(job['frames'])
     scene,balls,mats=setup(job)
     bpy.context.view_layer.update()
     # Compare the constructed Blender objects, not only an aspect-ratio setting.
@@ -31,7 +33,7 @@ def main():
         d=np.array(p)-pos
         return np.array([(0.5+d@right/(span*w/h))*w,(0.5-d@up/span)*h])
     bgkey=hashlib.sha256(json.dumps([job['display_bounds'],job['camera'],job['fixtures']],sort_keys=True).encode()).hexdigest()[:16]
-    backgrounds=Path(job.get('shared_backgrounds',folder));backgrounds.mkdir(exist_ok=True)
+    backgrounds=Path(job.get('shared_backgrounds',folder));backgrounds.mkdir(parents=True,exist_ok=True)
     bgpath=backgrounds/f'{bgkey}.png'
     with (backgrounds/f'{bgkey}.lock').open('w') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX)
@@ -52,7 +54,8 @@ def main():
         for i,frame in enumerate(old['frames']):
             image_path=Path(old['output'])/'frames'/f'{i:05}.png'
             if image_path.exists():seen[pose_key(frame)]=image_path
-    for index,frame in enumerate(job['frames']):
+    for index in range(start_index,min(end_index,len(job['frames']))):
+        frame=job['frames'][index]
         dest=frames/f'{index:05}.png'
         key=pose_key(frame)
         if dest.exists():seen[key]=dest;continue
@@ -84,7 +87,7 @@ def main():
         for part,(x0,y0,x1,y1) in enumerate(rects):
             scene.render.border_min_x=(x0+.1)/w;scene.render.border_max_x=min(1,(x1+.1)/w)
             scene.render.border_min_y=(h-y1+.1)/h;scene.render.border_max_y=min(1,(h-y0+.1)/h)
-            path=folder/'region.png';scene.render.filepath=str(path);bpy.ops.render.render(write_still=True)
+            path=folder/f'region-{start_index}.png';scene.render.filepath=str(path);bpy.ops.render.render(write_still=True)
             region=paper(path)
             assert region.size==(x1-x0,y1-y0),(region.size,(x1-x0,y1-y0))
             mask=Image.new('L',region.size);draw=ImageDraw.Draw(mask)

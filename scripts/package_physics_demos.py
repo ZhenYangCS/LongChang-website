@@ -29,14 +29,14 @@ scripted demonstrations are not LLM explorations and do not contribute to
 the paper's 540 evaluated runs. Original scene programs, object geometry,
 mass, friction, gravity and contact laws are preserved. Setup positions and
 interventions are explicit in each JSON record. Each video presents one
-hidden rule in a short caption. Video playback is retimed; the on-screen
-clock follows the original simulation time.
+hidden rule in a short caption. Video playback is steadily retimed; the player
+clock shows playback time, while measurements retain simulation time.
 
-JSON files contain 100 Hz samples, interventions, rule events and source
+JSON files contain 500 Hz samples, interventions, rule events and source
 hashes. Videos use nearest recorded simulation samples without pose
 interpolation. Camera, lighting and trajectory overlays are presentation.
 
-Render using project_page/scripts/render_clear_scenes.py, then
+Render using project_page/scripts/build_smooth_demos.py, then
 project_page/scripts/publish_clear_media.py. The project-page README
 documents the rendering workflow.
 ''')

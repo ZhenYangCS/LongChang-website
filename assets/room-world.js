@@ -23,6 +23,8 @@ export async function createRoom(stage,status) {
   } finally {clearTimeout(timeout);}
   mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);
   const renderer=new T.WebGLRenderer({alpha:true,antialias:true,powerPreference:'high-performance'});
+  const context=renderer.getContext(),debug=context.getExtension('WEBGL_debug_renderer_info');
+  const softwareRenderer=debug&&/SwiftShader|llvmpipe|software/i.test(context.getParameter(debug.UNMASKED_RENDERER_WEBGL));
   renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0xf8f9f6,0);
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
@@ -67,21 +69,48 @@ export async function createRoom(stage,status) {
     const mesh=new T.Mesh(geometry,group.material);mesh.userData.body=group.body;mesh.castShadow=group.cast;mesh.receiveShadow=!group.glass;mesh.matrixAutoUpdate=false;
     if(group.glass)mesh.renderOrder=2;scene.add(mesh);meshes.push(mesh);if(group.body)movable.push(mesh);
   }
+  let renderMs=0,physicsMs=0;
   function draw(){
+    const drawStart=performance.now();
     const p=data.xpos,q=data.xquat;
     for(const mesh of movable){const b=mesh.userData.body;mesh.position.fromArray(p,b*3);mesh.quaternion.set(q[b*4+1],q[b*4+2],q[b*4+3],q[b*4]);mesh.updateMatrix();}
     if(softShadows)updateContactShadows();
-    renderer.render(scene,camera);
+    renderer.render(scene,camera);renderMs=performance.now()-drawStart;
   }
   let softShadows=false;
   const contactShadows=[];
+  function bakeMatcaps(){
+    // Cache the same polished materials into tiny normal-based lighting textures
+    // on slower GPUs. Geometry and MuJoCo dynamics remain fully three-dimensional.
+    const originalSize=renderer.getSize(new T.Vector2()),ratio=renderer.getPixelRatio(),clear=renderer.getClearColor(new T.Color()),alpha=renderer.getClearAlpha();
+    const studio=new T.Scene();studio.environment=scene.environment;studio.environmentIntensity=scene.environmentIntensity;
+    const inverse=camera.quaternion.clone().invert();
+    for(const light of [key,fill,scene.children.find(o=>o.isHemisphereLight)]){const copy=light.clone();copy.castShadow=false;copy.position.applyQuaternion(inverse);studio.add(copy);}
+    const photoCamera=new T.OrthographicCamera(-1,1,1,-1,.1,10);photoCamera.position.z=3;
+    const sphere=new T.Mesh(new T.SphereGeometry(1,48,32));studio.add(sphere);const baked=new Map();
+    renderer.setPixelRatio(1);renderer.setSize(128,128,false);renderer.setClearColor(0xffffff,1);
+    for(const mesh of meshes){
+      const material=mesh.material;if(!material.isMeshPhysicalMaterial&&!material.isMeshStandardMaterial)continue;
+      if(!baked.has(material)){
+        sphere.material=material;renderer.render(studio,photoCamera);
+        const c=document.createElement('canvas');c.width=c.height=128;c.getContext('2d').drawImage(canvas,0,0);
+        const map=new T.CanvasTexture(c);map.colorSpace=T.SRGBColorSpace;
+        baked.set(material,new T.MeshMatcapMaterial({matcap:map,color:0xffffff,toneMapped:false}));
+      }
+      mesh.material=baked.get(material);
+    }
+    sphere.geometry.dispose();renderer.setPixelRatio(ratio);renderer.setSize(originalSize.x,originalSize.y,false);renderer.setClearColor(clear,alpha);
+  }
   function useContactShadows(){
     if(softShadows)return;softShadows=true;
     for(const mesh of movable)mesh.castShadow=false;
+    renderer.shadowMap.enabled=false;
+    for(const mesh of meshes)mesh.receiveShadow=false;
+    bakeMatcaps();
     const c=document.createElement('canvas');c.width=c.height=96;const context=c.getContext('2d'),gradient=context.createRadialGradient(48,48,2,48,48,47);
     gradient.addColorStop(0,'rgba(35,63,67,.42)');gradient.addColorStop(.4,'rgba(35,63,67,.22)');gradient.addColorStop(1,'rgba(35,63,67,0)');context.fillStyle=gradient;context.fillRect(0,0,96,96);
     const map=new T.CanvasTexture(c);
-    for(const [name,radius] of [['blue_ball',.33],['red_ball',.28],['test_block',.3],['pendulum_bob',.25]]){
+    for(const [name,radius] of [['blue_ball',.33],['red_ball',.28],['test_block',.3],['pendulum_bob',.25],['pendulum_base',.78],['balance_base',.7]]){
       const shadow=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({map,transparent:true,depthWrite:false,toneMapped:false}));shadow.renderOrder=1;scene.add(shadow);contactShadows.push({name,radius,shadow});
     }
     renderer.shadowMap.needsUpdate=true;
@@ -93,9 +122,9 @@ export async function createRoom(stage,status) {
     }
   }
   const orbit=new OrbitControls(camera,canvas);orbit.target.set(0,0,2.9);orbit.update();orbit.saveState();orbit.enablePan=false;orbit.minZoom=.7;orbit.maxZoom=2;orbit.enableDamping=false;orbit.enabled=false;orbit.addEventListener('change',draw);
-  const ray=new T.Raycaster(),pointer=new T.Vector2();let mode='push',drag=null,forces=[],frame=0,last=0,until=0,visible=true,selected='red_ball';
+  const ray=new T.Raycaster(),pointer=new T.Vector2();let mode='push',drag=null,forces=[],frame=0,last=0,until=0,visible=true,active=false,selected='red_ball';
   const physicsStep=model.opt.timestep;
-  let accumulated=0,frameAverage=16.7,qualitySamples=0;
+  let accumulated=0,frameAverage=16.7,qualitySamples=0,quietSince=null;
   const arrow=new T.ArrowHelper(new T.Vector3(0,1,0),new T.Vector3(),0,0x387f68,.22,.13);arrow.visible=false;scene.add(arrow);
   function setRay(e){const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(pointer,camera);}
   function tick(now){
@@ -106,6 +135,7 @@ export async function createRoom(stage,status) {
       else if(frameAverage>32&&!softShadows)useContactShadows();
       qualitySamples=0;
     }
+    const physicsStart=performance.now();
     accumulated=Math.min(.05,accumulated+Math.min(.05,elapsed/1000));
     while(accumulated>=physicsStep){
       data.xfrc_applied.fill(0);forces=forces.filter(f=>data.time<f.end);
@@ -121,9 +151,13 @@ export async function createRoom(stage,status) {
       mj.mj_step(model,data);
       accumulated-=physicsStep;
     }
-    if(!softShadows)renderer.shadowMap.needsUpdate=true;draw();if(drag||forces.length||data.time<until)frame=requestAnimationFrame(tick);
+    physicsMs=performance.now()-physicsStart;
+    if(!softShadows)renderer.shadowMap.needsUpdate=true;draw();
+    const moving=data.qvel.some(v=>Math.abs(v)>.01);
+    if(moving||drag||forces.length)quietSince=null;else if(quietSince===null)quietSince=data.time;
+    if(drag||forces.length||data.time<until||quietSince===null||data.time-quietSince<.5)frame=requestAnimationFrame(tick);else active=false;
   }
-  function wake(seconds=12){until=Math.max(until,data.time+seconds);if(!frame&&visible&&!document.hidden){last=performance.now();frame=requestAnimationFrame(tick);}}
+  function wake(seconds=12){active=true;quietSince=null;until=Math.max(until,data.time+seconds);if(!frame&&visible&&!document.hidden){last=performance.now();frame=requestAnimationFrame(tick);}}
   function push(body,impulse,point){const bid=typeof body==='number'?body:bodyIds[body];forces.push({body:bid,force:impulse.map(v=>v/.12),point:point||new T.Vector3().fromArray(data.xpos,bid*3),end:data.time+.12});wake();}
   const labels={red_ball:'Red ball',blue_ball:'Blue ball',test_block:'Block',pendulum_arm:'Pendulum',balance_arm:'Balance'};
   canvas.addEventListener('pointerdown',e=>{
@@ -145,13 +179,14 @@ export async function createRoom(stage,status) {
   });
   canvas.addEventListener('pointercancel',()=>{drag=null;arrow.visible=false;draw();});
   canvas.addEventListener('keydown',e=>{if(e.key==='Escape'){reset();return;}const d={ArrowUp:[0,2,0],ArrowDown:[0,-2,0],ArrowLeft:[-2,0,0],ArrowRight:[2,0,0],' ':[0,0,3]};if(d[e.key]){e.preventDefault();push(selected,d[e.key]);}});
-  function reset(){cancelAnimationFrame(frame);frame=0;drag=null;forces=[];until=0;accumulated=0;arrow.visible=false;mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);renderer.shadowMap.needsUpdate=true;draw();setMode(mode);}
+  function reset(){cancelAnimationFrame(frame);frame=0;active=false;quietSince=null;drag=null;forces=[];until=0;accumulated=0;arrow.visible=false;mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);renderer.shadowMap.needsUpdate=true;draw();setMode(mode);}
   function setMode(value){mode=value;orbit.enabled=value==='view';canvas.style.cursor=value==='view'?'grab':'crosshair';status(value==='view'?'Drag to rotate · scroll to zoom':value==='drag'?'Drag an object · release to drop':'Drag to push · tap to nudge');}
   function resize(){const r=stage.getBoundingClientRect(),half=5.8;camera.top=half;camera.bottom=-half;camera.left=-half*r.width/r.height;camera.right=half*r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false);draw();}
   new ResizeObserver(resize).observe(stage);
-  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(!visible){cancelAnimationFrame(frame);frame=0;}else if(data.time<until)wake(0);}).observe(stage);
-  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else if(data.time<until)wake(0);});
+  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(!visible){cancelAnimationFrame(frame);frame=0;}else if(active)wake(0);}).observe(stage);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else if(active)wake(0);});
   canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();status('Graphics paused. Reload to retry.');cancelAnimationFrame(frame);});
+  if(softwareRenderer){renderer.setPixelRatio(Math.min(devicePixelRatio,1));useContactShadows();}
   stage.append(canvas);resize();setMode(mode);
-  return {setMode,reset,push,getRenderInfo:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,pixelRatio:renderer.getPixelRatio(),frameMs:frameAverage,softShadows}),getState:()=>({time:data.time,mode,selected,qpos:Array.from(data.qpos),positions:Object.fromEntries(Object.entries(bodyIds).map(([n,b])=>[n,Array.from(data.xpos.slice(b*3,b*3+3))])),contacts:data.ncon}),project:name=>{const p=(name in geomIds?new T.Vector3().fromArray(data.geom_xpos,geomIds[name]*3):new T.Vector3().fromArray(data.xpos,bodyIds[name]*3)).project(camera),r=stage.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
+  return {setMode,reset,push,getRenderInfo:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,pixelRatio:renderer.getPixelRatio(),frameMs:frameAverage,renderMs,physicsMs,softShadows}),getState:()=>({time:data.time,mode,selected,qpos:Array.from(data.qpos),positions:Object.fromEntries(Object.entries(bodyIds).map(([n,b])=>[n,Array.from(data.xpos.slice(b*3,b*3+3))])),contacts:data.ncon}),project:name=>{const p=(name in geomIds?new T.Vector3().fromArray(data.geom_xpos,geomIds[name]*3):new T.Vector3().fromArray(data.xpos,bodyIds[name]*3)).project(camera),r=stage.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
 }

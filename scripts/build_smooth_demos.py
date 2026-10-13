@@ -7,6 +7,7 @@ import render_oracle_demos as native
 from render_clear_scenes import ROOM_BOUNDS,room_camera
 from oracle_catalog import catalog
 from compose_plain_demos import state as plain_state
+from launch_cues import add_launch_cues
 
 SITE=Path(__file__).resolve().parents[1]
 CACHE=Path('/tmp/longchang-smooth-scenes')
@@ -41,9 +42,10 @@ def prepare(id):
         if index in seen and fade==0 and film[seen[index]]['fade']==0:frame['reuse']=seen[index]
         else:seen[index]=i
         film.append(frame)
-    job=json.loads((LEGACY/id/'job.json').read_text())
+    job=native.studio_job(id,samples,spec,folder,samples=64,threads=10,width=1440,height=960)
+    reuse=[str(LEGACY/id/'job.json')] if (LEGACY/id/'job.json').exists() else []
     job.update(output=str(folder),display_bounds=ROOM_BOUNDS,camera=room_camera(),
-               shared_backgrounds=str(LEGACY/'backgrounds'),reuse_jobs=[str(LEGACY/id/'job.json')],
+               shared_backgrounds=str(LEGACY/'backgrounds'),reuse_jobs=reuse,
                fps=FPS,frames=[{k:v for k,v in f.items() if k in ['time','objects','epoch','native_index','reuse','fade']} for f in film])
     write(folder/'job.json',job)
     public=lambda frames:[{k:v for k,v in f.items() if k not in ['qpos','qvel','rgba']} for f in frames]
@@ -68,6 +70,8 @@ def render(id,ffmpeg):
     video=SITE/f'assets/videos/smooth/scene-{id}.mp4';video.parent.mkdir(exist_ok=True)
     temp=video.with_name(video.stem+'.partial.mp4')
     subprocess.run([ffmpeg,'-y','-hide_banner','-loglevel','error','-framerate',str(FPS),'-i',str(folder/'frames/%05d.png'),'-c:v','libx264','-preset','fast','-crf','17','-g','60','-pix_fmt','yuv420p','-movflags','+faststart',str(temp)],check=True);temp.replace(video)
+    entry['launch_cues']=id in ['12','13']
+    if entry['launch_cues']:video=add_launch_cues(ffmpeg,video,video.with_name(video.stem+'-cued.mp4'),entry)
     poster=SITE/f'assets/images/smooth-{id}.webp';Image.open(folder/'frames/00000.png').save(poster,quality=96,method=6)
     records=SITE/'downloads/smooth-demonstrations';records.mkdir(exist_ok=True)
     (records/f'scene-{id}.json').write_bytes((folder/'record.json').read_bytes())
@@ -85,6 +89,7 @@ def main():
     assert len({e['room_signature'] for e in updated})==1
     target=SITE/'data/physics.js';current=json.loads(target.read_text().removeprefix('window.PHYSICS_DEMOS = ').rstrip(';\n'));new={e['id']:e for e in updated}
     write(target,[new.get(e['id'],e) for e in current],prefix='window.PHYSICS_DEMOS = ')
+    write(SITE/'data/shared-room.json',dict(bounds=ROOM_BOUNDS,camera=room_camera(),render_signature=updated[0]['room_signature'],dimensions=[9,7.2,2.8]))
     print('Smooth films published.',flush=True)
 
 if __name__=='__main__':main()

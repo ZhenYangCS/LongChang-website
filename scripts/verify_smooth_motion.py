@@ -1,0 +1,40 @@
+"""Verify temporal continuity, genuine dense physics, and actual movie frame rates."""
+import argparse,json,itertools
+from pathlib import Path
+import numpy as np
+import imageio_ffmpeg
+
+SITE=Path(__file__).resolve().parents[1]
+CACHE=Path('/tmp/longchang-smooth-scenes')
+
+def main():
+    parser=argparse.ArgumentParser();parser.add_argument('--prepared',action='store_true');args=parser.parse_args()
+    entries=json.loads((SITE/'data/physics.js').read_text().removeprefix('window.PHYSICS_DEMOS = ').rstrip(';\n'))
+    for published in entries:
+        id=published['id'];entry=json.loads((CACHE/id/'entry.json').read_text()) if args.prepared else published
+        record=json.loads((CACHE/id/'record.json').read_text()) if args.prepared else json.loads((SITE/entry['record']).read_text())
+        job=json.loads((CACHE/id/'job.json').read_text())
+        assert entry['fps']==60 and record['sample_interval']==.002
+        assert len(job['frames'])==entry['duration']*60
+        assert len(entry['time_map'])==2,'Remove artificial holds and speed ramps'
+        repeats=[len(list(g)) for _,g in itertools.groupby(f['native_index'] for f in job['frames'])]
+        assert max(repeats)<=2,(id,'sparse source frames or a forced freeze')
+        for f in job['frames']:
+            native=record['samples'][f['native_index']]
+            assert f['objects']==native['objects'] and f['epoch']==native['epoch']
+        for a,b in zip(job['frames'],job['frames'][1:]):
+            if a['epoch']!=b['epoch']:assert a['fade']>.95 and b['fade']>.95,(id,'unmarked reset')
+        if id in ['12','13']:
+            assert all(f['epoch']==0 and f['fade']==0 for f in job['frames'])
+            assert not any(e['kind']=='arrange' for e in record['events'])
+            for name in record['focus']:
+                positions=np.array([f['objects'][name]['position'] for f in record['samples']])
+                assert np.linalg.norm(np.diff(positions,axis=0),axis=1).max()<.03,(id,name,'position discontinuity')
+        if not args.prepared:
+            reader=imageio_ffmpeg.read_frames(str(SITE/entry['video']));meta=next(reader);reader.close()
+            assert meta['fps']==60 and meta['size']==(1440,960),(id,meta)
+            if id in ['12','13']:assert entry.get('launch_cues')
+    print('PASS: 60 fps uses original 500 Hz states, without artificial holds or synthesized trajectories.')
+    print('PASS: collisions stay in one continuous run; separate trials fade explicitly instead of teleporting.')
+
+if __name__=='__main__':main()

@@ -12,13 +12,18 @@ def main():
     common=json.loads((SITE/'data/shared-room.json').read_text())
     first=None
     for entry in entries:
-        id=entry['id'];job=json.loads((CACHE/id/'job.json').read_text());source=json.loads((SOURCE/id/'studio-job.json').read_text())
-        signature=json.loads((CACHE/id/'room-signature.json').read_text())
+        id=entry['id'];cache=Path('/tmp/longchang-smooth-scenes') if entry.get('fps')==60 else CACHE
+        job=json.loads((cache/id/'job.json').read_text());source=json.loads((SOURCE/id/'studio-job.json').read_text())
+        signature=json.loads((cache/id/'room-signature.json').read_text())
         if first is None:first=signature
         assert signature==first,f'{id}: constructed Blender room, camera or lighting changed'
         assert job['display_bounds']==common['bounds']
         assert job['camera']==common['camera']
-        assert job['frames']==source['frames'] and job['radii']==source['radii']
+        assert job['radii']==source['radii']
+        if entry.get('fps')==60:
+            record=json.loads((SITE/entry['record']).read_text())
+            for frame in job['frames']:assert frame['objects']==record['samples'][frame['native_index']]['objects']
+        else:assert job['frames']==source['frames']
         assert entry['room_signature']==common['render_signature']==hashlib.sha256(json.dumps(signature,sort_keys=True).encode()).hexdigest()
         assert Image.open(SITE/entry['studio_poster']).size==(1440,960)
         xmin,xmax,ymin,ymax,height=common['bounds']

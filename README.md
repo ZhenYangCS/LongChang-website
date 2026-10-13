@@ -17,9 +17,11 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 ## 内容
 
 - 首屏先显示 Figure 1 原图。点击 Push / Drag / Rotate 后加载本地 MuJoCo WASM，用原始 `workspace.xml` 实时计算推动、拖放、碰撞、摆锤和天平运动；Three.js 绘制玻璃、金属、珐琅与阴影。支持转视角、缩放、键盘推动和重置。
+- 首图按材质合并静态几何，减少重复绘制；较慢设备使用缓存光照和自适应分辨率。物理保持固定步长，物体仍在运动时不会被固定时限强制停住；离开屏幕时暂停计算。
 - 左侧为 Table 1 场景目录：原编号、原名，以及直接从论文 TikZ 导出的机制小图；右侧显示一句神谕和运行视频。两栏始终同高，点目录即可播放，键盘上下键可选场景。手机使用简洁下拉目录。完整规律和测量数据收进 Full rule，保留 0.5×、1×、2×、4× 播放。
 - **场景命名以 ACL 论文为唯一来源**：`scripts/paper_scenes.py` 从当前总览表读取 01–15 的正式名称，从附录读取对应规律与作用范围；网页、案例、演示标题和重新导出的字幕共用这份数据。
 - **三种场景视图**：`Watch` 为原始 MuJoCo 场景程序的演示，`Try it` 为轻量 SVG 交互，`Original scene` 为原始初始布置。15 段 1440×960 视频使用完全相同的 9×7.2×2.8 展示房间；墙厚、底座、地砖、相机和灯光均固定，仅替换内部物体与规律。物体轨迹和大小保持原始记录。可下载 194 秒合集、GIF 和视频/记录 ZIP。
+- 视频为 60 fps，直接取自 500 Hz 的 MuJoCo 状态；恒定播放映射，不插入人为定格。场景 12、13 是连续碰撞过程，从当前位置继续推动；场景 09、10 的独立试验用短过渡明确区分。封面使用第一帧，避免开始播放时跳位置。下载 GIF 为 30 fps。
 - 页面先展示静图，未播放的视频不下载。首屏物理引擎只在操作时加载；场景索引与内嵌预览约 30 KB，取代原先 2.2 MB 的首屏数据，测量数组单独按需读取。高清图解码前先显示内嵌预览，避免空白。预览服务压缩 JS / JSON / WASM，保留视频 Range 请求；视频和引擎下载超时会提供重试。
 - 48 秒四幕概览与全屏演示模式；120 秒全场景 MP4、15 个逐场景 GIF 和合集可直接下载。
 - 四个交互式规律示意图：地砖反弹、顺时针偏转、延迟速度复制、受发射抑制的漂移。可改变高度或发射方向、选择对照实验、重置计时。
@@ -41,7 +43,7 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 
 SVG 交互和 illustration MP4/GIF 是用于解释规律的简化模型，不作为真实探索证据。普通摩擦、接触或运动在部分场景中被简化或省略，每个场景底部注明范围。
 
-`Watch` 直接运行 `scenes/base_15.json` 的原始物理程序，保留物体大小、颜色、质量、摩擦、重力与碰撞规律。为清楚演示触发条件，球的位置会按公开脚本预先布置；重复接触的例子会在两次试验间重置位置但保留事件历史。当前数据包含准备位置、干预、原始规则回调事件、源哈希、100 Hz 状态采样及关闭异常规则的普通物理对照。视频取最近的采样状态，玻璃外壳和展示底座仅用于呈现。这些是专门制作的演示，不是模型自主探索，不计入主实验的 540 条结果。
+`Watch` 直接运行 `scenes/base_15.json` 的原始物理程序，保留物体大小、颜色、质量、摩擦、重力与碰撞规律。初始位置按公开脚本布置；连续碰撞示例不再摆回起点，记录每次推动前的实际位置。当前数据包含准备位置、干预、原始规则回调事件、源哈希、500 Hz 状态采样及关闭异常规则的普通物理对照。视频取最近的原生状态，不使用光流补帧；玻璃外壳和展示底座仅用于呈现。这些是专门制作的演示，不是模型自主探索，不计入主实验的 540 条结果。
 
 成功探索视频和研究问题案例来自原始模型实验存档。三种素材的来源分别标识；页面播放秒数与模拟 counts 分开显示。
 
@@ -63,11 +65,13 @@ SVG 交互和 illustration MP4/GIF 是用于解释规律的简化模型，不作
 python scripts/verify_front.py --url http://127.0.0.1:8765 --require-hd
 python scripts/verify_oracle_records.py
 python scripts/verify_shared_room.py
+python scripts/verify_smooth_motion.py
 python scripts/export_table1_symbols.py
 
-# 原始记录 → 统一玻璃房、高清 Cycles 动画 → 带说明下载版
-python scripts/render_clear_scenes.py --ffmpeg /path/to/ffmpeg
+# 原生 500 Hz 状态 → 同一房间、60 fps 动画 → 带说明下载版
+python scripts/build_smooth_demos.py --ffmpeg /path/to/ffmpeg
 python scripts/publish_clear_media.py --ffmpeg /path/to/ffmpeg
+python scripts/export_oracle_signals.py
 python scripts/package_oracle_demos.py
 python scripts/package_physics_demos.py --ffmpeg /path/to/ffmpeg
 python scripts/prepare_scene_index.py

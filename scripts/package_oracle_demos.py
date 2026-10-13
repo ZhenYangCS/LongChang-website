@@ -51,8 +51,10 @@ with only the altered physical program disabled. These demonstrations do
 not contribute to the paper's model-discovery scores. The glass enclosures
 and cropped plinths are presentation geometry, not added physical walls.
 
-Playback slows down or holds exact sampled states around key events.
-The displayed clock remains the original simulation time. Full records,
+Playback uses steady retiming of dense native states, without artificial
+holds. Color exchange and third-contact jumps use continuous runs without
+repositioning. Separate trials in other scenes have explicit transitions.
+Video clocks show playback time; measurements retain simulation time. Full records,
 editable signal figures and source hashes are available on the project page.
 ''')
         for entry in entries:archive.write(SITE/entry['gif'],f"{entry['id']}-{entry['name']}.gif")

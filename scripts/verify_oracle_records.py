@@ -9,7 +9,8 @@ SITE=Path(__file__).resolve().parents[1]
 
 def main():
     names,_=paper_scene_names()
-    records={id:json.loads((SITE/f'downloads/oracle-demonstrations/scene-{id}.json').read_text()) for id in names}
+    demos=json.loads((SITE/'data/physics.js').read_text().removeprefix('window.PHYSICS_DEMOS = ').rstrip(';\n'))
+    records={d['id']:json.loads((SITE/d['record']).read_text()) for d in demos}
     for id,r in records.items():
         assert r['name']==names[id]
         assert len(r['samples'])==len(r['reference_samples'])
@@ -45,6 +46,17 @@ def main():
     assert [e['count'] for e in events if e['kind']=='contact_count']==[1,2,3]
     kicks=[e for e in events if e['kind']=='upward_kick'];assert len(kicks)==1
     for c in kicks[0]['changes']:assert abs(c['after'][2]-4)<1e-9
+    if records['13'].get('sample_interval')==.002:
+        r=records['13'];assert all(e['kind']=='launch' for e in r['events'])
+        assert {s['epoch'] for s in r['samples']}=={0}
+        start=r['events'][0]['positions_before']['red_ball'];end=r['events'][-1]['positions_before']['red_ball']
+        assert np.linalg.norm(np.asarray(start)-end)>1,'The final push must start from the new position reached in the continuous run'
+        for name in r['focus']:
+            positions=np.array([s['objects'][name]['position'] for s in r['samples']])
+            assert np.linalg.norm(np.diff(positions,axis=0),axis=1).max()<.03,'An object teleported'
+        for sample,reference in zip(r['samples'],r['reference_samples']):
+            if sample['time']>=kicks[0]['time']:break
+            for name in r['focus']:np.testing.assert_allclose(sample['objects'][name]['position'],reference['objects'][name]['position'],atol=1e-9)
     copies=records['14']['oracle_events'];assert len(copies)==1
     assert abs(copies[0]['time']-12)<.003
     np.testing.assert_allclose(copies[0]['changes'][0]['after'],[3,0,0],atol=1e-9)
