@@ -126,14 +126,14 @@ def main():
             entry['chapters'].append(item)
             dest=SITE/item['video']
             if dest.exists() and not args.force:continue
-            renderer=RecordedRenderer(record,cam,(1000,620));fps=24
+            renderer=RecordedRenderer(record,cam,(1600,992),detail_shadows=True);fps=24
             proc=subprocess.Popen([args.ffmpeg,'-loglevel','error','-y','-f','rawvideo','-pix_fmt','rgb24',
-                '-s','1000x620','-r',str(fps),'-i','-','-an','-c:v','libx264','-preset','fast','-crf','21',
+                '-s','1600x992','-r',str(fps),'-i','-','-an','-c:v','libx264','-preset','fast','-crf','18',
                 '-pix_fmt','yuv420p','-movflags','+faststart',str(dest)],stdin=subprocess.PIPE)
             times=np.asarray([f['time'] for f in frames])
             for n,t in enumerate(np.linspace(start,end,round(duration*fps))):
                 pixels=renderer.render(frames[int(np.abs(times-t).argmin())])
-                if n==0:Image.fromarray(pixels).save(SITE/item['poster'],quality=90)
+                if n==0:Image.fromarray(pixels).save(SITE/item['poster'],quality=94)
                 proc.stdin.write(pixels.tobytes())
             proc.stdin.close();assert proc.wait()==0;renderer.close()
             print(f"Rendered {filename}: turns {chapter['turns']}, {duration:.1f}s",flush=True)

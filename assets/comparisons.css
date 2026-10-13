@@ -27,8 +27,8 @@
 .controlled-card tbody th { font-size:10px; }
 .controlled-card tbody tr:last-child > * { border-bottom:0; }
 .controlled-card tbody tr:hover { background:#f5f8f6; }
-.controlled-discovery td { padding-block:10px; font-size:20px; line-height:1.3; font-weight:500; color:var(--teal); }
-.controlled-discovery th { color:var(--ink); }
+.controlled-highlight td { padding-block:10px; font-size:20px; line-height:1.3; font-weight:500; color:var(--teal); }
+.controlled-highlight th { color:var(--ink); }
 .controlled-track { display:block; height:3px; margin-top:7px; border-radius:2px; background:#e6efea; }
 .controlled-track > i { display:block; height:100%; border-radius:2px; background:var(--teal); }
 .controlled-baseline { margin-top:16px; font-size:11px; line-height:1.75; color:var(--muted); }
@@ -50,7 +50,7 @@
   .controlled-comparisons { gap:12px; }
   .controlled-card { padding:18px 14px; }
   .controlled-card h3 { font-size:23px; }
-  .controlled-discovery td { font-size:17px; }
+  .controlled-highlight td { font-size:17px; }
   .evolution-evaluation { gap:24px; }
 }
 @media(max-width:700px) {
@@ -65,7 +65,7 @@
   .controlled-card { padding:20px; }
   .controlled-card h3 { font-size:25px; }
   .controlled-card > p { min-height:0; }
-  .controlled-discovery td { font-size:20px; }
+  .controlled-highlight td { font-size:20px; }
   .evolution-evaluation { grid-template-columns:1fr; padding:18px; gap:20px; }
   .evolution-evaluation h3 { font-size:25px; }
   #evolution-results th,#evolution-results td { padding:8px 4px; font-size:10px; }

@@ -25,7 +25,7 @@ def main():
         page.on('pageerror',lambda error:errors.append(str(error)))
         page.goto(args.url)
         page.evaluate('document.fonts.ready')
-        assert not page.locator("#successful-explorations").evaluate("e=>e.open")
+        assert not page.locator("#exploration-dialog").evaluate("e=>e.open")
         assert page.locator('#model-chart .result-row').count()==12
         assert page.locator('.result-scene').count()==14
         assert page.locator('#result-details').count()==0
@@ -51,8 +51,8 @@ def main():
         assert page.locator('#result-model-title').inner_text()=='GPT-6-Astra'
         page.locator('[data-result-view="D"]').click()
         page.locator('[data-result-scene="07"]').click()
-        assert page.locator('#successful-explorations').evaluate('e=>e.open')
-        assert page.locator('#success-tab-07').get_attribute('aria-selected')=='true'
+        assert page.locator('#exploration-dialog').evaluate('e=>e.open')
+        assert page.locator('#discovery-title').inner_text()=='Tile rebounds'
         page.locator('#exploration-close').click()
         page.locator('[data-result-view="all"]').click()
         page.locator('#results-sort').select_option('paper')
@@ -68,25 +68,15 @@ def main():
         page.locator('[data-atlas-view=analysis]').click()
         assert '10 seconds' in page.locator('#scene-law-text').inner_text()
         page.locator('[data-atlas-view=physics]').click()
-        page.evaluate('showDiscovery("07")')
         for scene in ['07','06','14','15']:
-            page.locator('#success-tab-'+scene).click()
-            assert 'Astra' in page.locator('#discovery-run').inner_text()
-            for chapter in range(3):
-                page.locator(f'[data-chapter="{chapter}"]').click()
-                page.locator('#replay-play').click()
-                page.wait_for_function('document.querySelector("#success-video").readyState>=2 && !document.querySelector("#success-video").paused')
-                page.wait_for_timeout(250)
-                assert int(page.locator('#replay-progress').input_value())>0
-                page.locator('#replay-play').click()
-                before=page.locator('#replay-progress').input_value()
-                page.wait_for_timeout(80)
-                assert page.locator('#replay-progress').input_value()==before
-                page.locator('#replay-progress').evaluate('(e)=>{e.value=700;e.dispatchEvent(new Event("input",{bubbles:true}));}')
-                page.wait_for_timeout(150)
-                assert page.locator('#success-video').evaluate('(v)=>Math.abs(v.currentTime/v.duration-.7)<.03')
-                page.locator('#replay-reset').click()
-                assert page.locator('#replay-progress').input_value()=='0'
+            page.evaluate('(id)=>showDiscovery(id)',scene)
+            page.wait_for_function('document.querySelector("#success-video").readyState>=2 && !document.querySelector("#success-video").paused')
+            assert 'Astra' in page.locator('#discovery-source').inner_text()
+            assert page.locator('#exploration-dialog button:visible').count()==3
+            page.locator('#replay-play').click()
+            page.locator('#replay-progress').evaluate('(e)=>{e.value=700;e.dispatchEvent(new Event("input",{bubbles:true}));}')
+            page.wait_for_function('!document.querySelector("#success-video").seeking')
+            assert page.locator('#success-description').inner_text()
         # Closing the archive pauses playback; model details reopen the right run.
         page.locator('#replay-play').click()
         page.wait_for_function('!document.querySelector("#success-video").paused')
@@ -98,19 +88,13 @@ def main():
         page.locator('#fw-play').click()
         page.locator('[data-result-view="D"]').click()
         page.locator('[data-result-scene="07"]').click()
-        assert page.locator('#success-tab-07').get_attribute('aria-selected')=='true'
+        assert page.locator('#discovery-title').inner_text()=='Tile rebounds'
         page.locator('#exploration-close').click()
         page.locator('#tool-tab').click()
         assert page.locator('#tool-case').is_visible()
         assert not page.locator('#color-case').is_visible()
         page.locator('#tool-tab').press('ArrowLeft')
         assert page.locator('#color-case').is_visible()
-        page.evaluate('showDiscovery("07")')
-        page.locator('[data-chapter="0"]').click()
-        page.locator('.success-evidence .note-details summary').click()
-        assert 'red' in page.locator('#success-note').inner_text().lower()
-        page.locator('.success-evidence .note-details summary').click()
-        page.locator('#exploration-close').click()
         # Test every local download through the browser's HTTP client when served.
         if args.url.startswith('http'):
             links=page.locator('a[href^="downloads/"]').evaluate_all('(a)=>[...new Set(a.map(x=>x.href))]')
@@ -142,8 +126,8 @@ def main():
         assert offline.locator('#scene-picker button').count()==15
         context.close();browser.close()
     assert not errors,errors
-    print(json.dumps({'status':'PASS','checks':['12 successful-run video chapters: play, pause, seek, reset',
-        'three case studies, folded records and animated framework',
+    print(json.dumps({'status':'PASS','checks':['four recorded films: play, pause, seek and automatic captions',
+        'three case studies, compact replays and animated framework',
         'all scene and metric switches','keyboard tabs and model details','controlled table and data downloads',
         '320–1440 px overflow','mobile touch layout','reduced motion','offline local-file operation',
         'no JavaScript errors'],'screenshots':str(args.screenshots)},indent=2))

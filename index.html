@@ -27,6 +27,7 @@
   <link rel="stylesheet" href="assets/chapters.css">
   <script src="data/paper.js" defer></script>
   <script src="data/discoveries.js" defer></script>
+  <script src="data/discovery-films.js" defer></script>
   <script src="data/scene-index.js" defer></script>
   <script src="data/oracles.js" defer></script>
   <script src="assets/app.js" defer></script>
@@ -49,25 +50,16 @@
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header">
-    <div class="nav-wrap">
-      <a class="wordmark" href="#" aria-label="LongChang home"><img src="assets/favicon.svg" alt="" width="32" height="32">LongChang<span class="wordmark-dot">.</span></a>
-      <nav aria-label="Main navigation">
-        <a href="#worlds">Worlds</a><a href="#framework">Framework</a><a href="#results">Results</a><a href="#controlled">Comparisons</a><a href="#explore">Case studies</a><a href="#evolution">Evolution</a>
-      </nav>
-      <a class="nav-paper" href="downloads/paper.pdf" target="_blank" rel="noopener">Read the paper <span aria-hidden="true">↗</span></a>
-    </div>
-  </header>
   <main id="main">
     <section class="hero container publication-hero" aria-labelledby="hero-title" aria-describedby="paper-title">
       <div class="hero-copy">
-        <h1 id="hero-title">Long<span class="title-accent">Chang</span></h1>
-        <p id="paper-title" class="paper-title">Can LLMs Uncover Hidden Physical Laws<br class="desktop-break"> through Free Exploration?</p>
+        <h1 id="hero-title"><svg class="hero-logo" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="mark-glass" x2="1" y2="1"><stop stop-color="#f6fcfa"/><stop offset="1" stop-color="#dceceb"/></linearGradient><radialGradient id="mark-red" cx="30%" cy="25%" r="75%"><stop stop-color="#ffd3ba"/><stop offset=".42" stop-color="#d97861"/><stop offset="1" stop-color="#a53f36"/></radialGradient><radialGradient id="mark-blue" cx="30%" cy="25%" r="75%"><stop stop-color="#cce4f9"/><stop offset=".42" stop-color="#6d9fc6"/><stop offset="1" stop-color="#365d85"/></radialGradient></defs><path d="M20 3 36 12v17L20 38 4 29V12Z" fill="url(#mark-glass)" stroke="#315e68" stroke-width="1.3"/><path d="m4 12 16 9 16-9M20 21v17" fill="none" stroke="#527c80" stroke-width="1.1"/><g class="logo-eye"><circle cx="13" cy="24" r="4.4" fill="url(#mark-red)"/><ellipse cx="13.3" cy="24" rx=".7" ry="2.25" fill="#66322e" opacity=".65"/><circle cx="11.6" cy="22.5" r="1" fill="#fff" opacity=".8"/></g><g class="logo-eye"><circle cx="27" cy="24" r="4.4" fill="url(#mark-blue)"/><ellipse cx="26.7" cy="24" rx=".7" ry="2.25" fill="#263f5b" opacity=".65"/><circle cx="25.6" cy="22.5" r="1" fill="#fff" opacity=".8"/></g></svg><span class="title-accent">Long</span>Chang</h1>
+        <p id="paper-title" class="paper-title">Can LLMs Uncover Hidden Physical Laws through Free Exploration?</p>
         <div class="hero-authors">Anonymous Authors</div>
         <div class="hero-actions">
-          <a class="button primary" href="downloads/paper.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h7l3 3V17.5H5zM12 2.5v4h3M8 10h4M8 13h4"/></svg>Paper</a>
-          <a class="button secondary" href="downloads/longchang-source.zip" download><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6-4 4 4 4m8-8 4 4-4 4M11.5 4l-3 12"/></svg>Code</a>
-          <a class="button secondary explore-link" href="#worlds">Explore 15 worlds <span aria-hidden="true">↓</span></a>
+          <a class="button" href="downloads/paper.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h7l3 3V17.5H5zM12 2.5v4h3M8 10h4M8 13h4"/></svg>Paper</a>
+          <a class="button" href="downloads/longchang-source.zip" download><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6-4 4 4 4m8-8 4 4-4 4M11.5 4l-3 12"/></svg>Code</a>
+          <a class="button" href="#worlds"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="3.5" width="16" height="13" rx="2"/><path d="m8 7 5 3-5 3z"/></svg>Demo</a>
         </div>
       </div>
       <figure class="motion-hero" aria-label="Animated overview of four altered physical laws" hidden>
@@ -262,29 +254,14 @@
 
   </main>
   <footer><img src="assets/favicon.svg" alt="LongChang" width="32" height="32"></footer>
-  <dialog id="exploration-dialog" class="exploration-dialog" aria-label="Recorded exploration">
+  <dialog id="exploration-dialog" class="exploration-dialog" aria-labelledby="discovery-title" aria-describedby="discovery-finding">
     <button id="exploration-close" type="button" aria-label="Close recorded exploration">×</button>
-      <details id="successful-explorations" class="exploration-archive">
-        <summary><span><strong>More recorded explorations</strong></span><span class="archive-toggle" aria-hidden="true">+</span></summary>
-        <div class="archive-body">
-      <div class="success-picker" id="success-picker" role="tablist" aria-label="Choose a successful discovery"></div>
-      <div class="discovery-workbench" id="discovery-workbench" role="tabpanel">
-        <div class="discovery-title"><div><span class="eyebrow" id="discovery-index">Scene 07</span><h3 id="discovery-title">Tile rebounds</h3><p id="discovery-question"></p></div><div class="verified-run"><span>VERIFIED DISCOVERY</span><strong>Correct + supported</strong><small id="discovery-run"></small></div></div>
-        <div class="recorded-exploration">
-          <article class="successful-run">
-            <div class="success-video-frame"><video id="success-video" muted playsinline preload="none" aria-label="Experiment from a verified successful GPT-6-Astra run"></video><span id="success-clock" class="video-coordinate"></span><span id="success-turns" class="video-turn"></span></div>
-            <div class="success-chapters" id="success-chapters" role="tablist" aria-label="Evidence chapter"></div>
-            <div class="playback-controls"><button id="replay-play" class="play-button" aria-label="Play recorded experiment"><span aria-hidden="true">▶</span></button><label for="replay-progress" class="sr-only">Recorded experiment progress</label><input id="replay-progress" type="range" min="0" max="1000" value="0"><span id="replay-percent">0%</span><select id="replay-speed" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select><button id="replay-reset" class="text-button" aria-label="Restart recorded experiment">↺</button><button id="replay-fullscreen" class="text-button" aria-label="Expand recorded experiment"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button></div>
-            </article>
-          <div class="success-evidence" id="success-evidence" role="tabpanel"><h4 id="success-chapter-title"></h4><p id="success-description"></p><details class="note-details"><summary>Read the original note <span>↗</span></summary><blockquote id="success-note"></blockquote><span class="note-source" id="success-note-source"></span></details></div>
-        </div>
-        <div class="discovery-conclusion"><span>FINDING</span><p id="discovery-conclusion"></p></div>
-        <details class="final-note"><summary>Final note &amp; run details <span>+</span></summary><blockquote id="success-final-note"></blockquote><p class="note-source" id="success-source-label"></p></details>
-        <div class="success-source"><a id="discovery-world-link" href="?scene=07#worlds">Explore this world ↗</a><a href="downloads/successful-runs.json" download>Download all four runs ↓</a></div>
-      </div>
-      <p class="success-selection-note">Four selected successes. Astra succeeds in 7 of 42 altered-world runs overall; <a href="#results">see all results</a>.</p>
-        </div>
-      </details>
+    <header class="replay-heading"><p id="discovery-source">Recorded example · GPT-6-Astra</p><h3 id="discovery-title"></h3><p id="discovery-finding"></p></header>
+    <div class="exploration-player">
+      <div class="success-video-frame"><video id="success-video" muted playsinline preload="none" aria-label="Recorded experiments from a successful exploration"></video><p id="success-status" role="status" hidden></p></div>
+      <div class="playback-controls"><button id="replay-play" class="play-button" aria-label="Play recorded exploration">▶</button><label for="replay-progress" class="sr-only">Recorded exploration progress</label><input id="replay-progress" type="range" min="0" max="1000" value="0"><span id="replay-time">0:00</span><button id="replay-fullscreen" class="text-button" aria-label="Expand recorded exploration"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button></div>
+      <p id="success-description" class="replay-caption"></p>
+    </div>
   </dialog>
   <dialog id="motion-dialog" aria-labelledby="presentation-title">
     <div class="presentation-shell">

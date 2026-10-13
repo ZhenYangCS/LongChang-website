@@ -49,7 +49,7 @@ def main():
         # Full exploration records are still reachable, outside the case section.
         page.evaluate('showDiscovery("07")')
         expect(page.locator('#exploration-dialog')).to_have_js_property('open',True)
-        expect(page.locator('#success-tab-07')).to_have_attribute('aria-selected','true')
+        expect(page.locator('#discovery-title')).to_have_text('Tile rebounds')
         page.wait_for_function('[...document.querySelectorAll("#evolution video")].every(v=>v.paused)')
         page.locator('#exploration-close').click()
         page.locator('#evolution-play').click()

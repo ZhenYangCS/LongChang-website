@@ -81,8 +81,8 @@ def main():
                     assert page.locator('#scene-live-controls').is_visible()
         page.locator('[data-atlas-view=physics]').click()
         page.evaluate('showDiscovery("07")')
-        page.locator('#replay-play').click();page.wait_for_function('!document.querySelector("#success-video").paused')
-        page.locator('#replay-speed').select_option('2');assert page.locator('#success-video').evaluate('(v)=>v.playbackRate')==2
+        page.wait_for_function('!document.querySelector("#success-video").paused')
+        assert page.locator('#exploration-dialog button:visible').count()==3
         page.locator('#replay-play').click()
         page.locator('#exploration-close').click()
         for width,height in [(1366,768),(1280,720),(1440,900)]:

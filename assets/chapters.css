@@ -46,7 +46,7 @@
 .controlled-label { font-size:11px; }
 .controlled-card > p { font-size:14px; line-height:1.65; }
 .controlled-card thead th,.controlled-card tbody th { font-size:12px; }
-.controlled-card tbody tr:not(.controlled-discovery) > td { font-size:12px; }
+.controlled-card tbody tr:not(.controlled-highlight) > td { font-size:12px; }
 .controlled-baseline { font-size:13px; line-height:1.7; }
 .evolution-origin { font-size:15px; }
 .evolution-demo p,.evo-rule-details p { font-size:14px; line-height:1.7; }

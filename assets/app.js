@@ -65,24 +65,4 @@
   wireTabs($('.case-tabs'),chooseCase);
 
 
-  const navLinks=$$('.site-header nav a');
-  new IntersectionObserver(entries=>{
-    if(entries[0].isIntersecting)navLinks.forEach(a=>{a.classList.remove('active');a.removeAttribute('aria-current');});
-  },{rootMargin:'-15% 0px -65% 0px'}).observe($('.publication-hero'));
-  new IntersectionObserver(entries=>{
-    entries.filter(e=>e.isIntersecting).forEach(e=>navLinks.forEach(a=>{
-      const current=a.hash===`#${e.target.id}`;
-      a.classList.toggle('active',current);
-      if(current)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');
-    }));
-  },{rootMargin:'-15% 0px -65% 0px'}).observe($('#explore'));
-  for(const id of ['worlds','framework','results','controlled','evolution']){
-    new IntersectionObserver(entries=>{
-      if(entries[0].isIntersecting)navLinks.forEach(a=>{
-        const current=a.hash===`#${id}`;
-        a.classList.toggle('active',current);
-        if(current)a.setAttribute('aria-current','location');else a.removeAttribute('aria-current');
-      });
-    },{rootMargin:'-15% 0px -65% 0px'}).observe($(`#${id}`));
-  }
 })();

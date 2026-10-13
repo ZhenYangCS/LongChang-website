@@ -13,13 +13,14 @@
   ];
   const groups = [
     {id:'guidance', title:'Guidance helps.', note:'A task, altered-physics notice and scene clue.', names:['Free exploration','Task-guided'], labels:['Free','Guided']},
-    {id:'budget', title:'More turns add little.', note:'The explorer stops after about 42 turns.', names:['100 turns','500 turns'], labels:['100 turns','500 turns']},
+    {id:'budget', title:'Runs stop early.', note:'About 42 turns used under either budget.', names:['100 turns','500 turns'], labels:['100 turns','500 turns'], focus:'L'},
     {id:'apparatus', title:'Tool access helps.', note:'The explorer chooses whether to build.', names:['Disabled','Enabled'], labels:['Disabled','Enabled']}
   ];
   const target = document.querySelector('#controlled-comparisons');
   if (target) target.innerHTML = groups.map((group, index) => {
     const conditions = group.names.map(name => data.controlled.find(row => row.name === name));
-    return `<article class="controlled-card" data-comparison="${group.id}"><span class="controlled-label">0${index + 1} / ${['TASK GUIDANCE','TURN BUDGET','APPARATUS ACCESS'][index]}</span><h3>${group.title}</h3><p>${group.note}</p><table><caption class="sr-only">GPT-6-Astra: ${group.names.join(' compared with ')}</caption><thead><tr><th scope="col">Metric</th>${group.labels.map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${fields.map(({key, label}) => `<tr ${key === 'D' ? 'class="controlled-discovery"' : ''}><th scope="row">${label}</th>${conditions.map(row => `<td data-condition="${esc(row.name)}" data-metric="${key}"><span>${row[key].toFixed(1)}${key === 'L' ? '' : '%'}</span>${key === 'D' ? `<i class="controlled-track" aria-hidden="true"><i style="width:${row.D}%"></i></i>` : ''}</td>`).join('')}</tr>`).join('')}</tbody></table></article>`;
+    const focus=group.focus||'D',ordered=[fields.find(field=>field.key===focus),...fields.filter(field=>field.key!==focus)];
+    return `<article class="controlled-card" data-comparison="${group.id}" data-primary-metric="${focus}"><span class="controlled-label">0${index + 1} / ${['TASK GUIDANCE','TURN BUDGET','APPARATUS ACCESS'][index]}</span><h3>${group.title}</h3><p>${group.note}</p><table><caption class="sr-only">GPT-6-Astra: ${group.names.join(' compared with ')}</caption><thead><tr><th scope="col">Metric</th>${group.labels.map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${ordered.map(({key, label}) => `<tr ${key === focus ? 'class="controlled-highlight"' : ''}><th scope="row">${label}</th>${conditions.map(row => `<td data-condition="${esc(row.name)}" data-metric="${key}"><span>${row[key].toFixed(1)}${key === 'L' ? '' : '%'}</span>${key === focus&&key==='D' ? `<i class="controlled-track" aria-hidden="true"><i style="width:${row.D}%"></i></i>` : ''}</td>`).join('')}</tr>`).join('')}</tbody></table></article>`;
   }).join('');
 
   const evolution = document.querySelector('#evolution-results');

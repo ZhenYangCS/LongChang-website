@@ -17,8 +17,9 @@ export async function createRoom(stage,status,options={}) {
   const renderer=new T.WebGLRenderer({alpha:true,antialias:true,powerPreference:'high-performance'});
   const context=renderer.getContext(),debug=context.getExtension('WEBGL_debug_renderer_info');
   const softwareRenderer=debug&&/SwiftShader|llvmpipe|software/i.test(context.getParameter(debug.UNMASKED_RENDERER_WEBGL));
-  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0xf8f9f6,0);
-  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
+  const targetPixelRatio=Math.min(devicePixelRatio,softwareRenderer?1:2);
+  renderer.setPixelRatio(targetPixelRatio);renderer.setClearColor(0xf8f9f6,0);
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
   const canvas=renderer.domElement;canvas.className='room-canvas';canvas.tabIndex=0;
   canvas.setAttribute('aria-label','Push or drag objects; use arrow keys to push the selected object.');
@@ -30,7 +31,8 @@ export async function createRoom(stage,status,options={}) {
   if(live)camera.position.fromArray(simulation.config.camera.position);else camera.position.set(11.86,-14.134,14.882);camera.lookAt(lookTarget);
   scene.add(new T.HemisphereLight(0xe9f5ff,0xa1aaa9,1.6));
   const key=new T.DirectionalLight(0xfff2dc,3.3);key.position.set(-3,-4,10);key.castShadow=true;
-  key.shadow.mapSize.set(1024,1024);Object.assign(key.shadow.camera,{left:-6,right:6,top:6,bottom:-6});key.shadow.normalBias=.018;key.shadow.bias=-.0002;key.shadow.radius=4;scene.add(key);
+  const shadowSize=softwareRenderer?1024:2048;
+  key.shadow.mapSize.set(shadowSize,shadowSize);Object.assign(key.shadow.camera,{left:-6,right:6,top:6,bottom:-6});key.shadow.normalBias=.018;key.shadow.bias=-.0002;key.shadow.radius=4;scene.add(key);
   const fill=new T.DirectionalLight(0xd5eaff,1.2);fill.position.set(5,2,7);scene.add(fill);
   const mat=(color,metalness=0,roughness=.3,clearcoat=.15)=>new T.MeshPhysicalMaterial({color,metalness,roughness,clearcoat,clearcoatRoughness:.18});
   const materials={metal:mat('#456475',.65),silver:mat('#c2cfd6',.75),ramp_mat:mat('#337a6b',.15),bob_mat:mat('#efa12e',.7,.24),red_enamel:mat('#c31e18',0,.18,.65),blue_enamel:mat('#154da0',0,.18,.65),base_trim:mat('#bfd6dd',.7),frame:mat('#6b9faa',.25,.2),front_frame:mat('#94bdc8',.15,.25)};
@@ -112,12 +114,12 @@ export async function createRoom(stage,status,options={}) {
     for(const light of [key,fill,scene.children.find(o=>o.isHemisphereLight)]){const copy=light.clone();copy.castShadow=false;copy.position.applyQuaternion(inverse);studio.add(copy);}
     const photoCamera=new T.OrthographicCamera(-1,1,1,-1,.1,10);photoCamera.position.z=3;
     const sphere=new T.Mesh(new T.SphereGeometry(1,48,32));studio.add(sphere);const baked=bakedMaterials;
-    renderer.setPixelRatio(1);renderer.setSize(128,128,false);renderer.setClearColor(0xffffff,1);
+    renderer.setPixelRatio(1);renderer.setSize(256,256,false);renderer.setClearColor(0xffffff,1);
     for(const mesh of meshes){
       const material=mesh.material;if(!material.isMeshPhysicalMaterial&&!material.isMeshStandardMaterial)continue;
       if(!baked.has(material)){
         sphere.material=material;renderer.render(studio,photoCamera);
-        const c=document.createElement('canvas');c.width=c.height=128;c.getContext('2d').drawImage(canvas,0,0);
+        const c=document.createElement('canvas');c.width=c.height=256;c.getContext('2d').drawImage(canvas,0,0);
         const map=new T.CanvasTexture(c);map.colorSpace=T.SRGBColorSpace;
         baked.set(material,new T.MeshMatcapMaterial({matcap:map,color:0xffffff,toneMapped:false}));
       }
@@ -151,15 +153,21 @@ export async function createRoom(stage,status,options={}) {
   orbit.zoomToCursor=live;
   const pointers=new Set();
   const physicsStep=model.opt.timestep;let playbackRate=options.speed??(live?4:1);
-  let accumulated=0,frameAverage=16.7,qualitySamples=0,quietSince=null;
+  let accumulated=0,frameAverage=16.7,qualitySamples=0,stableSamples=0,quietSince=null;
   const arrow=new T.ArrowHelper(new T.Vector3(0,1,0),new T.Vector3(),0,0x387f68,.22,.13);arrow.visible=false;scene.add(arrow);
   function setRay(e){const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(pointer,camera);}
   function tick(now){
     frame=0;if(disposed||!active||!visible||document.hidden)return;const elapsed=Math.max(0,now-last)||16.7;last=now;
     frameAverage=frameAverage*.85+elapsed*.15;
     if(++qualitySamples>=20){
-      if(frameAverage>30&&renderer.getPixelRatio()>.65)renderer.setPixelRatio(Math.max(.65,renderer.getPixelRatio()*.8));
-      else if(frameAverage>32&&!softShadows)useContactShadows();
+      if(frameAverage>30){
+        stableSamples=0;
+        if(!softShadows)useContactShadows();
+        else if(renderer.getPixelRatio()>.75)renderer.setPixelRatio(Math.max(.75,renderer.getPixelRatio()*.8));
+      }else if(frameAverage<20){
+        stableSamples+=qualitySamples;
+        if(stableSamples>=120&&renderer.getPixelRatio()<targetPixelRatio){renderer.setPixelRatio(Math.min(targetPixelRatio,renderer.getPixelRatio()+.15));stableSamples=0;}
+      }else stableSamples=0;
       qualitySamples=0;
     }
     const physicsStart=performance.now();

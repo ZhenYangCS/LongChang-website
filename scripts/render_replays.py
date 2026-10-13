@@ -37,7 +37,7 @@ def styled(xml, width, height, camera=None):
 
 
 class RecordedRenderer:
-    def __init__(self, record, camera, size=(960, 560)):
+    def __init__(self, record, camera, size=(960, 560), detail_shadows=False):
         self.record = record
         self.camera = mujoco.MjvCamera()
         self.camera.lookat[:] = camera["lookat"]
@@ -46,6 +46,7 @@ class RecordedRenderer:
         self.camera.elevation = camera.get("elevation", -35)
         self.size = size
         self.camera_spec = camera
+        self.detail_shadows = detail_shadows
         self.version = None
         self.renderer = None
         self.options = mujoco.MjvOption()
@@ -56,6 +57,11 @@ class RecordedRenderer:
             if self.renderer: self.renderer.close()
             xml = next(v['xml'] for v in self.record['model_versions'] if v['version'] == frame['version'])
             self.model = mujoco.MjModel.from_xml_string(styled(xml, *self.size, self.camera_spec))
+            if self.detail_shadows and self.camera_spec.get('orthographic'):
+                # The default shadow map spans the entire workshop. Focus its
+                # display bounds on this close-up before allocating the context.
+                self.model.stat.center[:] = self.camera_spec['lookat']
+                self.model.stat.extent = max(3, self.camera_spec['vertical_span'] * 2)
             self.data = mujoco.MjData(self.model)
             self.renderer = mujoco.Renderer(self.model, self.size[1], self.size[0])
             self.version = frame['version']
