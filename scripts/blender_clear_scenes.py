@@ -10,6 +10,7 @@ from blender_oracle import setup
 def main():
     job=json.loads(Path(sys.argv[1]).read_text());folder=Path(job['output']);frames=folder/'frames';frames.mkdir(exist_ok=True)
     scene,balls,mats=setup(job)
+    bpy.context.view_layer.update()
     # Compare the constructed Blender objects, not only an aspect-ratio setting.
     signature={}
     for obj in scene.objects:

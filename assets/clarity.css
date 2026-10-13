@@ -142,3 +142,54 @@
   .scene-foot .physics-downloads { justify-content:flex-end; }
   .room-caption>span { min-width:0; text-align:center; }
 }
+/* Table 1 becomes a stable-height index beside the animated world. */
+.scene-workspace { display:grid; grid-template-columns:350px minmax(0,1fr); gap:18px; align-items:stretch; }
+.scene-index { display:flex; flex-direction:column; min-width:0; border:1px solid #d3dfd9; border-radius:9px; background:#f9fbf8; overflow:hidden; }
+.scene-index-heading { height:54px; display:flex; flex-shrink:0; align-items:center; justify-content:space-between; padding:0 16px; border-bottom:1px solid #dce5df; font-size:10px; letter-spacing:.11em; color:#486d61; }
+.scene-index-heading span { font-size:9px; letter-spacing:.06em; color:#879b91; }
+.scene-workspace .scene-picker { flex:1; display:grid; grid-template-columns:1fr; grid-template-rows:repeat(15,minmax(39px,1fr)); gap:3px; margin:0; padding:6px; border:0; }
+.scene-workspace .scene-picker button { display:grid; grid-template-columns:20px minmax(0,1fr) 106px; gap:6px; align-items:center; width:100%; padding:5px 8px; min-height:0; border:1px solid transparent; border-radius:5px; background:transparent; box-shadow:none; }
+.scene-workspace .scene-picker button:hover { background:#edf4f0; border-color:#d4e2d8; }
+.scene-workspace .scene-picker button[aria-selected=true] { background:#e3efe8; border-color:#a6c5b6; box-shadow:inset 2px 0 #477c67; }
+.scene-workspace .scene-choice-number { font-size:9px!important; color:#7d9589; margin:0!important; }
+.scene-workspace .scene-choice-name { font:12px/1.4 var(--sans); color:#426052; }
+.scene-workspace [aria-selected=true] .scene-choice-name { color:#264f3d; font-weight:500; }
+.scene-workspace .scene-picker .scene-choice-symbol { display:block; width:106px; height:36px; max-height:none; border:0; border-radius:0; object-fit:contain; background:none; padding:0; opacity:.84; }
+.scene-workspace [aria-selected=true] .scene-choice-symbol { opacity:1; }
+.scene-workspace .atlas-detail { display:flex; flex-direction:column; min-width:0; }
+.scene-workspace .atlas-topline { min-height:54px; padding:10px 16px; gap:8px; }
+.scene-workspace .atlas-navigation { gap:4px; }
+.scene-workspace .atlas-body { flex:1; }
+.scene-workspace .atlas-copy,.scene-workspace .atlas-detail[data-view=physics] .atlas-copy { padding:21px 22px 15px; }
+.scene-workspace .atlas-copy h3 { font-size:28px; }
+.scene-workspace #oracle-plain { font-size:18px; line-height:1.55; min-height:56px; display:flex; align-items:center; justify-content:center; }
+.scene-workspace .oracle-panel { width:100%; margin-top:8px; }
+.scene-workspace .physics-playback { padding:12px 17px 17px; gap:9px; }
+.scene-workspace .scene-foot { padding:16px 18px; margin-top:auto; }
+#scene-mobile-select { display:none; }
+.atlas-toolbar>span { visibility:hidden; }
+@media(min-width:801px) and (max-width:1150px) {
+  .scene-workspace { grid-template-columns:300px minmax(0,1fr); gap:14px; }
+  .scene-workspace .scene-picker button { grid-template-columns:17px minmax(0,1fr) 86px; padding-inline:5px; gap:5px; }
+  .scene-workspace .scene-picker .scene-choice-symbol { width:86px; height:31px; }
+  .scene-workspace .scene-choice-name { font-size:11px; }
+  .scene-workspace #oracle-plain { font-size:16px; min-height:60px; }
+  .scene-workspace .atlas-copy h3 { font-size:25px; }
+  .scene-workspace .atlas-view-switch button { padding:6px 7px; }
+}
+@media(max-width:800px) {
+  .scene-workspace { grid-template-columns:1fr; gap:14px; }
+  .scene-index-heading { height:38px; padding-inline:14px; }
+  .scene-workspace .scene-picker { display:none; }
+  #scene-mobile-select { display:block; width:100%; border:0; background:#fbfdfa; font:14px var(--sans); color:#365c4a; padding:14px; cursor:pointer; }
+  .scene-workspace #oracle-plain { min-height:0; font-size:17px; }
+  .scene-workspace .atlas-copy h3 { font-size:27px; }
+  .scene-workspace .atlas-body { flex:none; }
+  .scene-workspace .scene-foot { margin-top:0; }
+}
+@media(max-width:560px) {
+  .scene-workspace .atlas-copy,.scene-workspace .atlas-detail[data-view=physics] .atlas-copy { padding:20px 18px 16px; }
+  .scene-workspace #oracle-plain { font-size:16px; }
+  .scene-workspace .atlas-copy h3 { font-size:25px; }
+  .scene-workspace .physics-playback { padding:10px 12px 16px; gap:7px; }
+}

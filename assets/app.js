@@ -13,12 +13,13 @@
 
   function wireTabs(root, choose) {
     root.addEventListener('keydown', event => {
-      if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+      const vertical=root.getAttribute('aria-orientation')==='vertical';
+      if (!['ArrowLeft','ArrowRight','Home','End',...(vertical?['ArrowUp','ArrowDown']:[])].includes(event.key)) return;
       const tabs = $$('[role="tab"]', root);
       const i = tabs.indexOf(document.activeElement);
       if (i < 0) return;
       event.preventDefault();
-      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (i + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (i + (['ArrowRight','ArrowDown'].includes(event.key) ? 1 : -1) + tabs.length) % tabs.length;
       choose(tabs[next]);
       tabs[next].focus();
     });

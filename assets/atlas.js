@@ -279,9 +279,13 @@
   // The original scene thumbnails connect the illustrations to the paper.
   document.querySelectorAll('#scene-picker button').forEach(button => {
     const scene = window.LONGCHANG.scenes.find(s => s.id === button.dataset.scene);
-    button.innerHTML = `<span class="scene-choice-number">${scene.id}</span><strong class="scene-choice-name">${scene.name}</strong>`;
-    button.addEventListener('click', () => { touring = false; render(); });
+    button.innerHTML = `<span class="scene-choice-number">${scene.id}</span><strong class="scene-choice-name">${scene.name}</strong><img class="scene-choice-symbol" src="assets/table1/scene-${scene.id}.svg" width="106" height="36" loading="lazy" decoding="async" alt="" aria-hidden="true">`;
+    button.addEventListener('click', () => { touring = false; render(); if(view==='physics')window.LongChangPhysics?.play(); });
   });
+  const mobilePicker=$('#scene-mobile-select');
+  mobilePicker.innerHTML=window.LONGCHANG.scenes.map(s=>`<option value="${s.id}">${s.id} · ${s.name}</option>`).join('');
+  mobilePicker.addEventListener('change',()=>{window.showWorld(mobilePicker.value);if(view==='physics')window.LongChangPhysics?.play();});
+  document.addEventListener('longchang:scene',event=>{mobilePicker.value=event.detail.id;});
   $('#atlas-play').addEventListener('click', () => { if (time >= duration) time = 0; playing = !playing; if (!playing) touring = false; render(); syncClock(); });
   $('#atlas-reset').addEventListener('click', () => { time = 0; playing = false; touring = false; render(); syncClock(); });
   $('#atlas-progress').addEventListener('input', event => { time = Number(event.target.value) / 100; playing = false; touring = false; render(); syncClock(); });

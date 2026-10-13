@@ -92,6 +92,6 @@
   document.addEventListener('longchang:scene',e=>{if(!byTour)touring=false;select(e.detail.id);tourLabel();});
   new IntersectionObserver(e=>{if(!e[0].isIntersecting&&source)stop();},{threshold:0}).observe($('#atlas-physics-view'));
   document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
-  window.LongChangPhysics=Object.freeze({toggleTour(){touring=!touring;if(touring){byTour=true;window.showWorld('01');byTour=false;start();}else stop();tourLabel();}});
+  window.LongChangPhysics=Object.freeze({play:start,toggleTour(){touring=!touring;if(touring){byTour=true;window.showWorld('01');byTour=false;start();}else stop();tourLabel();}});
   shown=$('.atlas-detail').dataset.view==='physics';select(window.LongChangAtlas.currentScene());
 })();
