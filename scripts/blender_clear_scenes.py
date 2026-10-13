@@ -1,5 +1,5 @@
 """Cycles background plus feathered dynamic render regions; exact recorded poses."""
-import json,math,sys,time
+import json,math,sys,time,hashlib,fcntl
 from pathlib import Path
 import numpy as np
 from PIL import Image,ImageDraw,ImageFilter,ImageFont
@@ -10,6 +10,16 @@ from blender_oracle import setup
 def main():
     job=json.loads(Path(sys.argv[1]).read_text());folder=Path(job['output']);frames=folder/'frames';frames.mkdir(exist_ok=True)
     scene,balls,mats=setup(job)
+    # Compare the constructed Blender objects, not only an aspect-ratio setting.
+    signature={}
+    for obj in scene.objects:
+        if obj.type in {'CAMERA','LIGHT'} or obj.name.startswith(('Display plinth','Porcelain floor','Optical glass','Glass vertical edge','Glass top edge')):
+            item=dict(type=obj.type,matrix=[list(row) for row in obj.matrix_world])
+            if obj.type=='MESH':item.update(bounds=[list(c) for c in obj.bound_box],materials=[m.name for m in obj.data.materials])
+            if obj.type=='CAMERA':item.update(ortho_scale=obj.data.ortho_scale)
+            if obj.type=='LIGHT':item.update(energy=obj.data.energy,color=list(obj.data.color),size=obj.data.size,size_y=obj.data.size_y)
+            signature[obj.name]=item
+    (folder/'room-signature.json').write_text(json.dumps(signature,sort_keys=True))
     scene.cycles.adaptive_threshold=.012;scene.cycles.adaptive_min_samples=32
     scene.render.film_transparent=True
     def paper(path):
@@ -19,10 +29,16 @@ def main():
     def screen(p):
         d=np.array(p)-pos
         return np.array([(0.5+d@right/(span*w/h))*w,(0.5-d@up/span)*h])
-    bgpath=folder/'background.png'
-    if not bgpath.exists():
-        for b in balls.values():b.hide_render=True
-        scene.cycles.samples=256;scene.render.filepath=str(bgpath);bpy.ops.render.render(write_still=True)
+    bgkey=hashlib.sha256(json.dumps([job['display_bounds'],job['camera'],job['fixtures']],sort_keys=True).encode()).hexdigest()[:16]
+    backgrounds=Path(job.get('shared_backgrounds',folder));backgrounds.mkdir(exist_ok=True)
+    bgpath=backgrounds/f'{bgkey}.png'
+    with (backgrounds/f'{bgkey}.lock').open('w') as lock:
+        fcntl.flock(lock,fcntl.LOCK_EX)
+        if not bgpath.exists():
+            for b in balls.values():b.hide_render=True
+            scene.cycles.samples=256;scene.render.filepath=str(bgpath.with_suffix('.partial.png'));bpy.ops.render.render(write_still=True)
+            bgpath.with_suffix('.partial.png').replace(bgpath)
+        fcntl.flock(lock,fcntl.LOCK_UN)
     for b in balls.values():b.hide_render=False
     background=paper(bgpath)
     scene.cycles.samples=job['samples'];scene.render.use_border=True;scene.render.use_crop_to_border=True
