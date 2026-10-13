@@ -9,7 +9,7 @@ export async function createSceneSimulation(config,status=()=>{}) {
     const accessor=model.body(b),name=accessor.name;accessor.delete();
     const joint=model.body_jntadr[b];if(joint>=0&&model.jnt_type[joint]===0){const body={id:b,name,q:model.jnt_qposadr[joint],d:model.body_dofadr[b],g:model.body_geomadr[b],mass:model.body_mass[b]};bodies[name]=body;free.push(body);}
   }
-  const initialRGBA=Array.from(model.geom_rgba);let touching=new Set(),insideBefore=new Map(),previous=new Map(),pending=[],count=0,quietUntil=0;
+  const initialRGBA=Array.from(model.geom_rgba);let touching=new Set(),insideBefore=new Map(),previous=new Map(),pending=[],count=0,quietUntil=0,grip=null;
   const velocity=b=>Array.from(data.qvel.subarray(b.d,b.d+3)),pos=b=>data.xpos.subarray(b.id*3,b.id*3+3);
   const inside=(a,c,h)=>Math.abs(a[0]-c[0])<h&&Math.abs(a[1]-c[1])<h;
   const sphere=b=>model.body_geomnum[b.id]===1&&model.geom_type[b.g]===2;
@@ -69,19 +69,32 @@ export async function createSceneSimulation(config,status=()=>{}) {
   }
   function reset(){
     mj.mj_resetData(model,data);data.qpos.set(config.initial_qpos);data.qvel.set(config.initial_qvel);model.geom_rgba.set(initialRGBA);model.opt.gravity.set([0,0,-9.81]);
-    touching=new Set();insideBefore=new Map();previous=new Map();pending=[];count=0;quietUntil=0;
+    touching=new Set();insideBefore=new Map();previous=new Map();pending=[];count=0;quietUntil=0;grip=null;
     mj.mj_forward(model,data);rule();mj.mj_forward(model,data);data.xfrc_applied.fill(0);
   }
   function step(external=false){
-    if(!external){data.xfrc_applied.fill(0);data.qfrc_applied.fill(0);}rule();mj.mj_step(model,data);
+    if(!external){data.xfrc_applied.fill(0);data.qfrc_applied.fill(0);}rule();
+    // Match Workshop.apply: scene forces first, then a mass-scaled grip using
+    // the current gravity. Moving the hand never counts as a launch.
+    if(grip){
+      const b=bodies[grip.name],g=config.grip,desired=grip.target.map((x,k)=>(x-pos(b)[k])*8),length=Math.hypot(...desired);
+      if(length>g.move_speed)for(let k=0;k<3;k++)desired[k]*=g.move_speed/length;
+      const gravity=model.opt.gravity,v=velocity(b),force=desired.map((x,k)=>2*Math.sqrt(g.stiffness*b.mass)*(x-v[k])-b.mass*gravity[k]),magnitude=Math.hypot(...force);
+      if(magnitude>g.force_limit)for(let k=0;k<3;k++)force[k]*=g.force_limit/magnitude;
+      for(let k=0;k<3;k++)data.xfrc_applied[b.id*6+k]+=force[k];
+    }
+    mj.mj_step(model,data);
     for(const b of free)for(let k=0;k<3;k++){const lo=k===2?0:-6,hi=k===2?12:6;if(data.qpos[b.q+k]<lo||data.qpos[b.q+k]>hi){data.qpos[b.q+k]=Math.max(lo,Math.min(hi,data.qpos[b.q+k]));data.qvel[b.d+k]=0;}}
     if(id===8)rule();mj.mj_forward(model,data);
   }
   function launch(name,impulse){
-    const b=bodies[name];if(!b)throw Error('Unknown object');for(let k=0;k<3;k++)data.qvel[b.d+k]+=impulse[k]/b.mass;
+    const b=bodies[name];if(!b)throw Error('Unknown object');if(grip?.name===name)throw Error('Release the object before launching it');for(let k=0;k<3;k++)data.qvel[b.d+k]+=impulse[k]/b.mass;
     if(impulse.some(v=>v!==0)){if(id===14&&name===p.source)pending.push({time:data.time+p.DELAY,v:velocity(b)});if(id===15)quietUntil=data.time+p.HUSH;}
     if(id===8)rule();mj.mj_forward(model,data);
   }
   reset();
-  return {mj,model,data,config,bodies,reset,step,launch,rule,info:()=>({count,quietUntil,pending:pending.map(e=>e.time)}),destroy(){data.delete();model.delete();}};
+  return {mj,model,data,config,bodies,reset,step,launch,rule,
+    setGrip(name,target){if(!bodies[name])throw Error('Unknown object');grip={name,target:Array.from(target)};},
+    releaseGrip(){grip=null;},
+    info:()=>({count,quietUntil,pending:pending.map(e=>e.time),held:grip?.name||null,gripTarget:grip?.target||null}),destroy(){data.delete();model.delete();}};
 }

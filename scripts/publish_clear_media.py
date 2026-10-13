@@ -10,7 +10,7 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--ffmpeg',required=True);args=parser.parse_args()
     target=SITE/'data/physics.js';entries=json.loads(target.read_text().removeprefix('window.PHYSICS_DEMOS = ').rstrip(';\n'))
     smooth=all(e.get('fps',0)>=30 for e in entries)
-    prefix='focused' if all(e.get('detail_video') for e in entries) else 'smooth' if smooth else 'shared-room'
+    prefix='sealed' if all(e.get('render_revision')=='sealed-v1' for e in entries) else 'focused' if all(e.get('detail_video') for e in entries) else 'smooth' if smooth else 'shared-room'
     folder=SITE/f'assets/videos/{prefix}-captioned';folder.mkdir(exist_ok=True)
     temp=Path('/tmp/longchang-clear-captions');temp.mkdir(exist_ok=True)
     for item in entries:

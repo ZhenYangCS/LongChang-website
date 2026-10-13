@@ -68,8 +68,8 @@ python scripts/verify_shared_room.py
 python scripts/verify_smooth_motion.py
 python scripts/verify_playback.py
 python scripts/verify_zoom.py
-python scripts/verify_live_rules.py --prepare
-python scripts/verify_live_rules.py
+python scripts/verify_live_rules.py --prepare --audit
+python scripts/verify_live_rules.py --audit
 python scripts/verify_live_interaction.py
 python scripts/export_table1_symbols.py
 
@@ -79,6 +79,7 @@ python scripts/export_interactive_scenes.py
 # 原生 500 Hz 状态 → 同一房间、60 fps 动画 → 带说明下载版
 python scripts/build_smooth_demos.py --ffmpeg /path/to/ffmpeg
 python scripts/build_detail_views.py --ffmpeg /path/to/ffmpeg
+python scripts/seal_scene_media.py --ffmpeg /path/to/ffmpeg
 python scripts/oracle_catalog.py
 python scripts/publish_clear_media.py --ffmpeg /path/to/ffmpeg
 python scripts/export_oracle_signals.py
@@ -91,9 +92,9 @@ python scripts/prepare_scene_index.py
 
 固定房间配置在 `data/shared-room.json`。`verify_shared_room.py` 比较每次渲染实际构建的 Blender 网格、相机变换与灯光签名，防止仅统一长宽比却仍改变房间尺寸。Table 1 图标来源与哈希在 `assets/table1/source.json`。
 
-Try it 从 `data/interactive-scenes/` 按需加载原生模型、质量、摩擦、接触参数与准备位置。所有场景共享同一个 WASM 实例，每次只保留一个场景渲染器；切换到 Watch 或离开屏幕后暂停物理。玻璃采用统一剖视轮廓，实际物理边界保留原程序的 x/y ±6、z 0–12；固定房间视频的玻璃展示几何与这些物理边界分别记录。Push 按冲量/质量改变速度，Drag 施加连续抓取力，延迟与第三次接触的状态持续保存到重置。
+Try it 从 `data/interactive-scenes/` 按需加载原生模型、质量、摩擦、接触参数与准备位置。所有场景共享同一个 WASM 实例，每次只保留一个场景渲染器；切换到 Watch 或离开屏幕后暂停物理。交互房间封闭玻璃墙和顶面的内表面与原程序的 x/y ±6、z 0–12 边界对齐；固定房间视频的玻璃展示几何与这些物理边界分别记录。Push 按冲量/质量改变速度，Drag 使用原始 Workshop.apply 的质量相关抓取力、当前重力补偿、100 的力上限与 2 的移动速度上限，手部可达高度仍为 3。拖放不触发 PUSH/THROW 的事件；延迟与第三次接触的状态持续保存到重置。
 
-浏览器规则按 `scenes/base_15.json` 实现，包含接触变色、第三次接触上跳、延迟复制与暂停计时。`verify_live_rules.py` 用原始 Python 程序产生对照轨迹；当前 15 个测试场景的位姿/速度差异小于 10⁻⁸，颜色一致。Python 验证环境是 MuJoCo 3.12.0，浏览器是 3.15.0。浏览器交互不包含搭建新器材的工坊流程。
+浏览器规则按 `scenes/base_15.json` 实现，包含接触变色、第三次接触上跳、延迟复制与暂停计时。`verify_live_rules.py` 用原始 Python 程序产生对照轨迹；扩展审计共 69 组实验，覆盖原演示、随机初始运动、持续抓取与释放、换砖反弹、三球接触、天花板碰撞、多个延迟复制以及零冲量。以 0.05 秒间隔比较位姿、速度、颜色、抓取状态、碰撞计数和所有定时事件，当前误差小于 10⁻⁸。Python 验证环境是 MuJoCo 3.12.0，浏览器是 3.15.0。浏览器交互不包含搭建新器材的工坊流程。
 
 首屏依赖固定版本 MuJoCo 3.15.0（Apache-2.0）和 Three.js 0.186.1（MIT），全部存放于 `assets/vendor/`，无需连接外部 CDN。首次操作才下载引擎，不影响页面先显示；部署时保持相对目录和 `.wasm` 文件即可。
 

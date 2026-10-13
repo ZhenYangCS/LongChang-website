@@ -75,8 +75,9 @@ def setup(job):
             box('Glass vertical edge',(x,y,height/2),(radius,radius,height/2),mats['frame'],.002)
     for y in [ymin,ymax]:box('Glass top edge',(cx,y,height),(hx,radius*.65,radius*.65),mats['front_frame'] if y==ymin else mats['frame'],.002)
     for x in [xmin,xmax]:box('Glass top edge',(x,cy,height),(radius*.65,hy,radius*.65),mats['front_frame'] if x==xmax else mats['frame'],.002)
-    # The top is open for the experiment close-up; the tall rear and side panes
-    # retain the studio glass character while keeping the mechanism readable.
+    if job.get('enclosed'):
+        roof=box('Optical glass roof',(cx,cy,height+thick),(hx,hy,thick),mats['glass'],.003)
+        roof.visible_shadow=False
     for geom in job['fixtures']:
         c=geom['rgba'];kind='gray'
         if max(c[:3])-min(c[:3])>.15:

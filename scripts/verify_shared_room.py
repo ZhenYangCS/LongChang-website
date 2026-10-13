@@ -14,14 +14,21 @@ def main():
     for entry in entries:
         id=entry['id'];cache=Path('/tmp/longchang-smooth-scenes') if entry.get('fps')==60 else CACHE
         folder=Path('/tmp/longchang-detail-views/native/10') if id=='10' and entry.get('detail_video') else cache/id
+        sealed=entry.get('render_revision')=='sealed-v1'
+        if sealed:folder=Path('/tmp/longchang-sealed-scenes')/id/'room'
         job=json.loads((folder/'job.json').read_text());source=json.loads((SOURCE/id/'studio-job.json').read_text())
         signature_folder=Path('/tmp/longchang-detail-views')/id/'room' if entry.get('detail_video') else cache/id
+        if sealed:signature_folder=folder
         signature=json.loads((signature_folder/'room-signature.json').read_text())
         if first is None:first=signature
         assert signature==first,f'{id}: constructed Blender room, camera or lighting changed'
         assert job['display_bounds']==common['bounds']
         assert job['camera']==common['camera']
         assert job['radii']==source['radii']
+        if sealed:
+            assert job['enclosed'] and common['enclosed']
+            roof=signature['Optical glass roof']
+            assert abs(roof['matrix'][2][3]+min(p[2] for p in roof['bounds'])-common['bounds'][4])<1e-6
         if entry.get('fps')==60:
             record=json.loads((SITE/entry['record']).read_text())
             for frame in job['frames']:assert frame['objects']==record['samples'][frame['native_index']]['objects']
@@ -33,7 +40,9 @@ def main():
             from build_detail_views import focus_crop,project
             crop,camera=focus_crop(job)
             assert crop==entry['detail_crop'] and camera==entry['detail_camera']
-            detail=json.loads((Path('/tmp/longchang-detail-views')/id/'job.json').read_text())
+            detail_path=Path('/tmp/longchang-sealed-scenes')/id/'detail/job.json' if sealed else Path('/tmp/longchang-detail-views')/id/'job.json'
+            detail=json.loads(detail_path.read_text())
+            if sealed:assert detail['enclosed']
             assert detail['display_bounds']==common['bounds']
             assert detail['radii']==job['radii'] and detail['frames']==job['frames']
             l,t,r,b=crop

@@ -9,6 +9,8 @@ def main():
         page=browser.new_page(viewport={'width':1366,'height':768});page.on('pageerror',lambda e:errors.append(str(e)));page.goto(args.url+'/#worlds');page.wait_for_load_state('networkidle')
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>r.name.includes(".wasm"))')
         page.locator('[data-atlas-view=motion]').click();page.wait_for_function('window.SceneRoom?.getState().scene==="07"')
+        room=page.evaluate('SceneRoom.getRenderInfo().room')
+        assert room['bounds']==[-6,6,-6,6,12] and abs(room['roofBottom']-12)<1e-6
         page.locator('#scene-live-reset').click();page.locator('#scene-live-stage').scroll_into_view_if_needed()
         pos=page.evaluate('SceneRoom.project("gray_ball_1")');page.mouse.move(pos['x'],pos['y']);page.mouse.down();page.mouse.move(pos['x']+65,pos['y']-20,steps=8);page.mouse.up()
         page.wait_for_function('Math.hypot(SceneRoom.getState().positions.gray_ball_1[0]+2.5,SceneRoom.getState().positions.gray_ball_1[1])>.2')
@@ -29,6 +31,18 @@ def main():
             page.evaluate('(id)=>showWorld(id)',id);page.wait_for_function('(id)=>window.SceneRoom?.getState().scene===id',arg=id)
             assert page.locator('#scene-live-stage canvas').count()==1
         page.locator('#scene-live-reset').click();assert page.evaluate('SceneRoom.getState().oracle.count')==0
+        # A stationary grip on the heavier ball must use Workshop's mass-scaled
+        # force, rather than the teaser's weaker spring (which drifted 0.27 high).
+        page.evaluate('showWorld("03")');page.wait_for_function('window.SceneRoom?.getState().scene==="03"');page.locator('#scene-live-reset').click()
+        page.locator('[data-scene-mode=drag]').click();pos=page.evaluate('SceneRoom.project("blue_ball")')
+        page.mouse.move(pos['x'],pos['y']);page.mouse.down();page.wait_for_function('SceneRoom.getState().time>1.9')
+        grip=page.evaluate('SceneRoom.getState()');assert grip['oracle']['held']=='blue_ball'
+        assert abs(grip['positions']['blue_ball'][2]-grip['oracle']['gripTarget'][2])<.05
+        page.mouse.up();assert page.evaluate('SceneRoom.getState().oracle.held') is None
+        page.locator('#scene-live-reset').click();page.locator('[data-scene-mode=push]').click();page.locator('#scene-live-stage canvas').focus();page.keyboard.press('ArrowRight')
+        page.wait_for_function('document.querySelector("#scene-live-play").getAttribute("aria-label")==="Pause live physics"')
+        page.locator('#atlas-tour').click();assert page.locator('#scene-detail').get_attribute('data-view')=='physics'
+        page.wait_for_function('!document.querySelector("#physics-video").paused');page.locator('#atlas-tour').click()
         page.locator('[data-room-mode=push]').click();page.wait_for_function('!!window.RoomDemo')
         wasm=page.evaluate('performance.getEntriesByType("resource").filter(r=>r.name.includes(".wasm")).length');assert wasm==1,wasm
         print('PASS: real push, lift/drop, rotate, pause/resume, fullscreen controls, fresh scene state and one shared WASM download.',flush=True)

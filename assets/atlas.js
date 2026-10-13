@@ -290,7 +290,7 @@
   $('#atlas-reset').addEventListener('click', () => { time = 0; playing = false; touring = false; render(); syncClock(); });
   $('#atlas-progress').addEventListener('input', event => { time = Number(event.target.value) / 100; playing = false; touring = false; render(); syncClock(); });
   $('#atlas-tour').addEventListener('click', () => {
-    if(view === 'physics' && window.LongChangPhysics) { window.LongChangPhysics.toggleTour(); return; }
+    if(window.LongChangPhysics) { if(view!=='physics')setView('physics');window.LongChangPhysics.toggleTour();return; }
     touring = !touring;
     if (touring) { setView('motion'); window.showWorld('01'); playing = true; }
     else playing = false;

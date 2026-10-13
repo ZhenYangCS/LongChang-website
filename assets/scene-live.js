@@ -25,7 +25,7 @@
       if(!response.ok)throw Error('Scene unavailable');const config=await response.json();if(token!==version)return;
       const simulation=await createSceneSimulation(config,text=>{if(token===version)status(text);});
       if(token!==version){simulation.destroy();return;}
-      const next=await createRoom(stage,status,{simulation,onFrame:clock});
+      const next=await createRoom(stage,status,{simulation,onFrame:time=>{clock(time);if(world)playLabel();}});
       if(token!==version){next.destroy();return;}
       world=next;worldId=id;window.SceneRoom=world;poster.hidden=true;world.setMode(mode);if(visible)world.play();playLabel();
     }catch(error){if(token===version){status('Could not load. Tap Push to retry.');console.warn('Live scene:',error.message);}}

@@ -40,7 +40,7 @@ def main():
             # Identical rooms share one Cycles render across scenes.
             cache=folder.parents[0]/'background-cache';cache.mkdir(exist_ok=True)
             if folder.name=='room':cache=folder.parents[1]/'background-cache';cache.mkdir(exist_ok=True)
-            key=hashlib.sha256(json.dumps([job['camera'],job['display_bounds'],job['fixtures'],job['width'],job['height'],'focus-v1'],sort_keys=True).encode()).hexdigest()
+            key=hashlib.sha256(json.dumps([job['camera'],job['display_bounds'],job['fixtures'],job['width'],job['height'],job.get('enclosed',False),'focus-v2'],sort_keys=True).encode()).hexdigest()
             shared=cache/f'{key}.png'
             with (cache/f'{key}.lock').open('w') as lock:
                 fcntl.flock(lock,fcntl.LOCK_EX)

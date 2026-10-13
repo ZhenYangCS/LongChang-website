@@ -35,7 +35,7 @@ PLAIN = {
  '07':('Identical balls bounce high on red tiles and low on blue tiles.','一样的球，在红地砖上弹得高，在蓝地砖上弹得低。'),
  '08':('Push harder, and speed approaches a limit it can never reach.','推得再用力，速度也只能接近一个永远达不到的上限。'),
  '09':('Balls slow down on entering the gray tile and speed up on leaving it.','球进入灰色区域就减速，离开时就加速。'),
- '10':('Red speeds up over yellow; blue outside gets no extra boost.','红球经过黄色区会加速，区外的蓝球没有这股助推。'),
+ '10':('Either ball gains extra motion inside yellow, even in the air.','红球、蓝球进入黄色区都会获得助推，在空中也有效。'),
  '11':('When two balls separate after a collision, both get a speed boost.','两球碰撞后分开时，都会获得一次额外加速。'),
  '12':('When two balls touch, they swap colors.','两个球一接触，就交换颜色。'),
  '13':('Every third collision between the two balls makes both jump.','两球每相撞三次，就一起向上跳一下。'),
