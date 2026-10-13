@@ -16,26 +16,28 @@ def main():
         assert page.evaluate('document.readyState')=='complete'
         assert page.evaluate('performance.getEntriesByType("resource").filter(r=>/\\.(mp4|wasm)/.test(r.name)).length')==0
         assert page.locator('#scene-tab-07').get_attribute('aria-selected')=='true'
-        assert page.locator('#scene-picker img').count()==0
+        assert page.locator('#scene-picker .scene-choice-symbol').count()==15
+        left=page.locator('.scene-index').bounding_box();right=page.locator('#scene-detail').bounding_box()
+        assert left['x']+left['width']<right['x']
+        assert abs(left['height']-right['height'])<1
         print('PASS: first load completes with no video or physics download.',flush=True)
         for i in range(1,16):
             id=f'{i:02}';page.locator('#scene-tab-'+id).click()
             assert page.locator('#scene-name').inner_text()==names[id]
-            assert page.locator('#physics-video').get_attribute('src') is None
+            page.wait_for_function('!document.querySelector("#physics-video").paused')
             assert not page.locator('#oracle-chapters').is_visible()
             assert not page.locator('#atlas-model-note').is_visible()
             assert not page.locator('#scene-law').evaluate('(e)=>e.open')
             assert len(page.locator('#oracle-plain').inner_text().split())<20
-            page.locator('#studio-poster').scroll_into_view_if_needed()
-            page.wait_for_function('document.querySelector("#studio-poster").naturalWidth>0')
+            page.locator('.physics-video-frame').scroll_into_view_if_needed()
             rule=page.locator('#oracle-plain').bounding_box();art=page.locator('.physics-video-frame').bounding_box()
             assert rule['y']+rule['height']<=art['y']
-            page.locator('#scene-play-overlay').click()
-            page.wait_for_function('!document.querySelector("#physics-video").paused')
             if args.require_hd:assert page.locator('#physics-video').evaluate('(v)=>v.videoWidth')==1440
             for rate in ['0.5','1','2','4']:
                 page.locator('#physics-speed').select_option(rate)
                 assert page.locator('#physics-video').evaluate('(v)=>v.playbackRate')==float(rate)
+            left=page.locator('.scene-index').bounding_box();right=page.locator('#scene-detail').bounding_box()
+            assert abs(left['height']-right['height'])<1
             page.locator('#physics-play').click();assert page.locator('#physics-video').evaluate('(v)=>v.paused')
             page.locator('#physics-progress').evaluate('e=>{e.value=650;e.dispatchEvent(new Event("input",{bubbles:true}));}')
             page.wait_for_function('()=>{const v=document.querySelector("#physics-video");return !v.seeking&&Math.abs(v.currentTime/v.duration-.65)<.02;}')
@@ -53,6 +55,10 @@ def main():
         for width in [1440,1024,768,390,360,320]:
             page.set_viewport_size({'width':width,'height':900})
             assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),width
+        page.locator('#scene-mobile-select').select_option('12')
+        assert page.locator('#scene-name').inner_text()==names['12']
+        page.wait_for_function('!document.querySelector("#physics-video").paused')
+        page.locator('#physics-play').click()
         page.set_viewport_size({'width':1440,'height':1000})
         page.locator('[data-room-mode=push]').click();page.wait_for_function('Boolean(window.RoomDemo)',timeout=60000)
         pos=page.evaluate('RoomDemo.project("blue_ball")');page.mouse.move(pos['x'],pos['y']);page.mouse.down();page.mouse.move(pos['x']+65,pos['y']-25,steps=8);page.mouse.up()

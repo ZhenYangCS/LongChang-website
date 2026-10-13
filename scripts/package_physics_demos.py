@@ -36,8 +36,8 @@ JSON files contain 100 Hz samples, interventions, rule events and source
 hashes. Videos use nearest recorded simulation samples without pose
 interpolation. Camera, lighting and trajectory overlays are presentation.
 
-Regenerate using project_page/scripts/render_oracle_demos.py, then
-project_page/scripts/compose_plain_demos.py. The project-page README
+Render using project_page/scripts/render_clear_scenes.py, then
+project_page/scripts/publish_clear_media.py. The project-page README
 documents the rendering workflow.
 ''')
         for demo in demos:

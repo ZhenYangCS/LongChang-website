@@ -123,18 +123,17 @@ def demonstration(number):
         push(0, 'PUSH red_ball 0 3', 'Push red toward blue; green is not a participant.')
     elif n == 12:
         positions = {'ball_1':[-.6,0,.1], 'ball_2':[0,0,.1]}
-        focus = list(positions); duration = 3.5; film_duration = 12
-        intro = 'Two separate contacts. Reposition the same bodies between trials; preserve their colors.'
+        focus = list(positions); duration = 2.8; film_duration = 14
+        intro = 'Two contacts in one continuous run. After the first collision, push object B back from its current position.'
         push(0, 'PUSH ball_1 0 2.5', 'First contact exchanges the colors; object identities stay fixed.')
-        place(1.7, positions, 'Separate and reposition the same objects for a second contact.')
-        push(1.72, 'PUSH ball_1 0 2.5', 'The second contact exchanges the colors back.')
+        push(1.2, 'PUSH ball_2 180 3.5', 'Push B back from its current position; the second collision swaps colors back.')
     elif n == 13:
         positions = {'red_ball':[-.6,0,.1], 'blue_ball':[0,0,.1]}
-        focus = list(positions); duration = 4.8; film_duration = 12
-        intro = 'Three separate contacts; reposition between trials without resetting contact history.'
-        for count, t in enumerate([0, 1.5, 3], 1):
-            if count > 1: place(t, positions, f'Prepare contact {count}; preserve the scene’s event counter.')
-            push(t + .02, 'PUSH red_ball 0 2.5', f'Ball–ball contact {count} of 3.')
+        focus = list(positions); duration = 5.5; film_duration = 14
+        intro = 'One continuous run: push red, send blue back, then push red from where the second collision leaves it. No objects are repositioned.'
+        push(0, 'PUSH red_ball 0 2.5', 'Red starts the first collision.')
+        push(1.2, 'PUSH blue_ball 180 6', 'Push blue back from its current position for the second collision.')
+        push(3, 'PUSH red_ball 0 5', 'Push red from its new position for the third collision and upward kick.')
     elif n == 14:
         positions = {'red_ball':[-1,-.65,.1], 'green_ball':[-1,.65,.1]}
         focus = list(positions); duration = 15.5; film_duration = 12

@@ -7,7 +7,7 @@
       "name": "Normal control",
       "description": "A gray tile looks different. Does it change how objects move?",
       "family": "Control",
-      "law": "Gravity, inertia, friction, and collisions follow ordinary physics. The gray tile has no effect.",
+      "law": "Follows ordinary physics (see the scene appendix).",
       "image": "assets/images/scene-01.webp"
     },
     {
@@ -16,7 +16,7 @@
       "name": "Red attraction",
       "description": "Red and blue spheres share a room. Which pairs move toward each other?",
       "family": "Object properties",
-      "law": "Free bodies consisting of one red sphere attract each other with \\mathbf F=20\\mathbf d/max(r,0.5)^3, where \\mathbf d points toward the other sphere and r=|\\mathbf d|. This includes added red spheres. Blue spheres neither generate nor experience this force. The force is inverse-square for r≥0.5.",
+      "law": "Free single-sphere red bodies attract each other with F=20d/max(r,0.5)^3, where d points toward the other sphere and r=|d|.",
       "image": "assets/images/scene-02.webp"
     },
     {
@@ -25,7 +25,7 @@
       "name": "Mass-dependent fall",
       "description": "Two balls have different masses. How does that affect their fall?",
       "family": "Object properties",
-      "law": "Every free body has downward gravitational acceleration g_0√(m_0/m), with m_0=1. Blue (m=4) falls with half the acceleration of red (m=1). Added free bodies follow this law.",
+      "law": "Each free body has downward acceleration g_0√(m_0/m), with m_0=1.",
       "image": "assets/images/scene-03.webp"
     },
     {
@@ -34,7 +34,7 @@
       "name": "Oscillating gravity",
       "description": "Identical experiments can behave differently at different times.",
       "family": "Time",
-      "law": "Global gravity varies as g(t)=g_0[1+0.3sin(2π t/6)], oscillating with a six-second period.",
+      "law": "Global gravity follows g(t)=g_0[1+0.3sin(2π t/6)].",
       "image": "assets/images/scene-04.webp"
     },
     {
@@ -43,7 +43,7 @@
       "name": "High-speed braking",
       "description": "Slow motion looks ordinary. Faster motion tells a different story.",
       "family": "Motion",
-      "law": "Red, blue, and the box receive extra braking \\mathbf F=-8(s-2.5)\\mathbf v/s only when s=|\\mathbf v|>2.5. Everywhere in the room, this force opposes motion and vanishes at or below the threshold.",
+      "law": "Red, blue, and the box receive extra braking F=-8(s-2.5)v/s only when s=|v|>2.5.",
       "image": "assets/images/scene-05.webp"
     },
     {
@@ -52,7 +52,7 @@
       "name": "Automatic side force",
       "description": "A straight launch need not produce a straight path.",
       "family": "Motion",
-      "law": "Red and blue receive \\mathbf F=1.2(v_y,-v_x,0) when |v_x|+|v_y|>0.001. This horizontal force is perpendicular to motion and points to its right, bending trajectories clockwise in top view.",
+      "law": "Red and blue receive the horizontal force F=1.2(v_y,-v_x,0) when |v_x|+|v_y|>0.001.",
       "image": "assets/images/scene-06.webp"
     },
     {
@@ -61,7 +61,7 @@
       "name": "Tile rebounds",
       "description": "Two colored tiles give the same ball very different rebounds.",
       "family": "Contact",
-      "law": "At each new floor impact, both gray balls and movable apparatus parts have vertical restitution e=0.9 on the red tile and e=0.15 on the blue tile. Hinged and sliding parts are included.",
+      "law": "At new floor impacts, both gray balls and movable apparatus parts have vertical restitution e=0.9 on the red tile and e=0.15 on the blue tile. Hinged and sliding parts are included.",
       "image": "assets/images/scene-07.webp"
     },
     {
@@ -70,7 +70,7 @@
       "name": "Speed has a limit",
       "description": "Larger impulses bring smaller and smaller gains in speed.",
       "family": "Motion",
-      "law": "Each free body obeys \\mathbf p=m\\mathbf v/(1-|\\mathbf v|^2/v_max^2), with v_max=2.2. Forces and impulses add momentum, with diminishing speed gains. Neither launches nor free fall reach the limit, even for added free bodies. Fixed and joint-constrained parts obey ordinary physical laws.",
+      "law": "Each free body obeys p=mv/(1-|v|^2/v_max^2), with v_max=2.2. Forces and impulses add momentum, while speed remains below this limit.",
       "image": "assets/images/scene-08.webp"
     },
     {
@@ -79,7 +79,7 @@
       "name": "Slows in, speeds out",
       "description": "Crossing the edge of a gray tile changes a ball's motion.",
       "family": "Space",
-      "law": "Red and blue have their linear and angular velocities multiplied by 0.4 on entering the gray tile's footprint (|x-2|<1.5, |y|<1.5), at any height. Leaving multiplies their then-current velocities by 2.5. Ordinary gravity, friction, and collisions remain active between crossings.",
+      "law": "At any height, entering the gray tile's footprint (|x-2|<1.5, |y|<1.5) scales red's and blue's linear and angular velocities by 0.4. Leaving scales their current velocities by 2.5.",
       "image": "assets/images/scene-09.webp"
     },
     {
@@ -88,7 +88,7 @@
       "name": "Acceleration zone",
       "description": "Motion inside the yellow region has an additional source of energy.",
       "family": "Space",
-      "law": "Within the yellow tile's footprint (|x|<2, |y|<2), at any height, each step sets v_x=0.35 for s=|\\mathbf v|<0.35, or scales \\mathbf v by 1.0015 for 0.35≤ s<6. Only red and blue balls receive this update. All ordinary forces still act, and there is no update outside the zone or at s≥6.",
+      "law": "For red and blue, each step inside the yellow tile's footprint (|x|<2, |y|<2), at any height, sets v_x=0.35 when s=|v|<0.35, or scales v by 1.0015 when 0.35≤ s<6.",
       "image": "assets/images/scene-10.webp"
     },
     {
@@ -97,7 +97,7 @@
       "name": "Collision boost",
       "description": "Ball–ball contact can change more than the direction of motion.",
       "family": "Contact",
-      "law": "When contact between two of red, blue, and green ends, each participant's remaining linear velocity is multiplied by 1.8. The third ball is unaffected. Floor, wall, and apparatus contacts do not trigger the gain. Outgoing speeds need not exceed incoming speeds despite this gain.",
+      "law": "When contact between two of red, blue, and green ends, both participants' remaining linear velocities are multiplied by 1.8. Outgoing speeds can still be lower than incoming speeds.",
       "image": "assets/images/scene-11.webp"
     },
     {
@@ -106,7 +106,7 @@
       "name": "Contact color swap",
       "description": "The objects keep their identities. Their colors may not stay with them.",
       "family": "Contact",
-      "law": "Free single-sphere bodies, including added ones, swap colors once per contact onset. Another swap requires separation and renewed contact. Motion otherwise follows ordinary physics.",
+      "law": "Free single-sphere bodies swap colors once at the onset of each separate contact.",
       "image": "assets/images/scene-12.webp"
     },
     {
@@ -115,7 +115,7 @@
       "name": "Third-contact jump",
       "description": "Similar collisions can have different outcomes. Does their history matter?",
       "family": "History",
-      "law": "Every third separate contact between the original red and blue balls sets both upward velocities to 4. Sustained contact counts once. Floor, wall, and apparatus contacts do not count. The rule follows object identity, not color. Contacts with added balls do not increment this count.",
+      "law": "Every third separate contact between red and blue sets both upward velocities to 4. Sustained contact counts once. Only this pair counts, based on object identity, not current color.",
       "image": "assets/images/scene-13.webp"
     },
     {
@@ -124,7 +124,7 @@
       "name": "Velocity copy",
       "description": "One ball moves long after another was launched. Are the events connected?",
       "family": "Time",
-      "law": "Each launch of the original red ball records its 3D linear velocity. Green takes that velocity 12 seconds later, regardless of distance or red's later motion. No copies are pending initially, and later launches do not cancel them. Green's angular velocity and blue remain unaffected.",
+      "law": "Each launch of red schedules green to take red's 3D linear launch velocity 12 seconds later. Initially no copies are pending, and later launches do not cancel earlier copies.",
       "image": "assets/images/scene-14.webp"
     },
     {
@@ -133,7 +133,7 @@
       "name": "Northward force",
       "description": "A red ball starts moving by itself. Intervening can make the effect disappear.",
       "family": "History",
-      "law": "Red's extra northward force F_y=1.5m is initially active. Launching any movable object, including an added object, pauses this force for 10 seconds. Each new launch restarts the pause. Building, hand movement, and zero impulses do not reset it. The force then resumes.",
+      "law": "Red's extra northward force F_y=1.5m starts active. Each launch of any movable object restarts a 10-second pause, after which the force resumes.",
       "image": "assets/images/scene-15.webp"
     }
   ]

@@ -130,7 +130,7 @@ def snapshot(world,focus,epoch,probe=None):
                 gravity=world.model.opt.gravity.copy().tolist(),oracle=probe.snapshot() if probe else {})
 
 
-def record(number):
+def record(number,sample_stride=5):
     world,reference,spec=plan(number)
     probe=Probe(world,number,spec['focus'])
     frames,refs=[],[];epoch=0;cursor=0
@@ -140,13 +140,14 @@ def record(number):
         now=float(world.data.time)
         while cursor<len(events) and events[cursor]['time']<=now+.00001:
             event=events[cursor]
+            event['positions_before']={name:world.data.qpos[world.bodies[name][0]:world.bodies[name][0]+3].copy().tolist() for name in spec['focus']}
             for current in [world,reference]:
                 if event['kind']=='arrange':arrange(current,event['positions'])
                 elif event['kind']=='hold':current.workshop.grasp(current,event['object'])
                 else:launch(current,event['command'])
             if event['kind']=='arrange':epoch+=1
             event['actual_time']=now;cursor+=1
-        if tick%5==0 or tick==ticks:
+        if tick%sample_stride==0 or tick==ticks:
             frames.append(snapshot(world,spec['focus'],epoch,probe))
             refs.append(snapshot(reference,spec['focus'],epoch))
         if tick<ticks:

@@ -43,10 +43,18 @@ def main():
     for b in balls.values():b.hide_render=False
     background=paper(bgpath)
     scene.cycles.samples=job['samples'];scene.render.use_border=True;scene.render.use_crop_to_border=True
+    def pose_key(frame):
+        return json.dumps({n:[np.asarray(o['position'],dtype=np.float32).tolist(),o['color']] for n,o in frame['objects'].items()},sort_keys=True)+':'+format(float(frame.get('fade',0)),'.5f')
     seen={}
+    for path in job.get('reuse_jobs',[]):
+        old=json.loads(Path(path).read_text())
+        if old['display_bounds']!=job['display_bounds'] or old['camera']!=job['camera']:continue
+        for i,frame in enumerate(old['frames']):
+            image_path=Path(old['output'])/'frames'/f'{i:05}.png'
+            if image_path.exists():seen[pose_key(frame)]=image_path
     for index,frame in enumerate(job['frames']):
         dest=frames/f'{index:05}.png'
-        key=json.dumps({n:[np.asarray(o['position'],dtype=np.float32).tolist(),o['color']] for n,o in frame['objects'].items()},sort_keys=True)
+        key=pose_key(frame)
         if dest.exists():seen[key]=dest;continue
         if key in seen:
             dest.hardlink_to(seen[key]);continue
@@ -89,6 +97,11 @@ def main():
                 px,py=screen(obj['position']);py-=29
                 draw.rounded_rectangle((px-13,py-12,px+13,py+12),radius=5,fill='#f5f8f7',outline='#91aba4')
                 draw.text((px-6,py-11),'AB'[j],font=font,fill='#365f53')
+        if frame.get('fade',0)>0:
+            result=Image.blend(result,Image.new('RGB',result.size,'#f5f8f7'),frame['fade'])
+            if frame['fade']>.95:
+                draw=ImageDraw.Draw(result);font=ImageFont.truetype(str(Path(__file__).resolve().parents[1]/'assets/fonts/type-0.ttf'),28)
+                draw.text((w/2,h/2),'Next trial',anchor='mm',font=font,fill='#648375')
         result.save(dest);seen[key]=dest
         print(f'FRAME {job["id"]} {index+1}/{len(job["frames"])} {time.time()-start:.2f}s',flush=True)
     print('DONE',job['id'],flush=True)

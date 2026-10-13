@@ -2,6 +2,7 @@ import * as T from './vendor/three/three.module.js';
 import {RoomEnvironment} from './vendor/three/RoomEnvironment.js';
 import {RoundedBoxGeometry} from './vendor/three/RoundedBoxGeometry.js';
 import {OrbitControls} from './vendor/three/OrbitControls.js';
+import {mergeGeometries} from './vendor/three/BufferGeometryUtils.js';
 import loadMujoco from './vendor/mujoco/mujoco.js';
 
 // Native MuJoCo resolves contacts and forces; Three.js renders its state.
@@ -22,8 +23,8 @@ export async function createRoom(stage,status) {
   } finally {clearTimeout(timeout);}
   mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);
   const renderer=new T.WebGLRenderer({alpha:true,antialias:true,powerPreference:'high-performance'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.setClearColor(0xf8f9f6,0);
-  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;
+  renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setClearColor(0xf8f9f6,0);
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
   const canvas=renderer.domElement;canvas.className='room-canvas';canvas.tabIndex=0;
   canvas.setAttribute('aria-label','Push or drag objects; use arrow keys to push the selected object.');
@@ -32,37 +33,81 @@ export async function createRoom(stage,status) {
   const camera=new T.OrthographicCamera(-6,6,6,-6,.1,100);camera.up.set(0,0,1);camera.position.set(11.86,-14.134,14.882);camera.lookAt(0,0,2.9);
   scene.add(new T.HemisphereLight(0xe9f5ff,0xa1aaa9,1.6));
   const key=new T.DirectionalLight(0xfff2dc,3.3);key.position.set(-3,-4,10);key.castShadow=true;
-  key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-6,right:6,top:6,bottom:-6});key.shadow.normalBias=.018;key.shadow.bias=-.0002;key.shadow.radius=4;scene.add(key);
+  key.shadow.mapSize.set(1024,1024);Object.assign(key.shadow.camera,{left:-6,right:6,top:6,bottom:-6});key.shadow.normalBias=.018;key.shadow.bias=-.0002;key.shadow.radius=4;scene.add(key);
   const fill=new T.DirectionalLight(0xd5eaff,1.2);fill.position.set(5,2,7);scene.add(fill);
   const mat=(color,metalness=0,roughness=.3,clearcoat=.15)=>new T.MeshPhysicalMaterial({color,metalness,roughness,clearcoat,clearcoatRoughness:.18});
   const materials={metal:mat('#456475',.65),silver:mat('#c2cfd6',.75),ramp_mat:mat('#337a6b',.15),bob_mat:mat('#efa12e',.7,.24),red_enamel:mat('#c31e18',0,.18,.65),blue_enamel:mat('#154da0',0,.18,.65),base_trim:mat('#bfd6dd',.7),frame:mat('#6b9faa',.25,.2),front_frame:mat('#94bdc8',.15,.25)};
-  materials.glass=new T.MeshPhysicalMaterial({color:0xb8d9df,roughness:.13,metalness:.1,transparent:true,opacity:.045,depthWrite:false,side:T.DoubleSide});
+  // Clear panes need a restrained tint, without multiple full-screen PBR passes.
+  materials.glass=new T.MeshBasicMaterial({color:0xb8d9df,transparent:true,opacity:.045,depthWrite:false,side:T.DoubleSide});
   const tile=document.createElement('canvas');tile.width=1024;tile.height=1024;const ctx=tile.getContext('2d');
   for(let y=0;y<8;y++)for(let x=0;x<8;x++){ctx.fillStyle=(x+y)%2?'#bfcfd9':'#ecf2f4';ctx.fillRect(x*128,y*128,128,128);ctx.strokeStyle='#c5d4dd';ctx.lineWidth=1.4;ctx.strokeRect(x*128,y*128,128,128);}
-  const texture=new T.CanvasTexture(tile);texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=renderer.capabilities.getMaxAnisotropy();materials.floor_mat=mat('#ffffff',0,.7);materials.floor_mat.map=texture;
-  const meshes=[],movable=[],matrix=new T.Matrix4(),bodyIds={};
+  const texture=new T.CanvasTexture(tile);texture.colorSpace=T.SRGBColorSpace;texture.anisotropy=renderer.capabilities.getMaxAnisotropy();materials.floor_mat=new T.MeshLambertMaterial({color:0xffffff,map:texture});
+  const meshes=[],movable=[],geomIds={},groups=new Map(),matrix=new T.Matrix4(),bodyIds={};
   for(const name of ['red_ball','blue_ball','test_block','pendulum_arm','balance_arm']){const b=model.body(name);bodyIds[name]=b.id;b.delete();}
+  const bodyMatrix=body=>{const q=data.xquat,p=new T.Vector3().fromArray(data.xpos,body*3);return new T.Matrix4().compose(p,new T.Quaternion(q[body*4+1],q[body*4+2],q[body*4+3],q[body*4]),new T.Vector3(1,1,1));};
   for(let i=0;i<model.ngeom;i++){
-    const accessor=model.geom(i),name=accessor.name,s=Array.from(model.geom_size.slice(i*3,i*3+3));accessor.delete();
+    const accessor=model.geom(i),name=accessor.name,s=Array.from(model.geom_size.slice(i*3,i*3+3));accessor.delete();geomIds[name]=i;
     const materialAccessor=model.mat(model.geom_matid[i]),materialName=materialAccessor.name;materialAccessor.delete();let geometry;
     if(model.geom_type[i]===6)geometry=new RoundedBoxGeometry(s[0]*2,s[1]*2,s[2]*2,2,Math.min(.025,Math.min(...s)*.22));
-    else if(model.geom_type[i]===2)geometry=new T.SphereGeometry(s[0],48,32);
-    else if(model.geom_type[i]===3){geometry=new T.CapsuleGeometry(s[0],s[1]*2,6,20);geometry.rotateX(Math.PI/2);}else continue;
-    const mesh=new T.Mesh(geometry,materials[materialName]||materials.metal);mesh.name=name;mesh.userData={geom:i,body:model.geom_bodyid[i]};
-    const glass=materialName==='glass';mesh.castShadow=!glass&&!name.startsWith('corner_')&&!name.startsWith('edge_');mesh.receiveShadow=!glass;if(glass)mesh.renderOrder=2;
-    scene.add(mesh);meshes.push(mesh);if(model.body_dofnum[mesh.userData.body]>0)movable.push(mesh);
+    else if(model.geom_type[i]===2)geometry=new T.SphereGeometry(s[0],40,24);
+    else if(model.geom_type[i]===3){geometry=new T.CapsuleGeometry(s[0],s[1]*2,5,16);geometry.rotateX(Math.PI/2);}else continue;
+    if(geometry.index)geometry=geometry.toNonIndexed();
+    const r=data.geom_xmat,o=i*9,p=data.geom_xpos;
+    matrix.set(r[o],r[o+1],r[o+2],p[i*3],r[o+3],r[o+4],r[o+5],p[i*3+1],r[o+6],r[o+7],r[o+8],p[i*3+2],0,0,0,1);
+    const body=model.geom_bodyid[i],dynamic=model.body_dofnum[body]>0,glass=materialName==='glass';
+    const cast=!glass&&!name.startsWith('corner_')&&!name.startsWith('edge_')&&!name.startsWith('floor');
+    const local=dynamic?bodyMatrix(body).invert().multiply(matrix):matrix;
+    geometry.applyMatrix4(local);
+    const key=`${dynamic?body:0}:${materialName}:${cast}`;
+    if(!groups.has(key))groups.set(key,{body:dynamic?body:0,material:materials[materialName]||materials.metal,glass,cast,geometries:[]});
+    groups.get(key).geometries.push(geometry);
+  }
+  for(const group of groups.values()){
+    const geometry=mergeGeometries(group.geometries,false);for(const g of group.geometries)g.dispose();
+    const mesh=new T.Mesh(geometry,group.material);mesh.userData.body=group.body;mesh.castShadow=group.cast;mesh.receiveShadow=!group.glass;mesh.matrixAutoUpdate=false;
+    if(group.glass)mesh.renderOrder=2;scene.add(mesh);meshes.push(mesh);if(group.body)movable.push(mesh);
   }
   function draw(){
-    for(const mesh of meshes){const i=mesh.userData.geom,p=data.geom_xpos,r=data.geom_xmat,o=i*9;mesh.position.fromArray(p,i*3);matrix.set(r[o],r[o+1],r[o+2],0,r[o+3],r[o+4],r[o+5],0,r[o+6],r[o+7],r[o+8],0,0,0,0,1);mesh.quaternion.setFromRotationMatrix(matrix);}
+    const p=data.xpos,q=data.xquat;
+    for(const mesh of movable){const b=mesh.userData.body;mesh.position.fromArray(p,b*3);mesh.quaternion.set(q[b*4+1],q[b*4+2],q[b*4+3],q[b*4]);mesh.updateMatrix();}
+    if(softShadows)updateContactShadows();
     renderer.render(scene,camera);
+  }
+  let softShadows=false;
+  const contactShadows=[];
+  function useContactShadows(){
+    if(softShadows)return;softShadows=true;
+    for(const mesh of movable)mesh.castShadow=false;
+    const c=document.createElement('canvas');c.width=c.height=96;const context=c.getContext('2d'),gradient=context.createRadialGradient(48,48,2,48,48,47);
+    gradient.addColorStop(0,'rgba(35,63,67,.42)');gradient.addColorStop(.4,'rgba(35,63,67,.22)');gradient.addColorStop(1,'rgba(35,63,67,0)');context.fillStyle=gradient;context.fillRect(0,0,96,96);
+    const map=new T.CanvasTexture(c);
+    for(const [name,radius] of [['blue_ball',.33],['red_ball',.28],['test_block',.3],['pendulum_bob',.25]]){
+      const shadow=new T.Mesh(new T.PlaneGeometry(1,1),new T.MeshBasicMaterial({map,transparent:true,depthWrite:false,toneMapped:false}));shadow.renderOrder=1;scene.add(shadow);contactShadows.push({name,radius,shadow});
+    }
+    renderer.shadowMap.needsUpdate=true;
+  }
+  function updateContactShadows(){
+    for(const {name,radius,shadow} of contactShadows){
+      const p=name in geomIds?new T.Vector3().fromArray(data.geom_xpos,geomIds[name]*3):new T.Vector3().fromArray(data.xpos,bodyIds[name]*3),height=Math.max(0,p.z-radius);
+      shadow.position.set(p.x+.24*height,p.y+.3*height,.009);const size=(radius*2.5+height*.38);shadow.scale.set(size,size,1);shadow.material.opacity=.8*Math.exp(-height*.9);
+    }
   }
   const orbit=new OrbitControls(camera,canvas);orbit.target.set(0,0,2.9);orbit.update();orbit.saveState();orbit.enablePan=false;orbit.minZoom=.7;orbit.maxZoom=2;orbit.enableDamping=false;orbit.enabled=false;orbit.addEventListener('change',draw);
   const ray=new T.Raycaster(),pointer=new T.Vector2();let mode='push',drag=null,forces=[],frame=0,last=0,until=0,visible=true,selected='red_ball';
+  const physicsStep=model.opt.timestep;
+  let accumulated=0,frameAverage=16.7,qualitySamples=0;
   const arrow=new T.ArrowHelper(new T.Vector3(0,1,0),new T.Vector3(),0,0x387f68,.22,.13);arrow.visible=false;scene.add(arrow);
   function setRay(e){const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(pointer,camera);}
   function tick(now){
-    frame=0;if(!visible||document.hidden)return;const dt=Math.min(.04,(now-last)/1000||.016);last=now;
-    for(let t=0;t<dt;t+=model.opt.timestep){
+    frame=0;if(!visible||document.hidden)return;const elapsed=Math.max(0,now-last)||16.7;last=now;
+    frameAverage=frameAverage*.85+elapsed*.15;
+    if(++qualitySamples>=20){
+      if(frameAverage>30&&renderer.getPixelRatio()>.65)renderer.setPixelRatio(Math.max(.65,renderer.getPixelRatio()*.8));
+      else if(frameAverage>32&&!softShadows)useContactShadows();
+      qualitySamples=0;
+    }
+    accumulated=Math.min(.05,accumulated+Math.min(.05,elapsed/1000));
+    while(accumulated>=physicsStep){
       data.xfrc_applied.fill(0);forces=forces.filter(f=>data.time<f.end);
       for(const f of forces){const o=f.body*6;for(let k=0;k<3;k++)data.xfrc_applied[o+k]+=f.force[k];const center=new T.Vector3().fromArray(data.xpos,f.body*3),torque=f.point.clone().sub(center).cross(new T.Vector3(...f.force));for(let k=0;k<3;k++)data.xfrc_applied[o+3+k]+=torque.getComponent(k);}
       if(drag?.kind==='drag'){
@@ -74,8 +119,9 @@ export async function createRoom(stage,status) {
         f.clampLength(0,90);f.toArray(data.xfrc_applied,b*6);offset.cross(f).toArray(data.xfrc_applied,b*6+3);
       }
       mj.mj_step(model,data);
+      accumulated-=physicsStep;
     }
-    draw();if(drag||forces.length||data.time<until)frame=requestAnimationFrame(tick);
+    if(!softShadows)renderer.shadowMap.needsUpdate=true;draw();if(drag||forces.length||data.time<until)frame=requestAnimationFrame(tick);
   }
   function wake(seconds=12){until=Math.max(until,data.time+seconds);if(!frame&&visible&&!document.hidden){last=performance.now();frame=requestAnimationFrame(tick);}}
   function push(body,impulse,point){const bid=typeof body==='number'?body:bodyIds[body];forces.push({body:bid,force:impulse.map(v=>v/.12),point:point||new T.Vector3().fromArray(data.xpos,bid*3),end:data.time+.12});wake();}
@@ -99,7 +145,7 @@ export async function createRoom(stage,status) {
   });
   canvas.addEventListener('pointercancel',()=>{drag=null;arrow.visible=false;draw();});
   canvas.addEventListener('keydown',e=>{if(e.key==='Escape'){reset();return;}const d={ArrowUp:[0,2,0],ArrowDown:[0,-2,0],ArrowLeft:[-2,0,0],ArrowRight:[2,0,0],' ':[0,0,3]};if(d[e.key]){e.preventDefault();push(selected,d[e.key]);}});
-  function reset(){cancelAnimationFrame(frame);frame=0;drag=null;forces=[];until=0;arrow.visible=false;mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);draw();setMode(mode);}
+  function reset(){cancelAnimationFrame(frame);frame=0;drag=null;forces=[];until=0;accumulated=0;arrow.visible=false;mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);renderer.shadowMap.needsUpdate=true;draw();setMode(mode);}
   function setMode(value){mode=value;orbit.enabled=value==='view';canvas.style.cursor=value==='view'?'grab':'crosshair';status(value==='view'?'Drag to rotate · scroll to zoom':value==='drag'?'Drag an object · release to drop':'Drag to push · tap to nudge');}
   function resize(){const r=stage.getBoundingClientRect(),half=5.8;camera.top=half;camera.bottom=-half;camera.left=-half*r.width/r.height;camera.right=half*r.width/r.height;camera.updateProjectionMatrix();renderer.setSize(r.width,r.height,false);draw();}
   new ResizeObserver(resize).observe(stage);
@@ -107,5 +153,5 @@ export async function createRoom(stage,status) {
   document.addEventListener('visibilitychange',()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;}else if(data.time<until)wake(0);});
   canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();status('Graphics paused. Reload to retry.');cancelAnimationFrame(frame);});
   stage.append(canvas);resize();setMode(mode);
-  return {setMode,reset,push,getState:()=>({time:data.time,mode,selected,qpos:Array.from(data.qpos),positions:Object.fromEntries(Object.entries(bodyIds).map(([n,b])=>[n,Array.from(data.xpos.slice(b*3,b*3+3))])),contacts:data.ncon}),project:name=>{const mesh=meshes.find(m=>m.name===name),p=(mesh?mesh.position.clone():new T.Vector3().fromArray(data.xpos,bodyIds[name]*3)).project(camera),r=stage.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
+  return {setMode,reset,push,getRenderInfo:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,pixelRatio:renderer.getPixelRatio(),frameMs:frameAverage,softShadows}),getState:()=>({time:data.time,mode,selected,qpos:Array.from(data.qpos),positions:Object.fromEntries(Object.entries(bodyIds).map(([n,b])=>[n,Array.from(data.xpos.slice(b*3,b*3+3))])),contacts:data.ncon}),project:name=>{const p=(name in geomIds?new T.Vector3().fromArray(data.geom_xpos,geomIds[name]*3):new T.Vector3().fromArray(data.xpos,bodyIds[name]*3)).project(camera),r=stage.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
 }

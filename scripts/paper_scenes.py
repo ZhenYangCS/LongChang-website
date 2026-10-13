@@ -38,8 +38,10 @@ def paper_scene_laws():
         if number not in names:continue
         assert name.strip()==names[number],f'Appendix/overview name mismatch for {number}'
         law=law.replace('$','').replace('~',' ')
+        law=law.replace(r'App. \ref{apx:scenes}','see the scene appendix')
         law=re.sub(r'\\sqrt\{([^}]+)\}',r'√(\1)',law)
         law=re.sub(r'\\(?:mathbf|mathrm|texttt)\{([^}]+)\}',r'\1',law)
+        law=re.sub(r'\\(?:mathbf|mathrm|texttt)\s*','',law)
         for command,replacement in [(r'\geq','≥'),(r'\leq','≤'),(r'\pi','π'),(r'\sin','sin'),(r'\max','max')]:
             law=law.replace(command,replacement)
         law=re.sub(r'_\{([^}]+)\}',r'_\1',law)

@@ -8,7 +8,7 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 
 在服务器本机可访问 <http://127.0.0.1:8765>。从自己的电脑访问时，应使用服务器可达的 IP/域名加 `:8765`，或先建立 SSH 端口转发；浏览器中的 localhost 指的是浏览器所在电脑。预览服务器支持视频字节范围请求，并要求 HTML/JS/CSS 重新核验缓存，便于持续微调。
 
-当前预览服务独立运行在 `longchang-page` tmux 会话，可用 `tmux attach -t longchang-page` 查看。本轮统一玻璃房与高清动画在 `longchang-clear` 中导出，日志为 `/tmp/longchang-clear-build.log`，不会随终端命令结束而停止。
+当前预览服务独立运行在 `longchang-page` tmux 会话，可用 `tmux attach -t longchang-page` 查看。同一房间的 15 段动画在 `longchang-shared` 中导出，日志为 `/tmp/longchang-shared-build.log`，不会随终端命令结束而停止。
 
 整个 `project_page/` 目录可部署到任意静态托管服务，也支持站点子目录。无需 Node、构建步骤、API key 或实时模拟后端。字体、图片、视频和数据均为本地文件。代码按钮提供匿名源码 ZIP，包含框架、场景、依赖与入门说明。
 
@@ -17,9 +17,9 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 ## 内容
 
 - 首屏先显示 Figure 1 原图。点击 Push / Drag / Rotate 后加载本地 MuJoCo WASM，用原始 `workspace.xml` 实时计算推动、拖放、碰撞、摆锤和天平运动；Three.js 绘制玻璃、金属、珐琅与阴影。支持转视角、缩放、键盘推动和重置。
-- 15 个场景使用论文原名的文字选择器，神谕一句话在画面上方。删除 1/2/3 分段及展示性质说明；完整规律和测量数据收进 Full rule。影片与实验回放均提供 0.5×、1×、2×、4× 播放。
+- 左侧为 Table 1 场景目录：原编号、原名，以及直接从论文 TikZ 导出的机制小图；右侧显示一句神谕和运行视频。两栏始终同高，点目录即可播放，键盘上下键可选场景。手机使用简洁下拉目录。完整规律和测量数据收进 Full rule，保留 0.5×、1×、2×、4× 播放。
 - **场景命名以 ACL 论文为唯一来源**：`scripts/paper_scenes.py` 从当前总览表读取 01–15 的正式名称，从附录读取对应规律与作用范围；网页、案例、演示标题和重新导出的字幕共用这份数据。
-- **三种场景视图**：`Watch` 为原始 MuJoCo 场景程序的演示，`Try it` 为轻量 SVG 交互，`Original scene` 为原始初始布置。新视频与静帧为 1440×960，玻璃房统一比例和取景，仍使用 Figure 1 Cycles 材质。可下载带名称及一句话说明的 194 秒合集、GIF 和视频/记录 ZIP。
+- **三种场景视图**：`Watch` 为原始 MuJoCo 场景程序的演示，`Try it` 为轻量 SVG 交互，`Original scene` 为原始初始布置。15 段 1440×960 视频使用完全相同的 9×7.2×2.8 展示房间；墙厚、底座、地砖、相机和灯光均固定，仅替换内部物体与规律。物体轨迹和大小保持原始记录。可下载 194 秒合集、GIF 和视频/记录 ZIP。
 - 页面先展示静图，未播放的视频不下载。首屏物理引擎只在操作时加载；场景索引与内嵌预览约 30 KB，取代原先 2.2 MB 的首屏数据，测量数组单独按需读取。高清图解码前先显示内嵌预览，避免空白。预览服务压缩 JS / JSON / WASM，保留视频 Range 请求；视频和引擎下载超时会提供重试。
 - 48 秒四幕概览与全屏演示模式；120 秒全场景 MP4、15 个逐场景 GIF 和合集可直接下载。
 - 四个交互式规律示意图：地砖反弹、顺时针偏转、延迟速度复制、受发射抑制的漂移。可改变高度或发射方向、选择对照实验、重置计时。
@@ -62,6 +62,8 @@ SVG 交互和 illustration MP4/GIF 是用于解释规律的简化模型，不作
 ```bash
 python scripts/verify_front.py --url http://127.0.0.1:8765 --require-hd
 python scripts/verify_oracle_records.py
+python scripts/verify_shared_room.py
+python scripts/export_table1_symbols.py
 
 # 原始记录 → 统一玻璃房、高清 Cycles 动画 → 带说明下载版
 python scripts/render_clear_scenes.py --ffmpeg /path/to/ffmpeg
@@ -72,6 +74,8 @@ python scripts/prepare_scene_index.py
 ```
 
 渲染脚本使用项目现有 MuJoCo/Blender Python 环境。静态玻璃房采用 256 samples，物体及阴影区域采用 64 samples，再合成为完整画面；只改变呈现方式，不改变记录中的位置、尺寸或规律。`assets/clarity.css` 控制布局，`assets/room-world.js` 控制首屏实时物理，`scripts/oracle_catalog.py` 保存一句话中英说明。场景正式名称仍由论文自动读取。
+
+固定房间配置在 `data/shared-room.json`。`verify_shared_room.py` 比较每次渲染实际构建的 Blender 网格、相机变换与灯光签名，防止仅统一长宽比却仍改变房间尺寸。Table 1 图标来源与哈希在 `assets/table1/source.json`。
 
 首屏依赖固定版本 MuJoCo 3.15.0（Apache-2.0）和 Three.js 0.186.1（MIT），全部存放于 `assets/vendor/`，无需连接外部 CDN。首次操作才下载引擎，不影响页面先显示；部署时保持相对目录和 `.wasm` 文件即可。
 
