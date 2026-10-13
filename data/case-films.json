@@ -1,0 +1,444 @@
+{
+  "method": "Nearest archived states; no physics steps or pose interpolation. Chapters are edited selections. Split-screen tracks are retimed independently; counters show original simulation time.",
+  "width": 1280,
+  "height": 720,
+  "fps": 30,
+  "sources": {
+    "astra": {
+      "path": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gpt-6-astra/r2/T0/replay.bin",
+      "sha256": "1ccb7c59fcdae1f436c573cb66dd78b31df7e1858c15663132d685e1d5d5d970",
+      "session": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gpt-6-astra/r2/T0/session.json",
+      "session_sha256": "4432d8094cfb2707ac60a01ea3f0834b5c89a096e5be6af6c4ae49b01bff6fdc"
+    },
+    "gemini": {
+      "path": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gemini-3.7-flash/r1/T0/replay.bin",
+      "sha256": "c8398992b87bbb6fdfc8d659b91f1adad9bbacd52b3947b7bf142ddae965993f",
+      "session": "runs/main-15-20260930-022640-2180080/15_launch_suppressed_drift/gemini-3.7-flash/r1/T0/session.json",
+      "session_sha256": "4dfcf614263316f81464edd5815e2f4c455f78e18219af49d50ae788dcb1ab1b"
+    },
+    "color": {
+      "path": "runs/extra-all-20261001-164838-2223042/2.1-budget/budget-500/12_contact_colour_exchange/gpt-6-astra/r1/T0/replay.bin",
+      "sha256": "f7592af7269d85abae3fb1d4df987bac24090f12bffa2cc1357804e7571b8f97",
+      "session": "runs/extra-all-20261001-164838-2223042/2.1-budget/budget-500/12_contact_colour_exchange/gpt-6-astra/r1/T0/session.json",
+      "session_sha256": "c296032bcb5e7d261721aec908c1e3c7d3ce589db051e8f87f4887963c29150f"
+    },
+    "tool": {
+      "path": "runs/extra-all-20261001-164838-2223042/2.1-budget/budget-500/15_launch_suppressed_drift/gpt-6-astra/r2/T0/replay.bin",
+      "sha256": "dcec55027a24d8655ef4640a1427f903dc5263c0e7033f3a44f8b92d321ebc19",
+      "session": "runs/extra-all-20261001-164838-2223042/2.1-budget/budget-500/15_launch_suppressed_drift/gpt-6-astra/r2/T0/session.json",
+      "session_sha256": "364b9089b34ea857789c7c6cf9a8de48e740278e02825f29403da557d106d05b"
+    }
+  },
+  "cases": [
+    {
+      "id": "question",
+      "title": "Follow an anomaly",
+      "scene": "15",
+      "video": "assets/videos/case-question.mp4",
+      "poster": "assets/images/case-question.webp",
+      "chapters": [
+        {
+          "title": "Notice the restart",
+          "start": 0,
+          "end": 8,
+          "caption": "Red starts moving while blue is held still. Red stops, then starts moving again during the wait.",
+          "tracks": [
+            {
+              "source": "astra",
+              "start": 37.102,
+              "end": 39.102,
+              "turns": [
+                24
+              ],
+              "camera": {
+                "lookat": [
+                  -1.9241035203580088,
+                  -2.8866332346611827,
+                  0.0999161632518313
+                ],
+                "distance": 5,
+                "azimuth": 110,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 1.2
+              },
+              "targets": [
+                "red_ball",
+                "blue_ball"
+              ],
+              "label": "GPT-6-Astra",
+              "caption": "Red starts moving while blue is held still."
+            },
+            {
+              "source": "gemini",
+              "start": 2.8,
+              "end": 10.12,
+              "turns": [
+                2
+              ],
+              "camera": {
+                "lookat": [
+                  -4.546795392892119e-05,
+                  5.178999069874061,
+                  0.09997666740060698
+                ],
+                "distance": 5,
+                "azimuth": 155,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 1.4720031850189137
+              },
+              "targets": [
+                "red_ball"
+              ],
+              "label": "Gemini-3.7-Flash",
+              "caption": "Red stops, then starts moving again during the wait."
+            }
+          ]
+        },
+        {
+          "title": "Choose what to test",
+          "start": 8,
+          "end": 20,
+          "caption": "Astra pushes red south and waits. The northward motion returns. Gemini continues its planned tests with a vertical throw.",
+          "tracks": [
+            {
+              "source": "astra",
+              "start": 46.222,
+              "end": 58.1,
+              "turns": [
+                28,
+                29,
+                30
+              ],
+              "camera": {
+                "lookat": [
+                  -2.384351878031807,
+                  5.160206433350449,
+                  0.09999524045283159
+                ],
+                "distance": 5,
+                "azimuth": 160,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 1.5335567905069019
+              },
+              "targets": [
+                "red_ball"
+              ],
+              "label": "GPT-6-Astra",
+              "caption": "Astra pushes red south and waits. The northward motion returns."
+            },
+            {
+              "source": "gemini",
+              "start": 20.24,
+              "end": 22.24,
+              "turns": [
+                5,
+                6
+              ],
+              "camera": {
+                "lookat": [
+                  0.013074158165595021,
+                  5.745754321759567,
+                  0.6654399935440116
+                ],
+                "distance": 5,
+                "azimuth": 105,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 1.720026628256806
+              },
+              "targets": [
+                "red_ball"
+              ],
+              "label": "Gemini-3.7-Flash",
+              "caption": "Gemini continues its planned tests with a vertical throw."
+            }
+          ]
+        },
+        {
+          "title": "Follow the evidence",
+          "start": 20,
+          "end": 32,
+          "caption": "After a push to blue, red pauses and then restarts. Gemini proceeds to a collision test without pursuing the restart.",
+          "tracks": [
+            {
+              "source": "astra",
+              "start": 78.582,
+              "end": 90.582,
+              "turns": [
+                35
+              ],
+              "camera": {
+                "lookat": [
+                  -2.3845861005589315,
+                  5.356372465901394,
+                  0.09966734406127373
+                ],
+                "distance": 5,
+                "azimuth": 110,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 1.2
+              },
+              "targets": [
+                "red_ball"
+              ],
+              "label": "GPT-6-Astra",
+              "caption": "After a push to blue, red pauses and then restarts."
+            },
+            {
+              "source": "gemini",
+              "start": 41.356,
+              "end": 44.356,
+              "turns": [
+                13,
+                14
+              ],
+              "camera": {
+                "lookat": [
+                  2.281019734719797,
+                  5.727555516636573,
+                  0.11480399757058027
+                ],
+                "distance": 5,
+                "azimuth": 105,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 2.310581134451265
+              },
+              "targets": [
+                "red_ball",
+                "blue_ball"
+              ],
+              "label": "Gemini-3.7-Flash",
+              "caption": "Gemini proceeds to a collision test without pursuing the restart."
+            }
+          ]
+        }
+      ],
+      "duration": 32,
+      "video_sha256": "63003fd5e010637ac99f6ffde2911b08825b627ca5810eda643624dc9b54c211"
+    },
+    {
+      "id": "color",
+      "title": "Test an explanation",
+      "scene": "12",
+      "video": "assets/videos/case-color.mp4",
+      "poster": "assets/images/case-color.webp",
+      "chapters": [
+        {
+          "title": "The first color swap",
+          "start": 0,
+          "end": 6,
+          "caption": "Red and blue exchange colors at contact. Swapping and flipping both fit this observation.",
+          "tracks": [
+            {
+              "source": "color",
+              "start": 63.818,
+              "end": 64.818,
+              "turns": [
+                39
+              ],
+              "camera": {
+                "lookat": [
+                  -0.8051202605827978,
+                  1.980188190847793,
+                  0.10392674435918631
+                ],
+                "distance": 5,
+                "azimuth": 110,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 1.2
+              },
+              "targets": [
+                "ball_1",
+                "ball_2"
+              ],
+              "label": "GPT-6-Astra",
+              "caption": "Red and blue exchange colors at contact. Swapping and flipping both fit this observation."
+            }
+          ]
+        },
+        {
+          "title": "Repeat the collision",
+          "start": 6,
+          "end": 12,
+          "caption": "The colors switch back. The same two explanations still fit.",
+          "tracks": [
+            {
+              "source": "color",
+              "start": 67.818,
+              "end": 68.818,
+              "turns": [
+                41,
+                42
+              ],
+              "camera": {
+                "lookat": [
+                  0.1087141915694169,
+                  1.9790641168026988,
+                  0.10178496492063134
+                ],
+                "distance": 5,
+                "azimuth": 110,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 1.2
+              },
+              "targets": [
+                "ball_1",
+                "ball_2"
+              ],
+              "label": "GPT-6-Astra",
+              "caption": "The colors switch back. The same two explanations still fit."
+            }
+          ]
+        },
+        {
+          "title": "Test red against red",
+          "start": 12,
+          "end": 18,
+          "caption": "Both balls stay red. This separates color exchange from independent color flips.",
+          "tracks": [
+            {
+              "source": "color",
+              "start": 75.374,
+              "end": 77.374,
+              "turns": [
+                47,
+                48
+              ],
+              "camera": {
+                "lookat": [
+                  0.08390656893949963,
+                  1.7420495930001507,
+                  0.10028030839695282
+                ],
+                "distance": 5,
+                "azimuth": 150,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 1.2
+              },
+              "targets": [
+                "ball_1",
+                "ball_2",
+                "ball_3"
+              ],
+              "label": "GPT-6-Astra",
+              "caption": "Both balls stay red. This separates color exchange from independent color flips."
+            }
+          ]
+        }
+      ],
+      "duration": 18,
+      "video_sha256": "b7cf8eca279b31c58b62cdbb85594e6f73208c6a83563e343b14cf4e69ea2050"
+    },
+    {
+      "id": "tool",
+      "title": "Improve an instrument",
+      "scene": "15",
+      "video": "assets/videos/case-tool.mp4",
+      "poster": "assets/images/case-tool.webp",
+      "chapters": [
+        {
+          "title": "A flat pan fails",
+          "start": 0,
+          "end": 7,
+          "caption": "Red drifts off the flat pan. The instrument cannot hold a stable load.",
+          "tracks": [
+            {
+              "source": "tool",
+              "start": 44.98,
+              "end": 47.0,
+              "turns": [
+                23
+              ],
+              "camera": {
+                "lookat": [
+                  0,
+                  0.35,
+                  0.72
+                ],
+                "distance": 3,
+                "azimuth": -35,
+                "elevation": -28,
+                "orthographic": true,
+                "vertical_span": 2.5
+              },
+              "label": "GPT-6-Astra",
+              "caption": "Red drifts off the flat pan. The instrument cannot hold a stable load."
+            }
+          ]
+        },
+        {
+          "title": "Add retaining walls",
+          "start": 7,
+          "end": 14,
+          "caption": "Astra builds a deeper pan. After release, red stays inside the retaining walls.",
+          "tracks": [
+            {
+              "source": "tool",
+              "start": 57.264,
+              "end": 61.384,
+              "turns": [
+                28,
+                29
+              ],
+              "camera": {
+                "lookat": [
+                  -3,
+                  0,
+                  0.72
+                ],
+                "distance": 3,
+                "azimuth": 110,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 2.3
+              },
+              "label": "GPT-6-Astra",
+              "caption": "Astra builds a deeper pan. After release, red stays inside the retaining walls."
+            }
+          ]
+        },
+        {
+          "title": "Obtain stable readings",
+          "start": 14,
+          "end": 21,
+          "caption": "Blue also settles in the new pan. Both loaded trials give a stable reading of -0.3 brick.",
+          "tracks": [
+            {
+              "source": "tool",
+              "start": 73.498,
+              "end": 77.618,
+              "turns": [
+                33,
+                34
+              ],
+              "camera": {
+                "lookat": [
+                  -3,
+                  0,
+                  0.72
+                ],
+                "distance": 3,
+                "azimuth": 110,
+                "elevation": -32,
+                "orthographic": true,
+                "vertical_span": 2.3
+              },
+              "label": "GPT-6-Astra",
+              "caption": "Blue also settles in the new pan. Both loaded trials give a stable reading of -0.3 brick."
+            }
+          ]
+        }
+      ],
+      "duration": 21,
+      "video_sha256": "12f34848f9572fc5a9a0bd99b2cb596f0eec1c60e9cb68e693c9ef1779234f65"
+    }
+  ]
+}

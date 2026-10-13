@@ -24,7 +24,8 @@ def main():
             im=Image.open(SITE/entry['detail_poster']).convert('RGB');im.thumbnail((240,120));buffer=io.BytesIO();im.save(buffer,format='WEBP',quality=62)
             item['detail_preview']='data:image/webp;base64,'+base64.b64encode(buffer.getvalue()).decode()
         item['details']=f'data/scene-details/{id}.json';item['phases']=[]
-        if id=='10':
+        if entry.get('proof'):item['proof']=entry['proof']
+        if id=='10' and not entry.get('proof'):
             item['speed_trace']=dict(fps=entry['fps'],values=[[sample['objects'][name]['velocity'][0] for name in ['red_ball','blue_ball']] for sample in entry['timeline']])
         last=None
         for i,sample in enumerate(entry['timeline']):

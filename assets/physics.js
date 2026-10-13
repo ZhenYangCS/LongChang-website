@@ -5,6 +5,10 @@
   const video=$('#physics-video'),image=$('#studio-poster'),playButton=$('#physics-play'),speed=$('#physics-speed');
   let demo=null,wants=false,shown=false,source=false,version=0,timer=0,details=null,detailAbort=null,posterVisible=false,posterLoading=false,pending=null,progressFrame=0;
   const measurements=$('#oracle-measurements'),law=$('#scene-law');
+  const measurementHeading=document.createElement('p');measurementHeading.className='measurement-heading';measurementHeading.hidden=true;
+  const measurementNote=document.createElement('p');measurementNote.className='measurement-note';measurementNote.hidden=true;
+  $('#physics-values').before(measurementHeading);$('#physics-values').after(measurementNote);
+  $('#oracle-chart-wrap').before($('.physics-readout'));
   const foot=document.createElement('div');foot.className='scene-foot';
   const speedReadout=document.createElement('div');speedReadout.className='scene-speed-readout';speedReadout.hidden=true;
   speedReadout.innerHTML='<span class="speed-caption" title="Forward speed, in bricks per count">Forward speed</span><span class="speed-red"><i aria-hidden="true"></i><output id="speed-red-value" aria-label="Red ball forward speed"></output></span><span class="speed-blue"><i aria-hidden="true"></i><output id="speed-blue-value" aria-label="Blue ball forward speed"></output></span>';
@@ -30,6 +34,24 @@
   $('[data-atlas-view="physics"]').hidden=false;
   const overlay=document.createElement('button');overlay.id='scene-play-overlay';overlay.className='scene-play-overlay';overlay.textContent='▶ Play';overlay.setAttribute('aria-label','Play scene video');$('.physics-video-frame').append(overlay);
   const frame=$('.physics-video-frame');
+  const proof=document.createElement('div');proof.className='scene-proof';proof.hidden=true;proof.setAttribute('aria-label','Demonstration evidence');
+  proof.innerHTML='<strong class="proof-state"></strong><div class="proof-measurements"></div><i class="proof-timer" aria-hidden="true"></i>';
+  frame.after(proof);let proofRow=-1;
+  function configureProof(){
+    const info=demo?.proof;proof.hidden=!info;proofRow=-1;
+    proof.querySelector('.proof-measurements').replaceChildren();
+    if(!info)return;
+    const measure=document.createElement('span');measure.className='proof-measure';measure.textContent=info.measure;proof.querySelector('.proof-measurements').append(measure);
+    for(const [name,color,kind] of info.labels){const pair=document.createElement('span');pair.className='proof-pair';pair.style.color=color;const marker=document.createElement('i');marker.className='proof-marker '+kind;marker.setAttribute('aria-hidden','true');const label=document.createElement('span');label.textContent=name;const value=document.createElement('output');pair.append(marker,label,value);proof.querySelector('.proof-measurements').append(pair);}
+    proof.querySelector('.proof-timer').hidden=!info.timer;
+  }
+  function updateProof(){
+    const info=demo?.proof;if(!info)return;const current=Math.floor((video.currentTime||0)*info.fps),rows=info.rows;let lo=0,hi=rows.length;
+    while(lo<hi){const mid=(lo+hi)>>1;if(rows[mid][0]<=current)lo=mid+1;else hi=mid;}
+    const index=Math.max(0,lo-1);if(index===proofRow)return;proofRow=index;
+    const [,label,values,ratio]=rows[index];proof.querySelector('.proof-state').textContent=label;
+    proof.querySelectorAll('output').forEach((node,i)=>node.textContent=values[i]||'');proof.style.setProperty('--timer-progress',Math.max(0,ratio)+'%');
+  }
   const zoom=window.createSceneZoom(frame,video,image);
   video.controls=false;video.preload='none';
   const media=()=>demo.room_background&&demo.detail_video?{url:demo.detail_video,hash:demo.detail_video_sha256,poster:demo.detail_poster,preview:demo.detail_preview}:{url:demo.video,hash:demo.video_sha256,poster:demo.studio_poster,preview:demo.preview};
@@ -47,6 +69,7 @@
     progressFrame=0;if(video.paused||!source)return;
     $('#physics-progress').value=Math.round(video.currentTime/demo.duration*1000);
     measuredSpeed();
+    updateProof();
     progressFrame=video.requestVideoFrameCallback?video.requestVideoFrameCallback(animateProgress):requestAnimationFrame(animateProgress);
   }
   function cancelProgress(){if(progressFrame){if(video.cancelVideoFrameCallback)video.cancelVideoFrameCallback(progressFrame);else cancelAnimationFrame(progressFrame);}progressFrame=0;}
@@ -72,19 +95,23 @@
   function progress(){
     if(!demo)return;
     measuredSpeed();
+    updateProof();
     $('#physics-progress').value=Math.round(video.currentTime/demo.duration*1000);
-    $('#physics-clock').textContent=`${clock(video.currentTime)} / ${clock(demo.duration)}`;
+    $('#physics-clock').textContent=demo.proof?`${simTime().toFixed(1)} s`:`${clock(video.currentTime)} / ${clock(demo.duration)}`;
+    $('#physics-clock').title=demo.proof?'Simulation time':'Playback time';
     playButton.textContent=video.paused?'▶':'Ⅱ';playButton.setAttribute('aria-label',video.paused?'Play scene video':'Pause scene video');
     let phase='';for(const [t,text]of demo.phases){if(t>video.currentTime)break;phase=text;}
-    $('#simple-phase').textContent=phase;$('#simple-phase').hidden=!image.hidden||!phase;
+    $('#simple-phase').textContent=phase;$('#simple-phase').hidden=Boolean(demo.proof)||!image.hidden||!phase;
     if(details&&measurements.open)plot();
   }
   function select(id){
     const next=items.find(d=>d.id===id);if(!next)return;
     if(demo?.id===id)return;
     stop();version++;demo=next;details=null;detailAbort?.abort();source=false;pending=null;posterLoading=false;
+    $('#physics-values').replaceChildren();$('#physics-sample-label').textContent='';
+    measurementHeading.hidden=measurementNote.hidden=true;$('#oracle-chart-wrap').hidden=true;
     if(video.hasAttribute('src')){video.removeAttribute('src');video.load();}
-    video.playbackRate=Number(speed.value);image.alt=demo.name;zoom.setScene(demo);poster();
+    configureProof();video.playbackRate=Number(speed.value);image.alt=demo.name;zoom.setScene(demo);poster();
     overlay.hidden=false;loading(false);$('#physics-error').hidden=true;
     $('.physics-video-frame').classList.remove('is-oracle','is-simple','is-clear');
     $('.physics-video-frame').classList.add(demo.presentation==='clear'?'is-clear':'is-simple');
@@ -92,10 +119,45 @@
     law.open=false;measurements.open=false;$('#physics-download').href=demo.download_video||demo.video;$('#physics-record').href=demo.record;
     $('#oracle-signal-download').hidden=true;readoutVisibility();progress();
   }
+  function measuredRows(entry,sample){
+    const labels={
+      'Oracle effect':'Extra effect','Red-pair attraction':'Red pair','Blue-pair attraction':'Blue pair',
+      'Light red · mass 1':'Red · mass 1','Heavy blue · mass 4':'Blue · mass 4',
+      'Red apex · stronger gravity':'Stronger gravity','Blue apex · weaker gravity':'Weaker gravity',
+      'Impulse 2 → initial speed':'Impulse 2','Impulse 10 → initial speed':'Impulse 10',
+      'Measured boundary multiplier':'Boundary multiplier','Instantaneous speed change':'Speed before → after',
+      'Energy injected by the oracle':'Altered rule','Ordinary-physics reference':'Ordinary physics',
+      'Measured speed multiplier':'Speed multiplier','Blue, at the oracle update':'Blue: before → after',
+      'Distinct contacts counted':'Ball contacts','Echo countdown':'Copy in',
+      'Extra northward force':'Northward force','Pause remaining':'Resumes in'
+    };
+    let heading={'02':'Added attraction','03':'Height (bricks)','04':'Maximum height (bricks)','07':'Rebound speed (% of impact speed)','08':'Launch speed · limit 2.2','10':'Energy added'}[entry.id]||'';
+    let pending=false;
+    const rows=sample.annotation.values.map(([key,raw],i)=>{
+      let label=labels[key]||key,value=raw;
+      if(entry.id==='07')label=i===0?'Red tile':'Blue tile';
+      if(/Waiting|Awaiting|Not triggered/.test(value)){pending=true;value='—';}
+      value=value.replace('None · ordinary control','None').replace('Right of motion · no work','Right of motion').replace('No active energy input','0').replace('Unaffected control','Unchanged').replace('Transfer applied','Copied');
+      if(entry.id==='03')value=value.replace('z = ','');
+      if(entry.id==='08')value=value.replace(/\s*<\s*2\.2/,'');
+      if(entry.id==='12')value=value[0].toUpperCase()+value.slice(1);
+      if(entry.id==='13'&&i===1){label='Upward kick';value=sample.annotation.active?'Both balls':'Not yet';}
+      if(['14','15'].includes(entry.id))value=value.replace('counts','s');
+      return [label,value];
+    });
+    return {heading,rows,note:pending?(entry.id==='07'?'— No impact yet.':entry.id==='04'?'— Peak not reached.':'— Not triggered yet.'):''};
+  }
   function plot(){
     const t=simTime(),entry=details,sample=entry.timeline[Math.min(entry.timeline.length-1,Math.floor(video.currentTime*entry.fps))];
-    $('#physics-sample-label').textContent=`t = ${sample.time.toFixed(2)} s`;
-    $('#physics-values').innerHTML=sample.annotation.values.map(([k,v])=>`<div><span>${k}</span><strong>${v}</strong></div>`).join('');
+    $('#physics-sample-label').textContent=`Simulation time · ${sample.time.toFixed(2)} s`;
+    const display=measuredRows(entry,sample),list=$('#physics-values');
+    measurementHeading.textContent=display.heading;measurementHeading.hidden=!display.heading;
+    measurementNote.textContent=display.note;measurementNote.hidden=!display.note;
+    while(list.children.length>display.rows.length)list.lastElementChild.remove();
+    display.rows.forEach(([label,value],i)=>{
+      let item=list.children[i];if(!item){item=document.createElement('div');item.append(document.createElement('span'),document.createElement('strong'));list.append(item);}
+      const nodes=item.children;if(nodes[0].textContent!==label)nodes[0].textContent=label;if(nodes[1].textContent!==value)nodes[1].textContent=value;
+    });
     const p=entry.plot,left=35,right=625,top=15,bottom=135,max=Math.max(.1,...p.series.flat()),min=Math.min(0,...p.series.flat());
     const xy=(x,y)=>[left+x/entry.simulation_duration*(right-left),bottom-(y-min)/(max-min||1)*(bottom-top)];
     if(!$('#oracle-chart').dataset.drawn){let svg='';p.series.forEach((values,i)=>{const d=p.times.map((time,j)=>(j?'L':'M')+xy(time,values[j]).map(x=>x.toFixed(2)).join(' ')).join('');svg+=`<path d="${d}" stroke="${p.colors[i]}" stroke-width="2" fill="none"/>`;});

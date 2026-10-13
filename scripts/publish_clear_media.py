@@ -7,6 +7,49 @@ from launch_cues import add_launch_cues
 
 SITE=Path(__file__).resolve().parents[1]
 
+def proof_header(item,width,ffmpeg,temp):
+    """Export the same measured phases as the page, above the experiment."""
+    base=Image.new('RGB',(width,160),'#f5f8f7');draw=ImageDraw.Draw(base)
+    serif=ImageFont.truetype(str(SITE/'assets/fonts/type-6.ttf'),42)
+    sans=ImageFont.truetype(str(SITE/'assets/fonts/type-0.ttf'),25)
+    medium=ImageFont.truetype(str(SITE/'assets/fonts/type-1.ttf'),25)
+    symbols=ImageFont.truetype(str(SITE/'assets/fonts/DejaVuSans.ttf'),24)
+    draw.text((50,14),f'{item["id"]} / {item["name"]}',font=serif,fill='#25434a')
+    draw.text((50,65),catalog()[item['id']]['plain'],font=sans,fill='#365f53')
+    target=temp/f'{item["id"]}-proof-header.mp4';info=item['proof'];row=0;last=None;pixels=None
+    process=subprocess.Popen([ffmpeg,'-y','-hide_banner','-loglevel','error','-f','rawvideo','-pix_fmt','rgb24','-s',f'{width}x160','-r',str(item['fps']),'-i','-','-an','-c:v','libx264','-preset','fast','-crf','16','-pix_fmt','yuv420p',str(target)],stdin=subprocess.PIPE)
+    try:
+        for frame in range(round(item['duration']*item['fps'])):
+            while row+1<len(info['rows']) and info['rows'][row+1][0]<=frame:row+=1
+            if row!=last:
+                _,phase,values,ratio=info['rows'][row];last=row
+                image=base.copy();d=ImageDraw.Draw(image)
+                d.text((50,112),phase,font=symbols,fill='#365f53')
+                groups=[]
+                if info['measure']:groups.append((info['measure'], '#638276','none',False))
+                for (label,color,kind),value in zip(info['labels'],values):
+                    label='Ordinary physics' if kind=='dashed' else label
+                    groups.append((' '.join(s for s in [label,value] if s),color,kind,True))
+                widths=[d.textlength(t,font=medium if bold else sans)+(28 if kind!='none' else 0) for t,_,kind,bold in groups]
+                x=width-50-sum(widths)-28*(len(groups)-1)
+                for (label,color,kind,bold),w in zip(groups,widths):
+                    if kind=='solid':d.ellipse((x,122,x+10,132),fill=color)
+                    elif kind=='dashed':
+                        d.ellipse((x,121,x+12,133),outline=color,width=2)
+                        d.line((x-8,127,x-4,127),fill=color,width=2)
+                        d.line((x+16,127,x+20,127),fill=color,width=2)
+                    d.text((x+(28 if kind!='none' else 0),112),label,font=medium if bold else sans,fill=color)
+                    x+=w+28
+                if info.get('timer'):
+                    d.rectangle((0,156,width,159),fill='#e0e9e1')
+                    d.rectangle((0,156,round(width*max(0,ratio)/100),159),fill='#8daa83')
+                pixels=image.tobytes()
+            process.stdin.write(pixels)
+        process.stdin.close();assert process.wait()==0
+    finally:
+        if process.poll() is None:process.kill();process.wait()
+    return target
+
 def speed_header(item,width,ffmpeg,temp):
     """Keep measured numbers in the caption margin, outside the experiment."""
     base=Image.new('RGB',(width,160),'#f5f8f7');draw=ImageDraw.Draw(base)
@@ -35,7 +78,7 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--ffmpeg',required=True);parser.add_argument('--only',nargs='*');args=parser.parse_args()
     target=SITE/'data/physics.js';entries=json.loads(target.read_text().removeprefix('window.PHYSICS_DEMOS = ').rstrip(';\n'))
     smooth=all(e.get('fps',0)>=30 for e in entries)
-    prefix='unified' if all(e.get('render_revision')=='unified-v1' for e in entries) else 'focused' if all(e.get('detail_video') for e in entries) else 'smooth' if smooth else 'shared-room'
+    prefix='explained' if any(e.get('render_revision')=='explained-v1' for e in entries) else 'unified' if all(e.get('render_revision')=='unified-v1' for e in entries) else 'focused' if all(e.get('detail_video') for e in entries) else 'smooth' if smooth else 'shared-room'
     folder=SITE/f'assets/videos/{prefix}-captioned';folder.mkdir(exist_ok=True)
     temp=Path('/tmp/longchang-clear-captions');temp.mkdir(exist_ok=True)
     for item in entries:
@@ -51,9 +94,9 @@ def main():
         draw.text((50,24),f'{id} / {item["name"]}',font=serif,fill='#25434a')
         draw.text((50,91),catalog()[id]['plain'],font=sans,fill='#365f53')
         header=temp/f'{id}.png';image.save(header)
-        suffix='-clean' if id=='10' else ''
+        suffix='-clean' if id=='10' and not item.get('proof') else ''
         output=folder/f'scene-{id}{suffix}.mp4'
-        header_input=['-i',str(speed_header(item,width,args.ffmpeg,temp))] if id=='10' else ['-loop','1','-i',str(header)]
+        header_input=['-i',str(proof_header(item,width,args.ffmpeg,temp))] if item.get('proof') else ['-i',str(speed_header(item,width,args.ffmpeg,temp))] if id=='10' else ['-loop','1','-i',str(header)]
         subprocess.run([args.ffmpeg,'-y','-hide_banner','-loglevel','error','-i',str(SITE/item.get('detail_video',item['video'])),*header_input,'-filter_complex',f'[0:v]pad={width}:{height+header_height}:0:{header_height}:color=0xf5f8f7[v];[v][1:v]overlay=0:0:shortest=1','-c:v','libx264','-preset','fast','-crf','18','-pix_fmt','yuv420p','-movflags','+faststart',str(output)],check=True)
         gif=SITE/f'downloads/animated-scenes/{prefix}-{id}{suffix}.gif'
         rate=30 if smooth else 10

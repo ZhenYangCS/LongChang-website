@@ -25,13 +25,13 @@ def main():
         page.on('pageerror',lambda error:errors.append(str(error)))
         page.goto(args.url)
         page.evaluate('document.fonts.ready')
-        page.wait_for_function('document.querySelector("#success-video").readyState>=2')
-        assert page.locator('.chart-model-row').count()==12
+        assert not page.locator("#successful-explorations").evaluate("e=>e.open")
+        assert page.locator('#model-chart tbody tr').count()==12
         assert page.locator('.heat-cell').count()==168
         assert page.locator('#scene-picker button').count()==15
-        for metric,count in [('D',12),('C',12),('S',12),('all',36)]:
-            page.locator(f'[data-metric="{metric}"]').click()
-            assert page.locator('.chart-lane').count()==count
+        assert page.locator('#model-chart [data-result-metric]').count()==36
+        assert not page.locator('#result-details').evaluate('(e)=>e.open')
+        page.locator('#result-details > summary').click()
         for metric in ['C','S','D']:
             page.locator(f'[data-heat="{metric}"]').click()
             assert page.locator('.heat-cell').count()==168
@@ -42,18 +42,19 @@ def main():
         assert not page.locator('#chart-tooltip').is_visible()
         for number in range(1,16):
             page.locator(f'#scene-tab-{number:02}').click()
-            page.wait_for_function('document.querySelector("#scene-image").complete && document.querySelector("#scene-image").naturalWidth>0')
+            page.wait_for_function('id=>document.querySelector("#scene-name").textContent===window.LONGCHANG.scenes.find(s=>s.id===id).name',arg=f"{number:02}")
             assert page.locator(f'#scene-tab-{number:02}').get_attribute('aria-selected')=='true'
-        page.locator('#scene-law summary').click()
-        assert '10 seconds' in page.locator('#scene-law-text').inner_text()
-        page.locator('#scene-law summary').click()
+        page.locator('#scene-law > summary').click()
+        assert '10-second pause' in page.locator('#scene-law-text').inner_text()
+        page.locator('#scene-law > summary').click()
+        page.locator('#successful-explorations > summary').click()
         for scene in ['07','06','14','15']:
             page.locator('#success-tab-'+scene).click()
             assert 'Astra' in page.locator('#discovery-run').inner_text()
             for chapter in range(3):
                 page.locator(f'[data-chapter="{chapter}"]').click()
-                page.wait_for_function('document.querySelector("#success-video").readyState>=2')
                 page.locator('#replay-play').click()
+                page.wait_for_function('document.querySelector("#success-video").readyState>=2 && !document.querySelector("#success-video").paused')
                 page.wait_for_timeout(250)
                 assert int(page.locator('#replay-progress').input_value())>0
                 page.locator('#replay-play').click()
@@ -65,34 +66,15 @@ def main():
                 assert page.locator('#success-video').evaluate('(v)=>Math.abs(v.currentTime/v.duration-.7)<.03')
                 page.locator('#replay-reset').click()
                 assert page.locator('#replay-progress').input_value()=='0'
-            page.locator('#lab-reset').click()
-            before=page.locator('#law-canvas').inner_html()
-            page.locator('#lab-play').click();page.wait_for_timeout(220)
-            after=page.locator('#law-canvas').inner_html()
-            assert before!=after
-            assert 'NaN' not in after and 'undefined' not in after
-            if scene=='07':
-                page.locator('#lab-value').fill('3')
-                page.locator('#lab-swap').click()
-                assert '3.0 bricks' in page.locator('#lab-readout').inner_text()
-            elif scene=='06':
-                page.locator('#lab-select').select_option('90');page.wait_for_timeout(100)
-                assert 'NaN' not in page.locator('#law-canvas').inner_html()
-            elif scene=='14':
-                page.locator('#lab-select').select_option('hold')
-                assert 'Holding red' in page.locator('#lab-readout').inner_text()
-                page.locator('#lab-select').select_option('moving')
-                assert 'replaced' in page.locator('#lab-readout').inner_text()
-            else:
-                page.locator('[data-push="blue"]').click()
-                assert 'nonzero push' in page.locator('#lab-readout').inner_text()
-                page.locator('#lab-zero').click()
-                assert 'unchanged' in page.locator('#lab-readout').inner_text()
-            page.locator('#lab-reset').click()
-        page.locator('.cycle-step').nth(2).click()
-        assert 'judge' in page.locator('#cycle-explanation').inner_text()
-        page.locator('#cycle-play').click();page.wait_for_timeout(100)
-        page.locator('#cycle-play').click()
+        # Closing the archive pauses playback; heatmap links reopen the right run.
+        page.locator('#replay-play').click()
+        page.wait_for_function('!document.querySelector("#success-video").paused')
+        page.locator('#successful-explorations > summary').click()
+        page.wait_for_function('document.querySelector("#success-video").paused')
+        page.locator('[data-node="judge"]').click()
+        assert 'judge' in page.locator('#fw-detail-description').inner_text()
+        page.locator('#fw-play').click();page.wait_for_timeout(100)
+        page.locator('#fw-play').click()
         page.locator('[data-heat="D"]').click()
         page.locator('[data-success-scene="07"]').click()
         assert page.locator('#success-tab-07').get_attribute('aria-selected')=='true'
@@ -101,11 +83,12 @@ def main():
         assert not page.locator('#color-case').is_visible()
         page.locator('#tool-tab').press('ArrowLeft')
         assert page.locator('#color-case').is_visible()
-        for i in [0,1]:
-            page.locator('.full-results').nth(i).locator('summary').click()
+        page.locator('#controlled-details > summary').click()
+        page.locator('#controlled-details .full-results > summary').click()
         assert page.locator('#full-results-table tbody tr').count()==12
         assert page.locator('#controlled-table tbody tr').count()==9
-        for i in [0,1]:page.locator('.full-results').nth(i).locator('summary').click()
+        page.locator('#controlled-details > summary').click()
+        page.locator('#result-details > summary').click()
         page.locator('[data-chapter="0"]').click()
         page.locator('.success-evidence .note-details summary').click()
         assert 'red' in page.locator('#success-note').inner_text().lower()
@@ -137,12 +120,12 @@ def main():
         # Local-file operation also works with the network disabled.
         context=browser.new_context(offline=True)
         offline=context.new_page();offline.goto((SITE/'index.html').as_uri())
-        assert offline.locator('.chart-model-row').count()==12
+        assert offline.locator('#model-chart tbody tr').count()==12
         assert offline.locator('#scene-picker button').count()==15
         context.close();browser.close()
     assert not errors,errors
     print(json.dumps({'status':'PASS','checks':['12 successful-run video chapters: play, pause, seek, reset',
-        'four interactive law illustrations and animated framework',
+        'three case studies, folded records and animated framework',
         'all scene and metric switches','keyboard tabs and heatmap tooltips','full tables and downloads',
         '320–1440 px overflow','mobile touch layout','reduced motion','offline local-file operation',
         'no JavaScript errors'],'screenshots':str(args.screenshots)},indent=2))

@@ -12,6 +12,8 @@ def main():
     entries=json.loads((SITE/'data/physics.js').read_text().removeprefix('window.PHYSICS_DEMOS = ').rstrip(';\n'))
     for published in entries:
         id=published['id'];folder=Path('/tmp/longchang-detail-views/native/10') if id=='10' and published.get('detail_video') and not args.prepared else CACHE/id
+        explained=published.get('render_revision')=='explained-v1' and not args.prepared
+        if explained:folder=Path('/tmp/longchang-explained-scenes/native')/id
         entry=json.loads((folder/'entry.json').read_text()) if args.prepared else published
         record=json.loads((folder/'record.json').read_text()) if args.prepared else json.loads((SITE/entry['record']).read_text())
         job=json.loads((folder/'job.json').read_text())
@@ -25,7 +27,7 @@ def main():
             assert f['objects']==native['objects'] and f['epoch']==native['epoch']
         for a,b in zip(job['frames'],job['frames'][1:]):
             if a['epoch']!=b['epoch']:assert a['fade']>.95 and b['fade']>.95,(id,'unmarked reset')
-        if id in ['10','12','13']:
+        if explained or id in ['10','12','13']:
             assert all(f['epoch']==0 and f['fade']==0 for f in job['frames'])
             assert not any(e['kind']=='arrange' for e in record['events'])
             for name in record['focus']:
@@ -38,10 +40,12 @@ def main():
             if entry.get('detail_video'):
                 reader=imageio_ffmpeg.read_frames(str(SITE/entry['detail_video']));meta=next(reader);reader.close()
                 assert meta['fps']==60 and meta['size']==(1600,800),(id,meta)
-                detail_path=Path('/tmp/longchang-unified-scenes')/id/'detail/job.json' if entry.get('render_revision')=='unified-v1' else Path('/tmp/longchang-detail-views')/id/'job.json'
+                sealed=entry.get('render_revision') in ['unified-v1','explained-v1']
+                render_cache=Path('/tmp/longchang-explained-scenes' if explained else '/tmp/longchang-unified-scenes')
+                detail_path=render_cache/id/'detail/job.json' if sealed else Path('/tmp/longchang-detail-views')/id/'job.json'
                 detail=json.loads(detail_path.read_text())
-                if entry.get('render_revision')=='unified-v1':
-                    room=json.loads((Path('/tmp/longchang-unified-scenes')/id/'room/job.json').read_text())
+                if sealed:
+                    room=json.loads((render_cache/id/'room/job.json').read_text())
                     assert room['frames']==job['frames'] and room['enclosed'] and detail['enclosed']
                 assert detail['frames']==job['frames'] and detail['radii']==job['radii']
                 assert detail['display_bounds']==json.loads((SITE/'data/shared-room.json').read_text())['bounds']

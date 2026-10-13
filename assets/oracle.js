@@ -6,9 +6,9 @@
   function show(id){
     const oracle=entries[id];if(!oracle)return;
     $('#oracle-plain').textContent=oracle.plain;
-    $('#scene-law-text').textContent=oracle.law;
+    window.LongChangMath.renderText($('#scene-law-text'),oracle.law,id);
     $('#oracle-kind').textContent=id==='01'?'Control scene':'The hidden rule';
-    $('#oracle-formula').textContent=oracle.formula;
+    window.LongChangMath.render($('#oracle-formula'),id);
     $('#oracle-signal').textContent=oracle.measure;
   }
   document.addEventListener('longchang:scene',event=>show(event.detail.id));

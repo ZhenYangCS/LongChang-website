@@ -27,7 +27,7 @@ window.createSceneZoom = (frame, video, poster) => {
   function resize(){
     width=frame.clientWidth;height=frame.clientHeight;
     fitWidth=Math.min(width,height*aspect);fitHeight=fitWidth/aspect;
-    if(fitFocus&&width&&height){scale=clamp(Math.min(width/(fitWidth*(crop[2]-crop[0])/1440),height/(fitHeight*(crop[3]-crop[1])/960)),1,6);[cx,cy]=focus;fitFocus=false;}
+    if(fitFocus&&width&&height){scale=clamp(Math.min(width/(fitWidth*(crop[2]-crop[0])/1440),height/(fitHeight*(crop[3]-crop[1])/960)),1,6);[cx,cy]=focus;}
     layer.style.width=fitWidth+'px';layer.style.height=fitHeight+'px';paint();
   }
   function mode(value){
@@ -46,6 +46,7 @@ window.createSceneZoom = (frame, video, poster) => {
   function showDetail(){mode(true);fitFocus=true;resize();}
   function zoom(next,x=width/2,y=height/2){
     if(!fitWidth||!fitHeight)return;
+    fitFocus=false;
     next=clamp(next,1,6);
     // Keep the image point under the cursor (or pinch midpoint) fixed.
     cx+=(x-width/2)/fitWidth*(1/scale-1/next);
@@ -72,6 +73,7 @@ window.createSceneZoom = (frame, video, poster) => {
   });
   frame.addEventListener('pointermove',e=>{
     if(!pointers.has(e.pointerId))return;
+    fitFocus=false;
     e.preventDefault();const before=gesture();pointers.set(e.pointerId,local(e));const after=gesture();
     if(before.d>0&&after.d>0)zoom(scale*after.d/before.d,before.x,before.y);
     cx-=(after.x-before.x)/(fitWidth*scale);cy-=(after.y-before.y)/(fitHeight*scale);paint();
@@ -85,7 +87,7 @@ window.createSceneZoom = (frame, video, poster) => {
     if(['0','Home','Escape'].includes(e.key)){reset();return;}
     if(e.key==='+'||e.key==='=')zoom(scale*1.25);
     else if(e.key==='-')zoom(scale/1.25);
-    else{cx+=({'ArrowLeft':-48,'ArrowRight':48}[e.key]||0)/(fitWidth*scale);cy+=({'ArrowUp':-48,'ArrowDown':48}[e.key]||0)/(fitHeight*scale);paint();}
+    else{fitFocus=false;cx+=({'ArrowLeft':-48,'ArrowRight':48}[e.key]||0)/(fitWidth*scale);cy+=({'ArrowUp':-48,'ArrowDown':48}[e.key]||0)/(fitHeight*scale);paint();}
   });
   new ResizeObserver(resize).observe(frame);
   video.addEventListener('loadedmetadata',()=>{if(video.videoWidth&&video.videoHeight){aspect=useDetail?1.5:video.videoWidth/video.videoHeight;resize();}});

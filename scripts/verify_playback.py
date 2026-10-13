@@ -24,6 +24,12 @@ def main():
    page.locator('#physics-reset').click();page.locator('#physics-play').click();page.wait_for_function('!document.querySelector("#physics-video").paused');page.wait_for_timeout(350)
    row=page.evaluate(MEASURE,4);row.update(scene=scene,framing=framing);report.append(row);print(json.dumps(row),flush=True)
    page.locator('#physics-play').click()
+  # Default 4x must also present smoothly, including the new measured captions.
+  page.locator('#physics-speed').select_option('4')
+  for scene in ['05','09','10','11','14','15']:
+   page.evaluate('(id)=>showWorld(id)',scene);page.locator('#physics-reset').click();page.locator('#physics-play').click();page.wait_for_function('!document.querySelector("#physics-video").paused');page.wait_for_timeout(250)
+   row=page.evaluate(MEASURE,2.5);row.update(scene=scene,framing='detail');report.append(row);print(json.dumps(row),flush=True)
+   page.locator('#physics-play').click()
   # The optional plot must not repeatedly reconstruct all the static SVG paths.
   page.locator('#scene-law > summary').click();page.wait_for_function('document.querySelector("#oracle-cursor")!==null');page.evaluate('window.savedChartPath=document.querySelector("#oracle-chart path")');page.locator('#physics-play').click();page.wait_for_timeout(500)
   assert page.evaluate('window.savedChartPath===document.querySelector("#oracle-chart path")')

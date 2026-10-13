@@ -1458,6 +1458,11 @@ table thead {
 .subsection-heading .eyebrow {
   font-size:9px
 }
+.subsection-heading>p {
+  margin-top:10px;
+  font-size:10px;
+  color:var(--muted)
+}
 .intervention-grid {
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -1467,7 +1472,7 @@ table thead {
   background:white;
   border:1px solid var(--line);
   border-radius:12px;
-  padding:25px 23px;
+  padding:22px 21px;
   display:flex;
   flex-direction:column;
   align-items:flex-start
@@ -1485,12 +1490,12 @@ table thead {
 }
 .intervention-card>p {
   font-size:11px;
-  line-height:1.8;
-  min-height:60px
+  line-height:1.65
 }
 .mini-compare {
   width:100%;
-  margin-block:23px 20px
+  margin-top:auto;
+  padding-top:16px
 }
 .compare-row {
   display:grid;
@@ -1521,20 +1526,6 @@ table thead {
 }
 .compare-row:last-child .compare-fill {
   background:var(--teal)
-}
-.intervention-takeaway {
-  font-size:10px;
-  padding-top:16px;
-  border-top:1px solid var(--line);
-  color:var(--teal);
-  width:100%;
-  margin-top:auto
-}
-.intervention-foot {
-  font-size:8px;
-  color:var(--muted);
-  margin-top:12px;
-  line-height:1.65
 }
 .case-tabs {
   display:flex;
@@ -2071,29 +2062,12 @@ table thead {
   color:var(--teal)
 }
 footer {
+  display:flex;
+  justify-content:center;
+  align-items:center;
   border-top:1px solid var(--line);
   padding-block:30px;
   background:#eef3f0
-}
-.footer-inner {
-  display:flex;
-  align-items:center;
-  gap:30px
-}
-.footer-inner .wordmark {
-  font-size:20px
-}
-.footer-inner p {
-  font-size:10px
-}
-.footer-inner>span {
-  font-size:9px;
-  color:var(--muted);
-  margin-left:auto
-}
-.footer-inner>a:last-child {
-  font-size:21px;
-  padding-inline:15px
 }
 #chart-tooltip {
   position:fixed;
@@ -2489,8 +2463,7 @@ footer {
     font-size:23px
   }
   .intervention-card>p {
-    font-size:10px;
-    min-height:75px
+    font-size:10px
   }
   .compare-row {
     grid-template-columns:1fr 35px;
@@ -2502,12 +2475,6 @@ footer {
   }
   .compare-row strong {
     font-size:11px
-  }
-  .intervention-foot {
-    font-size:7px
-  }
-  .intervention-takeaway {
-    font-size:9px
   }
   .prediction-strip {
     padding:20px 15px
@@ -2602,17 +2569,6 @@ footer {
   }
   .resource-grid p {
     font-size:11px
-  }
-  .footer-inner {
-    gap:20px;
-    flex-wrap:wrap
-  }
-  .footer-inner p {
-    font-size:9px;
-    max-width:200px
-  }
-  .footer-inner>span {
-    font-size:8px
   }
 }
 @media(max-width:560px) {
@@ -3108,8 +3064,7 @@ footer {
     font-size:27px
   }
   .intervention-card>p {
-    font-size:12px;
-    min-height:0
+    font-size:12px
   }
   .compare-row {
     grid-template-columns:80px 1fr 40px;
@@ -3125,16 +3080,6 @@ footer {
   }
   .compare-track {
     height:9px
-  }
-  .mini-compare {
-    margin-block:18px 16px
-  }
-  .intervention-takeaway {
-    font-size:11px;
-    padding-top:15px
-  }
-  .intervention-foot {
-    font-size:9px
   }
   .case-tabs {
     gap:0
@@ -3382,31 +3327,6 @@ footer {
     gap:12px 18px;
     font-size:9px;
     margin-top:24px
-  }
-  .footer-inner {
-    gap:17px;
-    align-items:center
-  }
-  .footer-inner p {
-    order:3;
-    max-width:none;
-    width:100%;
-    font-size:9px
-  }
-  .footer-inner>span {
-    font-size:8px;
-    margin-left:auto
-  }
-  .footer-inner>a:last-child {
-    font-size:19px;
-    padding:0
-  }
-  .footer-inner .wordmark {
-    font-size:19px
-  }
-  .footer-inner .wordmark img {
-    width:25px;
-    height:25px
   }
   footer {
     padding-block:25px

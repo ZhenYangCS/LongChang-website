@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import re
 import zipfile
+from urllib.parse import urlsplit
 from paper_scenes import paper_scene_names, paper_scene_laws
 
 SITE=Path(__file__).resolve().parents[1]
@@ -34,7 +35,11 @@ def main():
         if link.startswith(('http:','https:')):continue
         if link.startswith('#'):
             assert link=='#' or link[1:] in p.ids,link
-        else:assert (SITE/link).is_file(),link
+        else:
+            local=urlsplit(link)
+            assert (SITE/(local.path or 'index.html')).is_file(),link
+            if not local.path and local.fragment:
+                assert local.fragment in p.ids,link
     for scene in data['scenes']:assert (SITE/scene['image']).is_file(),scene['image']
     clips=json.loads((SITE/'data/replays.json').read_text())
     assert len(clips)==6

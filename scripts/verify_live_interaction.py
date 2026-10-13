@@ -16,7 +16,18 @@ def main():
         page.wait_for_function('Math.hypot(SceneRoom.getState().positions.gray_ball_1[0]+2.5,SceneRoom.getState().positions.gray_ball_1[1])>.2')
         page.locator('#scene-live-reset').click();page.locator('[data-scene-mode=drag]').click();pos=page.evaluate('SceneRoom.project("gray_ball_1")')
         page.mouse.move(pos['x'],pos['y']);page.mouse.down();page.mouse.move(pos['x'],pos['y']-50,steps=8)
-        page.wait_for_function('SceneRoom.getState().positions.gray_ball_1[2]>2.1');page.mouse.up()
+        page.wait_for_function('SceneRoom.getState().positions.gray_ball_1[2]>2.1')
+        lifted=page.evaluate('SceneRoom.getState().positions.gray_ball_1')
+        assert math.hypot(lifted[0]+2.5,lifted[1])<.01,'Dragging straight up must not move the ball sideways'
+        page.mouse.up();page.wait_for_function('SceneRoom.getState().positions.gray_ball_1[2]<.7')
+        page.locator('#scene-live-reset').click();pos=page.evaluate('SceneRoom.project("gray_ball_1")')
+        page.keyboard.down('Shift');page.mouse.move(pos['x'],pos['y']);page.mouse.down();page.mouse.move(pos['x']+35,pos['y']-10,steps=8)
+        page.wait_for_function('SceneRoom.getState().time>.7')
+        slid=page.evaluate('SceneRoom.getState().positions.gray_ball_1')
+        assert math.hypot(slid[0]+2.5,slid[1])>.2 and abs(slid[2]-1.5)<.06,'Shift-drag must slide at the initial height'
+        page.locator('#scene-live-stage canvas').dispatch_event('pointercancel',{'pointerId':1})
+        assert page.evaluate('SceneRoom.getState().oracle.held') is None
+        page.mouse.up();page.keyboard.up('Shift')
         page.locator('#scene-live-play').click();assert page.evaluate('!SceneRoom.isRunning()')
         state=page.evaluate('SceneRoom.getState()');page.locator('[data-atlas-view=physics]').click();page.wait_for_timeout(200)
         assert page.evaluate('SceneRoom.getState().time')==state['time']

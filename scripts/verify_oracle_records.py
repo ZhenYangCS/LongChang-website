@@ -26,30 +26,36 @@ def main():
     peaks=[max(s['objects'][name]['position'][2] for s in records['04']['reference_samples']) for name in ['red_ball','blue_ball']]
     assert abs(peaks[0]-peaks[1])<.001
     assert np.linalg.norm(records['05']['samples'][0]['oracle']['forces']['red_ball'])>40
+    brake=records['05'];actual=brake['samples'][-1]['objects'];ordinary=brake['reference_samples'][-1]['objects']
+    assert ordinary['red_ball']['position'][0]-actual['red_ball']['position'][0]>2
+    assert all(np.linalg.norm(s['oracle']['forces'].get('blue_ball',[0,0,0]))<1e-9 for s in brake['samples'])
     assert records['06']['samples'][0]['oracle']['forces']['red_ball'][1]<0
     for event in records['07']['oracle_events']:
         for c in event.get('changes',[]):
             np.testing.assert_allclose(c['ratio'],.9 if c['object']=='gray_ball_1' else .15,rtol=1e-9)
     assert max(np.linalg.norm(o['velocity']) for s in records['08']['samples'] for o in s['objects'].values())<2.2
     entries=records['09']['oracle_events']
-    np.testing.assert_allclose([e['changes'][0]['ratio'] for e in entries],[.4,2.5,.4],rtol=1e-9)
-    assert entries[-1]['changes'][0]['position'][2]>.5
+    np.testing.assert_allclose([e['changes'][0]['ratio'] for e in entries],[.4,2.5],rtol=1e-9)
+    np.testing.assert_allclose([e['time'] for e in entries],[.130,1.320],atol=.0021)
+    assert {s['epoch'] for s in records['09']['samples']}=={0}
     zone=records['10'];assert zone['samples'][-1]['oracle']['energy_added']>5
-    if zone['simulation_duration']==.7:
+    if zone['simulation_duration']==1.0:
         assert {s['epoch'] for s in zone['samples']}=={0}
         assert all(e['kind']=='launch' for e in zone['events'])
         for name in ['red_ball','blue_ball']:
-            np.testing.assert_allclose(zone['samples'][0]['objects'][name]['velocity'],[3,0,2.5],atol=1e-8)
+            np.testing.assert_allclose(zone['samples'][0]['objects'][name]['velocity'],[2.5,0,4.5],atol=1e-8)
             assert all(s['objects'][name]['position'][2]>.1 for s in zone['samples'])
         assert zone['samples'][0]['objects']['red_ball']['position'][0]<-2
         assert any(abs(s['objects']['red_ball']['position'][0])<2 for s in zone['samples'])
         assert all(s['objects']['blue_ball']['position'][1]>2 for s in zone['samples'])
         assert 4.5<zone['samples'][-1]['objects']['red_ball']['velocity'][0]<4.7
-        np.testing.assert_allclose([s['objects']['blue_ball']['velocity'][0] for s in zone['samples']],3,atol=1e-8)
+        np.testing.assert_allclose([s['objects']['blue_ball']['velocity'][0] for s in zone['samples']],2.5,atol=1e-8)
+        assert zone['samples'][-1]['objects']['red_ball']['velocity'][0]>1.7*zone['samples'][-1]['objects']['blue_ball']['velocity'][0]
     boosts=records['11']['oracle_events']
     assert len(boosts)==1 and boosts[0]['kind']=='separation_boost'
     assert {c['object'] for c in boosts[0]['changes']}=={'red_ball','blue_ball'}
     for c in boosts[0]['changes']:np.testing.assert_allclose(c['after'],np.asarray(c['before'])*1.8,rtol=1e-9)
+    assert records['11']['samples'][-1]['objects']['blue_ball']['position'][0]>records['11']['reference_samples'][-1]['objects']['blue_ball']['position'][0]+.15
     swaps=records['12']['oracle_events'];assert len(swaps)==2
     for e in swaps:
         a,b=e['changes'];assert a['before']==b['after'] and b['before']==a['after']
@@ -77,8 +83,9 @@ def main():
     sample=min(r['samples'],key=lambda s:abs(s['time']-6.1))
     assert abs(sample['oracle']['quiet_until']-16)<.003
     sample=min(r['samples'],key=lambda s:abs(s['time']-1.2))
-    assert sample['oracle']['forces']['red_ball'][1]==1.5,'Zero impulse must leave the force on'
-    print('PASS: all 15 names and paired preparations; exact restitution, boundary and collision multipliers; color swap; third-contact kick; 12-count copy; zero/nonzero launch and pause reset.')
+    assert sample['oracle']['forces']['red_ball'][1]==1.5,'The force starts active before any push'
+    assert [e['time'] for e in r['events'] if e['kind']=='launch']==[2,6]
+    print('PASS: all 15 names and paired preparations; braking/control and airborne acceleration; exact restitution, boundary and collision multipliers; color swap; third-contact kick; 12-count copy; launch pause and timer reset. Zero pushes are covered by verify_live_rules.py.')
 
 
 if __name__=='__main__':main()

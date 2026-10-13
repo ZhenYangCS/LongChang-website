@@ -29,8 +29,9 @@ scripted demonstrations are not LLM explorations and do not contribute to
 the paper's 540 evaluated runs. Original scene programs, object geometry,
 mass, friction, gravity and contact laws are preserved. Setup positions and
 interventions are explicit in each JSON record. Each video presents one
-hidden rule in a short caption. Video playback is steadily retimed; the player
-clock shows playback time, while measurements retain simulation time.
+hidden rule in a short caption. Video playback is steadily retimed. The six
+causal demonstrations show simulation time; the other player clocks show
+playback time. Measurements always retain simulation time.
 
 JSON files contain 500 Hz samples, interventions, rule events and source
 hashes. Videos use nearest recorded simulation samples without pose
@@ -40,8 +41,16 @@ Close-ups use a crop of the same fixed room, cached Cycles spherical lighting
 and projected soft shadows. Display contrast is enhanced; native RGBA values
 remain in the records. No physical objects are enlarged for presentation.
 
+Scenes 05 and 11 include dashed paths and hollow balls for ordinary physics,
+with the same setup and actions and only the altered program disabled.
+Scene 09 enters and exits the tile in one uninterrupted traversal. Scenes 14
+and 15 show the delayed copy and resettable pause with measured countdowns.
+All six redesigned films (05, 09, 10, 11, 14, 15) keep phase and numeric
+captions above the image. The 15-film compilation is 240 seconds at 60 fps.
+
 Render using project_page/scripts/build_smooth_demos.py, followed by
-project_page/scripts/build_detail_views.py and
+project_page/scripts/build_detail_views.py,
+project_page/scripts/build_explained_demos.py and
 project_page/scripts/publish_clear_media.py. The project-page README
 documents the rendering workflow.
 ''')

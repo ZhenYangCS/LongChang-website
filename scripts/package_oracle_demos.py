@@ -54,7 +54,8 @@ and cropped plinths are presentation geometry, not added physical walls.
 Playback uses steady retiming of dense native states, without artificial
 holds. Color exchange and third-contact jumps use continuous runs without
 repositioning. Separate trials in other scenes have explicit transitions.
-Video clocks show playback time; measurements retain simulation time. Full records,
+The six redesigned causal demonstrations use simulation clocks; other
+video clocks show playback time. Measurements retain simulation time. Full records,
 editable signal figures and source hashes are available on the project page.
 ''')
         for entry in entries:archive.write(SITE/entry['gif'],f"{entry['id']}-{entry['name']}.gif")
