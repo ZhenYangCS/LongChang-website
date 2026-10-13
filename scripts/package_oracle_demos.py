@@ -1,4 +1,4 @@
-"""Publish studio thumbnails and portable oracle films, figures and records."""
+"""Package the current scene presentation without replacing its chosen assets."""
 from pathlib import Path
 import hashlib
 import json
@@ -22,13 +22,17 @@ def main():
         ROOT/'ACL/materials/teaser/blender_scene.py']}
     for entry in entries:
         id=entry['id'];assert entry['name']==names[id]
-        frame=round(entry['preview_time']*entry['fps'])
-        preview=Image.open(CACHE/id/'frames'/f'{frame:05}.png').convert('RGBA')
-        path=SITE/f'assets/images/oracle-world-{id}.webp'
-        preview.save(path,quality=94,method=6)
-        entry.update(studio_poster=str(path.relative_to(SITE)),
-                     gif=f'downloads/animated-scenes/oracle-{id}.gif',
-                     signal_figure=f'downloads/oracle-signals/scene-{id}.svg',
+        if not entry.get('studio_poster'):
+            frame=round(entry['preview_time']*entry['fps'])
+            preview=Image.open(CACHE/id/'frames'/f'{frame:05}.png').convert('RGBA')
+            path=SITE/f'assets/images/oracle-world-{id}.webp'
+            preview.save(path,quality=94,method=6)
+            entry['studio_poster']=str(path.relative_to(SITE))
+        prefix='plain' if entry.get('presentation')=='plain' else 'oracle'
+        entry.setdefault('gif',f'downloads/animated-scenes/{prefix}-{id}.gif')
+        for key in ['studio_poster','gif','video']:
+            assert (SITE/entry[key]).is_file(),entry[key]
+        entry.update(signal_figure=f'downloads/oracle-signals/scene-{id}.svg',
                      source_hashes=hashes,
                      video_sha256=hashlib.sha256((SITE/entry['video']).read_bytes()).hexdigest())
     temp=target.with_suffix('.js.tmp')
@@ -39,7 +43,7 @@ def main():
 
 Fresh scripted experiments with native scene physics. Glass materials and
 studio lighting reuse the paper's Figure 1 rendering code. Each animation
-shows the oracle, its trigger, measured state changes, and a comparison.
+shows one hidden rule, with a short caption and its trigger in motion.
 Names follow the ACL scene-overview table exactly.
 
 Ordinary references use identical geometry, masses and prescribed actions,
@@ -54,7 +58,7 @@ editable signal figures and source hashes are available on the project page.
         for entry in entries:archive.write(SITE/entry['gif'],f"{entry['id']}-{entry['name']}.gif")
     with zipfile.ZipFile(SITE/'downloads/longchang-oracle-signals.zip','w',zipfile.ZIP_DEFLATED) as archive:
         for path in sorted((SITE/'downloads/oracle-signals').glob('*')):archive.write(path,path.name)
-    print('Packaged 15 Figure 1 studio thumbnails, oracle GIFs, SVG/PNG figures and verified source hashes.')
+    print('Packaged the current 15 scene GIFs, signal figures and source hashes; selected posters preserved.')
 
 
 if __name__=='__main__':main()

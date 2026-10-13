@@ -1,0 +1,105 @@
+<mujoco model="LongChang_glass_room_illustration">
+  <compiler angle="radian" />
+  <option timestep=".002" gravity="0 0 -9.81" />
+  <visual>
+    <global offwidth="1872" offheight="2000" orthographic="true" fovy="13" />
+    <quality shadowsize="4096" offsamples="4" numslices="96" numstacks="64" />
+    <headlight ambient=".43 .43 .43" diffuse=".32 .32 .32" specular=".10 .10 .10" />
+  </visual>
+  <asset>
+    <texture name="background" type="skybox" builtin="gradient" rgb1="0 0 0" rgb2="0 0 0" width="128" height="128" />
+    <texture name="grid" type="2d" builtin="checker" rgb1=".94 .955 .96" rgb2=".91 .935 .945" width="512" height="512" />
+    <material name="floor_mat" texture="grid" texrepeat="4 4" texuniform="false" specular=".06" shininess=".3" reflectance="0" />
+    <material name="glass" rgba=".65 .84 .91 .028" specular=".65" shininess=".85" reflectance="0" />
+    <material name="frame" rgba=".34 .54 .62 .9" specular=".65" shininess=".75" />
+    <material name="metal" rgba=".34 .46 .54 1" specular=".55" shininess=".65" />
+    <material name="silver" rgba=".68 .77 .82 1" specular=".8" shininess=".8" />
+    <material name="ramp_mat" rgba=".35 .64 .58 1" specular=".4" shininess=".55" />
+    <material name="bob_mat" rgba=".95 .62 .20 1" specular=".48" shininess=".65" />
+    <material name="front_frame" rgba=".45 .67 .74 .5" specular=".65" shininess=".75" />
+    <material name="red_enamel" rgba=".86 .22 .18 1" specular=".55" shininess=".65" />
+    <material name="blue_enamel" rgba=".16 .43 .76 1" specular=".55" shininess=".65" />
+    <material name="base_trim" rgba=".71 .82 .86 1" specular=".7" shininess=".7" />
+  </asset>
+  <worldbody>
+    <light name="key" pos="-1.5 1.2 5.25" dir=".15 -.1 -1" directional="false" diffuse=".25 .24 .22" specular=".45 .43 .40" castshadow="true" cutoff="85" exponent="0" />
+    <light name="fill" pos="4 -3 7" dir="-.4 .2 -1" directional="true" diffuse=".11 .13 .15" specular=".18 .21 .25" castshadow="false" />
+    <geom name="floor_base" type="box" pos="0.0 0.0 -0.1" size="4.08 4.08 0.1" material="metal" />
+    <geom name="floor" type="box" pos="0.0 0.0 -0.008" size="4.0 4.0 0.012" material="floor_mat" />
+    <geom name="wall_0_-1" type="box" pos="-4.0 0.0 2.9" size="0.018 4.0 2.9" material="glass" />
+    <geom name="wall_0_1" type="box" pos="4.0 0.0 2.9" size="0.018 4.0 2.9" material="glass" />
+    <geom name="wall_1_-1" type="box" pos="0.0 -4.0 2.9" size="4.0 0.018 2.9" material="glass" />
+    <geom name="wall_1_1" type="box" pos="0.0 4.0 2.9" size="4.0 0.018 2.9" material="glass" />
+    <geom name="glass_ceiling" type="box" pos="0 0 5.8" size="4.0 4.0 0.018" material="glass" />
+    <geom name="corner_-4_-4" type="capsule" fromto="-4.0 -4.0 0.0 -4.0 -4.0 5.8" size=".019" material="frame" />
+    <geom name="corner_-4_4" type="capsule" fromto="-4.0 4.0 0.0 -4.0 4.0 5.8" size=".019" material="frame" />
+    <geom name="corner_4_-4" type="capsule" fromto="4.0 -4.0 0.0 4.0 -4.0 5.8" size=".014" material="front_frame" />
+    <geom name="corner_4_4" type="capsule" fromto="4.0 4.0 0.0 4.0 4.0 5.8" size=".019" material="frame" />
+    <geom name="edge_x_-4_0" type="capsule" fromto="-4.0 -4.0 0.0 4.0 -4.0 0.0" size=".017" material="frame" />
+    <geom name="edge_y_-4_0" type="capsule" fromto="-4.0 -4.0 0.0 -4.0 4.0 0.0" size=".017" material="frame" />
+    <geom name="edge_x_4_0" type="capsule" fromto="-4.0 4.0 0.0 4.0 4.0 0.0" size=".017" material="frame" />
+    <geom name="edge_y_4_0" type="capsule" fromto="4.0 -4.0 0.0 4.0 4.0 0.0" size=".017" material="frame" />
+    <geom name="edge_x_-4_6" type="capsule" fromto="-4.0 -4.0 5.8 4.0 -4.0 5.8" size=".014" material="front_frame" />
+    <geom name="edge_y_-4_6" type="capsule" fromto="-4.0 -4.0 5.8 -4.0 4.0 5.8" size=".019" material="frame" />
+    <geom name="edge_x_4_6" type="capsule" fromto="-4.0 4.0 5.8 4.0 4.0 5.8" size=".019" material="frame" />
+    <geom name="edge_y_4_6" type="capsule" fromto="4.0 -4.0 5.8 4.0 4.0 5.8" size=".014" material="front_frame" />
+    <body name="pendulum" pos="-2.2 .9 0">
+      <geom name="pendulum_base" type="box" pos="0.0 0.0 0.118" size="0.72 0.45 0.118" material="metal" />
+      <geom name="pendulum_post" type="box" pos="-0.48 0.0 1.829" size="0.07 0.07 1.593" material="metal" />
+      <geom name="pendulum_beam" type="box" pos="0.1 0.0 3.3983999999999996" size="0.65 0.07 0.0826" material="metal" />
+      <body name="pendulum_arm" pos=".63 0 3.3984">
+        <joint name="swing" type="hinge" axis="1 0 0" limited="true" range="-1.2 1.2" damping=".05" />
+        <geom name="pendulum_rod" type="capsule" fromto="0.0 0.0 0.0 0.0 0.0 -1.829" size="0.027" material="silver" mass="0.15" />
+        <geom name="pendulum_bob" type="sphere" pos="0.0 0.0 -1.829" size="0.25" material="bob_mat" mass="1" />
+      </body>
+    </body>
+    <body name="ramp" pos="1.7 1.6 0.79" euler="0 -0.4886921905584123 0">
+      <geom name="ramp_deck" type="box" pos="0.0 0.0 0.0" size="1.45 0.65 0.09" material="ramp_mat" />
+      <geom name="ramp_rail_-1" type="box" pos="0 -0.65 .09" size="1.45 .025 .09" material="metal" />
+      <geom name="ramp_rail_1" type="box" pos="0 0.65 .09" size="1.45 .025 .09" material="metal" />
+    </body>
+    <geom name="ramp_leg_-1.15_-0.48" type="box" pos="0.7268627088629641 1.12 0.08532120971946111" size="0.065 0.065 0.08532120971946111" material="silver" />
+    <geom name="ramp_leg_-1.15_0.48" type="box" pos="0.7268627088629641 2.08 0.08532120971946111" size="0.065 0.065 0.08532120971946111" material="silver" />
+    <geom name="ramp_leg_1.15_-0.48" type="box" pos="2.757642172438496 1.12 0.6252135069232355" size="0.065 0.065 0.6252135069232355" material="silver" />
+    <geom name="ramp_leg_1.15_0.48" type="box" pos="2.757642172438496 2.08 0.6252135069232355" size="0.065 0.065 0.6252135069232355" material="silver" />
+    <body name="red_ball" pos="2.2149946441991837 1.6 1.4828784283307979">
+      <freejoint name="red_joint" />
+      <geom name="red_geom" type="sphere" pos="0.0 0.0 0.0" size="0.28" mass="1" material="red_enamel" />
+    </body>
+    <body name="balance" pos="1.55 -1.5 0">
+      <geom name="balance_base" type="box" pos="0.0 0.0 0.12" size="0.65 0.42 0.12" material="metal" />
+      <geom name="balance_post" type="capsule" fromto="0 0 .22 0 0 2.1" size="0.095" material="metal" />
+      <body name="balance_arm" pos="0 0 2.1">
+        <joint name="balance_hinge" type="hinge" axis="0 1 0" stiffness="5" damping="0.4" limited="true" range="-.35 .35" />
+        <geom name="balance_beam" type="capsule" fromto="-1.12 0.0 0.0 1.12 0.0 0.0" size="0.047" material="silver" mass="0.4" />
+        <geom name="pan_link_-1_-0.23_-0.24" type="capsule" fromto="-1.0 0.0 -0.02 -1.24 -0.23 -0.45" size="0.013" material="silver" mass="0.015" />
+        <geom name="pan_link_-1_-0.23_0.24" type="capsule" fromto="-1.0 0.0 -0.02 -0.76 -0.23 -0.45" size="0.013" material="silver" mass="0.015" />
+        <geom name="pan_link_-1_0.23_-0.24" type="capsule" fromto="-1.0 0.0 -0.02 -1.24 0.23 -0.45" size="0.013" material="silver" mass="0.015" />
+        <geom name="pan_link_-1_0.23_0.24" type="capsule" fromto="-1.0 0.0 -0.02 -0.76 0.23 -0.45" size="0.013" material="silver" mass="0.015" />
+        <geom name="pan_-1" type="box" pos="-1.0 0.0 -0.49" size="0.39 0.31 0.045" material="ramp_mat" mass="0.25" />
+        <geom name="pan_rim_-1_-1" type="box" pos="-1.0 -0.29 -0.41" size="0.39 0.025 0.055" material="silver" mass="0.025" />
+        <geom name="pan_rim_-1_1" type="box" pos="-1.0 0.29 -0.41" size="0.39 0.025 0.055" material="silver" mass="0.025" />
+        <geom name="pan_link_1_-0.23_-0.24" type="capsule" fromto="1.0 0.0 -0.02 0.76 -0.23 -0.45" size="0.013" material="silver" mass="0.015" />
+        <geom name="pan_link_1_-0.23_0.24" type="capsule" fromto="1.0 0.0 -0.02 1.24 -0.23 -0.45" size="0.013" material="silver" mass="0.015" />
+        <geom name="pan_link_1_0.23_-0.24" type="capsule" fromto="1.0 0.0 -0.02 0.76 0.23 -0.45" size="0.013" material="silver" mass="0.015" />
+        <geom name="pan_link_1_0.23_0.24" type="capsule" fromto="1.0 0.0 -0.02 1.24 0.23 -0.45" size="0.013" material="silver" mass="0.015" />
+        <geom name="pan_1" type="box" pos="1.0 0.0 -0.49" size="0.39 0.31 0.045" material="ramp_mat" mass="0.25" />
+        <geom name="pan_rim_1_-1" type="box" pos="1.0 -0.29 -0.41" size="0.39 0.025 0.055" material="silver" mass="0.025" />
+        <geom name="pan_rim_1_1" type="box" pos="1.0 0.29 -0.41" size="0.39 0.025 0.055" material="silver" mass="0.025" />
+      </body>
+    </body>
+    <body name="blue_ball" pos="-2.0 -1.9 .33">
+      <freejoint name="blue_joint" />
+      <geom name="blue_geom" type="sphere" pos="0.0 0.0 0.0" size="0.33" mass="1.4" material="blue_enamel" />
+    </body>
+    <body name="test_block" pos="-.65 -2.2 .27">
+      <freejoint name="block_joint" />
+      <geom name="block_geom" type="box" pos="0.0 0.0 0.0" size="0.28 0.28 0.27" material="silver" mass="1.5" />
+    </body>
+    <light name="rim" pos="1 -5 8" dir="0 .6 -1" directional="true" diffuse=".07 .08 .09" specular=".24 .27 .30" castshadow="false" />
+    <geom name="floor_trim" type="box" pos="0 0 -.038" size="4.065 4.065 .020" material="base_trim" />
+  </worldbody>
+  <keyframe>
+    <key name="figure1_illustration" qpos="-0.40000000000000002 2.2149946441991837 1.6000000000000001 1.4828784283307979 1 0 0 0 0 -2 -1.8999999999999999 0.33000000000000002 1 0 0 0 -0.65000000000000002 -2.2000000000000002 0.27000000000000002 1 0 0 0" />
+  </keyframe>
+</mujoco>

@@ -1,0 +1,144 @@
+/* One rule, one clear scene. Detailed mathematics is available on demand. */
+.atlas-section .scene-picker { grid-template-columns:repeat(5,minmax(0,1fr)); gap:0 18px; margin-bottom:25px; }
+.atlas-section .scene-picker button { display:flex; align-items:baseline; gap:10px; border:0; border-bottom:1px solid #dfe6df; border-radius:0; padding:14px 3px; min-height:59px; background:transparent; box-shadow:none; }
+.atlas-section .scene-picker button:hover { background:transparent; border-color:#8bab99; }
+.atlas-section .scene-picker button[aria-selected=true] { background:transparent; border-color:#477c67; box-shadow:0 1px #477c67; }
+.atlas-section .scene-picker .scene-choice-number { font-size:10px; color:#9bae9f; }
+.scene-choice-name { font-weight:400; font-size:13px; line-height:1.6; color:#566e61; }
+[aria-selected=true]>.scene-choice-name { color:#2e6550; font-weight:500; }
+.atlas-topline .category-tag { display:none!important; }
+.atlas-detail #scene-description { display:none; }
+.atlas-detail .oracle-panel { padding:0; border:0; background:none; border-radius:0; margin:22px 0; }
+#oracle-kind { display:block; font-size:9px; color:#8d9c90; letter-spacing:.1em; text-transform:uppercase; }
+#oracle-plain { margin-top:12px; color:#345d4d; font-size:21px; line-height:1.7; }
+.atlas-detail[data-view=physics] .atlas-copy { justify-content:center; padding:36px 38px; }
+.atlas-detail[data-view=physics] .world-law { margin-top:28px; }
+.atlas-detail[data-view=physics] .atlas-trigger,.atlas-detail[data-view=physics] .atlas-observation { display:none; }
+.oracle-overlay { display:none!important; }
+.oracle-measurements { border-bottom:1px solid #dce6d5; background:#f7faf5; }
+.oracle-measurements>summary { padding:14px 21px; color:#84998c; font-size:10px; display:flex; justify-content:space-between; }
+.oracle-measurements[open]>summary { border-bottom:1px solid #dce6d5; }
+.oracle-measurements[open]>summary>span { transform:rotate(45deg); }
+.oracle-measurements #oracle-chart-wrap { border:0; }
+.oracle-measurements .physics-readout { border-top:1px solid #e5ece2; }
+.physics-downloads { padding-top:14px; }
+.physics-video-frame.is-simple { aspect-ratio:900/650; overflow:hidden; }
+.physics-video-frame video { pointer-events:none; }
+.physics-video-frame:fullscreen video { pointer-events:auto; }
+.physics-video-frame.is-simple video { width:111.1111%; height:138.4615%; left:-5.5556%; top:-26.1538%; }
+.physics-video-frame.is-simple:fullscreen video { position:static; width:100%; height:100%; left:auto; top:auto; object-fit:contain; }
+.simple-phase { position:absolute; top:14px; right:18px; z-index:2; padding:6px 10px; background:#f8fbf6eb; border:1px solid #d4e1db; border-radius:5px; color:#5c7b70; font-size:11px; }
+.physics-video-frame:fullscreen .simple-phase { display:none; }
+.studio-poster { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; z-index:1; background:#f5f8f7; }
+.physics-video-frame:fullscreen .studio-poster { display:none; }
+.atlas-detail[data-view=physics] #atlas-evidence { display:none; }
+.room-stage { position:relative; width:100%; aspect-ratio:1250/1222; isolation:isolate; }
+.room-stage>img { width:100%; height:100%; object-fit:fill; user-select:none; pointer-events:none; -webkit-user-drag:none; }
+.room-stage>video { position:absolute; inset:0; width:100%; height:100%; object-fit:fill; pointer-events:none; }
+.room-targets { position:absolute; inset:0; z-index:3; pointer-events:none; }
+.room-hit { pointer-events:auto; position:absolute; width:48px; height:48px; padding:0; border:1px solid transparent; border-radius:50%; transform:translate(-50%,-50%); background:transparent; cursor:grab; touch-action:none; transition:box-shadow .18s,border-color .18s; }
+.room-stage:hover .room-hit { border-color:#6b9faa45; }
+.room-hit:hover,.room-hit:focus-visible { border-color:#6b9faa80; box-shadow:0 0 0 7px #87b7bd12,0 0 24px #639faa20; outline-offset:3px; }
+.room-stage.is-dragging .room-hit { cursor:grabbing; }
+.room-stage.is-loading .room-hit:hover { cursor:progress; }
+.paper-hero-art .room-caption { display:flex; align-items:center; gap:24px; border:0; background:none; left:10px; bottom:0; padding:0 12px; }
+.room-caption>span { font-size:10px!important; color:#789591!important; }
+.room-caption button { font-size:19px; color:#759994; padding:5px 8px; }
+@media(hover:none) {
+  .room-hit { border-color:#6b9faa45; }
+}
+@media(max-width:560px) {
+  .room-hit { width:42px; height:42px; }
+  .paper-hero-art .room-caption { bottom:0; left:0; padding-left:7px; }
+}
+@media(max-width:1000px) {
+  .atlas-section .scene-picker { gap:0 12px; }
+  .scene-choice-name { font-size:11px; }
+  .atlas-section .scene-picker button { gap:7px; }
+}
+@media(max-width:800px) {
+  .atlas-section .scene-picker { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .atlas-body { display:flex; flex-direction:column; }
+  .atlas-copy { order:-1; }
+  .atlas-detail[data-view=physics] .atlas-copy { padding:26px; }
+  #oracle-plain { font-size:19px; }
+  .atlas-detail .oracle-panel { margin:15px 0 3px; }
+  .atlas-detail[data-view=physics] .world-law { margin-top:18px; }
+}
+@media(max-width:560px) {
+  .atlas-section .scene-picker { gap:0 10px; }
+  .atlas-section .scene-picker button { display:block; padding:10px 1px; min-height:62px; }
+  .atlas-section .scene-picker .scene-choice-number { display:block; font-size:8px; margin-bottom:2px; }
+  .scene-choice-name { display:block; font-size:10px; }
+  .atlas-detail[data-view=physics] .atlas-copy { padding:23px; }
+  #oracle-plain { font-size:17px; line-height:1.7; }
+  .simple-phase { font-size:9px; right:12px; top:10px; }
+}
+/* A single reading order: rule, scene, playback. */
+@media(min-width:1100px) {
+  .hero.container { max-width:1440px; width:calc(100% - 80px); grid-template-columns:minmax(440px,.85fr) minmax(0,1.2fr); gap:28px; padding-block:55px 45px; }
+  .hero h1 { font-size:clamp(48px,4.3vw,68px); }
+  .paper-hero-art { margin:-16px 0 0; }
+}
+.atlas-body { display:flex; flex-direction:column; }
+.atlas-detail .atlas-copy { order:-1; width:100%; text-align:center; align-items:center; padding:30px 32px 24px; background:#fbfcfa; }
+.atlas-detail[data-view=physics] .atlas-copy { padding:30px 32px 24px; justify-content:flex-start; }
+.atlas-copy h3 { font-size:29px; }
+.atlas-detail .oracle-panel { margin:9px 0 0; max-width:850px; }
+#oracle-kind { display:none; }
+#oracle-plain { margin:0; font-size:20px; line-height:1.6; color:#44695a; }
+.atlas-visual { border:0; width:100%; }
+#atlas-physics-view { background:#f5f8f7; }
+.atlas-detail .physics-video-frame { width:100%; max-width:1040px; margin:0 auto; background:#f5f8f7; }
+.physics-video-frame.is-clear { aspect-ratio:3/2; overflow:hidden; }
+.physics-video-frame.is-clear video { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; aspect-ratio:auto; }
+.physics-video-frame.is-clear:fullscreen { aspect-ratio:auto; }
+.physics-video-frame.is-simple video { position:absolute; }
+#oracle-chapters,.atlas-bottomline { display:none!important; }
+.atlas-topline { gap:18px; }
+.atlas-navigation { display:flex; gap:16px; margin-left:auto; }
+.atlas-navigation button { font-size:20px; color:#5e7e6e; padding:4px 8px; }
+#atlas-position { display:none; }
+.physics-playback { border:0; background:#f5f8f7; padding:16px 27px 22px; }
+#physics-speed { border:1px solid #ccd9d1; background:#fbfdfa; border-radius:5px; padding:6px 4px; color:#456753; font:12px var(--sans); cursor:pointer; }
+#replay-speed { border:1px solid #ccd9d1; background:#fbfdfa; border-radius:5px; padding:5px 3px; color:#456753; font:11px var(--sans); }
+.atlas-detail .physics-video-frame:fullscreen { max-width:none; }
+.scene-play-overlay { position:absolute; z-index:3; left:28px; bottom:22px; padding:11px 20px; border:1px solid #b9cec0; border-radius:24px; background:#fafff7ed; color:#305e49; box-shadow:0 3px 12px #3158440b; font-size:12px; }
+.scene-play-overlay:hover { background:#e7f0e5; }
+.scene-foot { display:grid; grid-template-columns:1fr auto; align-items:start; gap:30px; padding:17px 27px; border-top:1px solid #dce5db; background:#fbfcfa; }
+.scene-foot .world-law { margin:0!important; border:0; padding:0; min-width:0; }
+.scene-foot .world-law summary { color:#567b64; font-size:11px; }
+.scene-foot .world-law>p { max-width:880px; }
+.scene-foot .physics-downloads { margin:0; padding:0; font-size:11px; gap:22px; }
+.oracle-measurements { margin-top:18px; border:1px solid #e0e8de; border-radius:6px; }
+#physics-error { z-index:2; inset:auto 25px 70px; background:#f5f8f7e8; padding:10px; font-size:12px; }
+.room-stage { cursor:pointer; }
+.paper-hero-art { flex-direction:column; justify-content:center; }
+.room-stage { flex-shrink:0; }
+.room-canvas { display:block; position:absolute; inset:0; width:100%; height:100%; touch-action:none; }
+.paper-hero-art .room-caption { position:static; display:flex; flex-wrap:wrap; justify-content:center; gap:10px 20px; margin-top:8px; padding:0; }
+.room-tools { display:flex; gap:3px; padding:3px; border:1px solid #d4dfda; border-radius:8px; background:#fbfcf9; }
+.room-caption .room-tools button { font:11px var(--sans); padding:7px 12px; border-radius:5px; color:#5a796d; }
+.room-tools button[aria-pressed=true] { background:#e5eee7; color:#315c48; }
+.room-caption>span { min-width:170px; }
+@media(max-width:800px) {
+  .atlas-detail .atlas-copy,.atlas-detail[data-view=physics] .atlas-copy { padding:25px 22px 20px; }
+  .atlas-copy h3 { font-size:27px; }
+  #oracle-plain { font-size:18px; }
+}
+@media(max-width:560px) {
+  .atlas-topline { gap:4px; padding:13px 14px; flex-wrap:wrap; }
+  .atlas-navigation { gap:0; }
+  .atlas-view-switch { margin-left:auto; }
+  .atlas-detail .atlas-copy,.atlas-detail[data-view=physics] .atlas-copy { padding:24px 18px 18px; }
+  .atlas-copy h3 { font-size:25px; }
+  #oracle-plain { font-size:16px; }
+  .physics-playback { padding:10px 12px 16px; gap:7px; }
+  .physics-playback .round-control { width:27px; height:27px; flex-shrink:0; }
+  #physics-clock { font-size:8px; }
+  #physics-speed { font-size:10px; padding:5px 1px; }
+  .scene-play-overlay { left:16px; bottom:14px; padding:7px 13px; font-size:10px; }
+  .scene-foot { padding:17px; gap:14px; grid-template-columns:1fr; }
+  .scene-foot .physics-downloads { justify-content:flex-end; }
+  .room-caption>span { min-width:0; text-align:center; }
+}

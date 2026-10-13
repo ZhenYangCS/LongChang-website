@@ -25,12 +25,31 @@ CATALOG = {
  '15':dict(formula='Fᵧ = 1.5m · Launch pauses 10 counts',condition='Any movable object receives a nonzero push or throw.',effect='Red’s northward force pauses for ten counts. Another launch resets the timer.',scope='Zero impulses, building and hand movement do not reset it. The force starts active and resumes after the pause.',signal='force',measure='Red’s extra northward force',unit='force units')
 }
 
+PLAIN = {
+ '01':('The gray tile does not change how objects move.','灰色地砖不会改变物体的运动。'),
+ '02':('Red balls attract each other; blue balls do not.','红球互相吸引，蓝球不参与。'),
+ '03':('The heavier blue ball falls more slowly than the lighter red one.','重的蓝球反而比轻的红球落得慢。'),
+ '04':('Gravity gets stronger and weaker in a six-second cycle.','重力每六秒完成一次由强到弱、再变强的循环。'),
+ '05':('Fast-moving objects get an extra brake; slow ones do not.','物体速度够快时会受到额外制动，慢下来就没有了。'),
+ '06':('Moving balls are pushed sideways to their right.','球运动时，总会受到一个朝自身右侧的力。'),
+ '07':('Identical balls bounce high on red tiles and low on blue tiles.','一样的球，在红地砖上弹得高，在蓝地砖上弹得低。'),
+ '08':('Push harder, and speed approaches a limit it can never reach.','推得再用力，速度也只能接近一个永远达不到的上限。'),
+ '09':('Balls slow down on entering the gray tile and speed up on leaving it.','球进入灰色区域就减速，离开时就加速。'),
+ '10':('The yellow area gives balls an extra boost.','黄色区域会给球额外的动力。'),
+ '11':('When two balls separate after a collision, both get a speed boost.','两球碰撞后分开时，都会获得一次额外加速。'),
+ '12':('When two balls touch, they swap colors.','两个球一接触，就交换颜色。'),
+ '13':('Every third collision between the two balls makes both jump.','两球每相撞三次，就一起向上跳一下。'),
+ '14':('Push red, and twelve seconds later green copies its launch speed and direction.','推动红球十二秒后，绿球会获得红球刚被推动时的速度和方向。'),
+ '15':('Red is pulled north, but pushing any object pauses that pull for ten seconds.','红球受到向北的拉力，但推动任意物体都会让这股力暂停十秒。')
+}
+
 
 def catalog():
     names,_=paper_scene_names();laws,_=paper_scene_laws()
-    return {id:dict(id=id,name=names[id],law=laws[id],**entry) for id,entry in CATALOG.items()}
+    return {id:dict(id=id,name=names[id],law=laws[id],plain=PLAIN[id][0],plain_zh=PLAIN[id][1],**entry) for id,entry in CATALOG.items()}
 
 
 if __name__=='__main__':
     site=Path(__file__).resolve().parents[1]
     (site/'data/oracles.js').write_text('window.ORACLE_CATALOG = '+json.dumps(catalog(),ensure_ascii=False)+';\n')
+    (site/'downloads/oracle-captions-zh.txt').write_text('\n'.join(f'{id} {entry["name"]}\n{entry["plain_zh"]}\n' for id,entry in catalog().items()),encoding='utf-8')

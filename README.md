@@ -1,6 +1,6 @@
 # LongChang anonymous project page
 
-独立的英文匿名论文主页。直接用浏览器打开 `index.html`，或在仓库根目录启动：
+独立的英文匿名论文主页。在仓库根目录启动以下服务；首屏 MuJoCo 交互需要通过 HTTP 打开：
 
 ```bash
 python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
@@ -8,7 +8,7 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 
 在服务器本机可访问 <http://127.0.0.1:8765>。从自己的电脑访问时，应使用服务器可达的 IP/域名加 `:8765`，或先建立 SSH 端口转发；浏览器中的 localhost 指的是浏览器所在电脑。预览服务器支持视频字节范围请求，并要求 HTML/JS/CSS 重新核验缓存，便于持续微调。
 
-当前预览服务独立运行在 `longchang-page` tmux 会话，可用 `tmux attach -t longchang-page` 查看。素材导出运行在 `longchang-media`，日志为 `/tmp/longchang-media-build.log`，不会随一条终端命令结束而停止。
+当前预览服务独立运行在 `longchang-page` tmux 会话，可用 `tmux attach -t longchang-page` 查看。本轮统一玻璃房与高清动画在 `longchang-clear` 中导出，日志为 `/tmp/longchang-clear-build.log`，不会随终端命令结束而停止。
 
 整个 `project_page/` 目录可部署到任意静态托管服务，也支持站点子目录。无需 Node、构建步骤、API key 或实时模拟后端。字体、图片、视频和数据均为本地文件。代码按钮提供匿名源码 ZIP，包含框架、场景、依赖与入门说明。
 
@@ -16,10 +16,11 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 
 ## 内容
 
-- 浅色学术版式、动态首屏与研究概述；标题、摘要和匿名 PDF 同步当前论文。
-- 15 个场景全部提供动态图解、触发说明、参数或对照条件；支持播放、暂停、拖动、重置、键盘切换和自动轮播。每个场景可切换查看论文来源的真实初始布置。
+- 首屏先显示 Figure 1 原图。点击 Push / Drag / Rotate 后加载本地 MuJoCo WASM，用原始 `workspace.xml` 实时计算推动、拖放、碰撞、摆锤和天平运动；Three.js 绘制玻璃、金属、珐琅与阴影。支持转视角、缩放、键盘推动和重置。
+- 15 个场景使用论文原名的文字选择器，神谕一句话在画面上方。删除 1/2/3 分段及展示性质说明；完整规律和测量数据收进 Full rule。影片与实验回放均提供 0.5×、1×、2×、4× 播放。
 - **场景命名以 ACL 论文为唯一来源**：`scripts/paper_scenes.py` 从当前总览表读取 01–15 的正式名称，从附录读取对应规律与作用范围；网页、案例、演示标题和重新导出的字幕共用这份数据。
-- **三种场景视图**：`Physics demo` 为原始 MuJoCo 场景程序的脚本化演示，`Try the law` 为轻量 SVG 交互，`Original scene` 为原始初始布置。全部 15 段实际物理演示带模拟时间、采样轨迹、读数、布置与操作记录；可下载 162 秒合集和视频/记录 ZIP。
+- **三种场景视图**：`Watch` 为原始 MuJoCo 场景程序的演示，`Try it` 为轻量 SVG 交互，`Original scene` 为原始初始布置。新视频与静帧为 1440×960，玻璃房统一比例和取景，仍使用 Figure 1 Cycles 材质。可下载带名称及一句话说明的 194 秒合集、GIF 和视频/记录 ZIP。
+- 页面先展示静图，未播放的视频不下载。首屏物理引擎只在操作时加载；场景索引与内嵌预览约 30 KB，取代原先 2.2 MB 的首屏数据，测量数组单独按需读取。高清图解码前先显示内嵌预览，避免空白。预览服务压缩 JS / JSON / WASM，保留视频 Range 请求；视频和引擎下载超时会提供重试。
 - 48 秒四幕概览与全屏演示模式；120 秒全场景 MP4、15 个逐场景 GIF 和合集可直接下载。
 - 四个交互式规律示意图：地砖反弹、顺时针偏转、延迟速度复制、受发射抑制的漂移。可改变高度或发射方向、选择对照实验、重置计时。
 - 从当前评分 C/S 同时通过的 Astra runs 中精选四个故事，每个有三个真实视频章节，共12段；支持播放、暂停、拖动、最终笔记和报告下载。
@@ -40,7 +41,7 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 
 SVG 交互和 illustration MP4/GIF 是用于解释规律的简化模型，不作为真实探索证据。普通摩擦、接触或运动在部分场景中被简化或省略，每个场景底部注明范围。
 
-`Physics demo` 直接运行 `scenes/base_15.json` 的原始物理程序，保留物体大小、颜色、质量、摩擦、重力与碰撞规律。为清楚演示触发条件，球的位置会按公开脚本预先布置；重复接触的例子会在两次试验间重置位置但保留事件历史。数据包含准备位置、干预、接触事件、源哈希和 50 Hz 状态采样。视频取最近的采样状态，镜头和轨迹线仅用于显示。这些是专门制作的演示，不是模型自主探索，不计入主实验的 540 条结果。
+`Watch` 直接运行 `scenes/base_15.json` 的原始物理程序，保留物体大小、颜色、质量、摩擦、重力与碰撞规律。为清楚演示触发条件，球的位置会按公开脚本预先布置；重复接触的例子会在两次试验间重置位置但保留事件历史。当前数据包含准备位置、干预、原始规则回调事件、源哈希、100 Hz 状态采样及关闭异常规则的普通物理对照。视频取最近的采样状态，玻璃外壳和展示底座仅用于呈现。这些是专门制作的演示，不是模型自主探索，不计入主实验的 540 条结果。
 
 成功探索视频和研究问题案例来自原始模型实验存档。三种素材的来源分别标识；页面播放秒数与模拟 counts 分开显示。
 
@@ -55,6 +56,26 @@ SVG 交互和 illustration MP4/GIF 是用于解释规律的简化模型，不作
 ## 更新素材
 
 页面可直接使用，以下脚本仅用于在论文或源素材变化后重新导出。
+
+本轮首屏和场景展示的检查与更新（已完成的渲染无需重跑）：
+
+```bash
+python scripts/verify_front.py --url http://127.0.0.1:8765 --require-hd
+python scripts/verify_oracle_records.py
+
+# 原始记录 → 统一玻璃房、高清 Cycles 动画 → 带说明下载版
+python scripts/render_clear_scenes.py --ffmpeg /path/to/ffmpeg
+python scripts/publish_clear_media.py --ffmpeg /path/to/ffmpeg
+python scripts/package_oracle_demos.py
+python scripts/package_physics_demos.py --ffmpeg /path/to/ffmpeg
+python scripts/prepare_scene_index.py
+```
+
+渲染脚本使用项目现有 MuJoCo/Blender Python 环境。静态玻璃房采用 256 samples，物体及阴影区域采用 64 samples，再合成为完整画面；只改变呈现方式，不改变记录中的位置、尺寸或规律。`assets/clarity.css` 控制布局，`assets/room-world.js` 控制首屏实时物理，`scripts/oracle_catalog.py` 保存一句话中英说明。场景正式名称仍由论文自动读取。
+
+首屏依赖固定版本 MuJoCo 3.15.0（Apache-2.0）和 Three.js 0.186.1（MIT），全部存放于 `assets/vendor/`，无需连接外部 CDN。首次操作才下载引擎，不影响页面先显示；部署时保持相对目录和 `.wasm` 文件即可。
+
+以下为其他论文材料及旧版示意图的导出工具：
 
 ```bash
 # 依赖 Pillow、pypdf；从当前论文、图件和结果表导出

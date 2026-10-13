@@ -9,7 +9,7 @@
   let selected=0,chapter=0;
   const video=$('#success-video'),slider=$('#replay-progress'),play=$('#replay-play');
   let videoGeneration=0,videoLoading=false,wantsVideo=false,videoAnimation=0;
-  const cache=new Map();
+  let pendingSource=null;
 
   function setTab(button) {
     button.closest('[role="tablist"]').querySelectorAll('[role="tab"]').forEach(b=>{
@@ -38,8 +38,10 @@
   }
   function startVideo() {
     wantsVideo=true;
+    if(pendingSource){video.src=pendingSource;pendingSource=null;video.load();}
     if(videoLoading||video.readyState<2){play.textContent='…';return;}
     if(video.ended||video.currentTime>=video.duration-.04)video.currentTime=0;
+    video.playbackRate=Number($('#replay-speed').value);
     video.play().then(()=>{
       play.innerHTML='<span aria-hidden="true">II</span>';play.setAttribute('aria-label','Pause recorded experiment');
       cancelAnimationFrame(videoAnimation);videoProgress();
@@ -48,15 +50,10 @@
   async function loadVideo(c) {
     const generation=++videoGeneration;videoLoading=true;pauseVideo();video.poster=c.poster;
     video.removeAttribute('src');video.load();
-    let src=c.video;
-    if(location.protocol!=='file:'){
-      if(!cache.has(src))cache.set(src,fetch(src).then(r=>{if(!r.ok)throw new Error('Video unavailable');return r.blob();}).then(b=>URL.createObjectURL(b)));
-      try{src=await cache.get(src);}catch(_){cache.delete(c.video);}
-    }
-    if(generation!==videoGeneration)return;
-    video.src=src;video.load();videoLoading=false;
+    pendingSource=c.video;video.preload='none';videoLoading=false;
   }
   video.addEventListener('loadedmetadata',videoProgress);
+  $('#replay-speed').addEventListener('change',()=>{video.playbackRate=Number($('#replay-speed').value);});
   video.addEventListener('loadeddata',()=>{videoProgress();if(wantsVideo)startVideo();});
   video.addEventListener('ended',()=>{pauseVideo();videoProgress();});
   video.addEventListener('error',pauseVideo);

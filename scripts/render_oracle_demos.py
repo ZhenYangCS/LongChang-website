@@ -77,7 +77,7 @@ class Probe:
                 rgba=model.geom_rgba[model.body_geomadr[bid]]
                 changed=not np.allclose(old,after,atol=1e-9,rtol=0)
                 if changed and self.number in [7,9,11,13,14]:
-                    ratio=float(np.linalg.norm(after)/np.linalg.norm(old)) if np.linalg.norm(old)>1e-8 else None
+                    ratio=float(np.linalg.norm(after)/np.linalg.norm(old)) if self.number in [9,11] and np.linalg.norm(old)>1e-8 else None
                     if self.number==7:ratio=float(after[2]/abs(old[2])) if abs(old[2])>1e-8 else None
                     changes.append(dict(object=name,before=old.tolist(),after=after.tolist(),ratio=ratio,position=data.qpos[q:q+3].copy().tolist()))
                 if self.number==10 and changed:
@@ -370,14 +370,18 @@ def compose_frame(image_path,frame,oracle,spec,plot,job,video_time):
         delta=np.asarray(p)-pos
         return np.array([20+(0.5+delta@right/(span*job['width']/job['height']))*job['width'],90+(0.5-delta@up/span)*job['height']])
     n=int(oracle['id'])
+    # Clip trajectory guides to the illustration, keeping them out of the text.
+    paths=Image.new('RGBA',(900,630),(0,0,0,0));path_draw=ImageDraw.Draw(paths)
+    local=lambda p:tuple(screen(p)-[20,90])
     if n in [2,6,9,13,14,15]:
         for name,track in job.get('reference_tracks',{}).items():
-            points=[tuple(screen(point['position'])) for point in track if point['time']<=frame['time'] and point['epoch']==frame['epoch']]
+            points=[local(point['position']) for point in track if point['time']<=frame['time'] and point['epoch']==frame['epoch']]
             for j in range(0,len(points)-1,5):
-                if len(points[j:j+3])>1:draw.line(points[j:j+3],fill='#bdcaca',width=2)
+                if len(points[j:j+3])>1:path_draw.line(points[j:j+3],fill='#bdcaca',width=2)
         for name,track in job.get('tracks',{}).items():
-            points=[tuple(screen(point['position'])) for point in track if point['time']<=frame['time'] and point['epoch']==frame['epoch']]
-            if len(points)>1:draw.line(points,fill='#c7927d',width=2)
+            points=[local(point['position']) for point in track if point['time']<=frame['time'] and point['epoch']==frame['epoch']]
+            if len(points)>1:path_draw.line(points,fill='#c7927d',width=2)
+    im.paste(paths,(20,90),paths);draw=ImageDraw.Draw(im)
     for i,(name,obj) in enumerate(frame['objects'].items()):
         p=screen(obj['position'])
         if n in [2,5,6,15]:v=np.asarray(frame['oracle']['forces'].get(name,[0,0,0]));label='extra F'
@@ -395,6 +399,23 @@ def compose_frame(image_path,frame,oracle,spec,plot,job,video_time):
         if n==12:
             draw.rounded_rectangle((p[0]-13,p[1]-41,p[0]+13,p[1]-15),radius=6,fill='#f5f8f7',outline='#95b0b1')
             draw.text((p[0]-6,p[1]-39),'AB'[i],font=font(17),fill=ink)
+        if n in [3,7]:
+            floor=screen([*obj['position'][:2],0]);guide=p+[-22,0];end=floor+[-22,0]
+            for a in np.arange(0,1,.1):
+                aa=guide+(end-guide)*a;bb=guide+(end-guide)*min(1,a+.05)
+                draw.line((tuple(aa),tuple(bb)),fill='#aac0bc',width=1)
+        if n in [3,5,8]:
+            label=f"m = {[1,4][i]}" if n==3 else f"launch J = {([8,2] if n==5 else [2,10])[i]}"
+            tw=draw.textlength(label,font=font(12))
+            draw.rounded_rectangle((p[0]-tw/2-7,p[1]+19,p[0]+tw/2+7,p[1]+44),radius=5,fill='#f5faf5',outline='#d3dfd7')
+            draw.text((p[0]-tw/2,p[1]+24),label,font=font(12),fill=ink)
+        if n==6:
+            v=np.asarray(obj['velocity']);delta=np.array([v@right,-v@up]);mag=np.linalg.norm(delta)
+            if mag>.05:
+                direction=delta/mag;a=p+direction*13;b=a+direction*50;normal=np.array([-direction[1],direction[0]])
+                draw.line((tuple(a),tuple(b)),fill='#6388ae',width=3)
+                draw.polygon([tuple(b),tuple(b-direction*10+normal*4),tuple(b-direction*10-normal*4)],fill='#6388ae')
+                draw.text(tuple(b+[4,-12]),'v',font=font(14),fill='#6388ae')
     draw.text((42,99),'NEW CONTROLLED EXPERIMENT  ·  ORIGINAL SCENE PHYSICS',font=font(11),fill=muted)
     draw.rounded_rectangle((710,102,890,141),radius=7,fill='#f5f8f7',outline='#d2dfdb')
     draw.text((724,111),f"t = {frame['time']:05.2f} counts",font=font(16),fill=ink)
@@ -423,12 +444,16 @@ def compose_frame(image_path,frame,oracle,spec,plot,job,video_time):
     draw.line((632,735,653,735),fill=plot['colors'][1],width=2)
     draw.text((662,727),labels[1],font=font(11),fill=muted)
     data=np.array(plot['series']);low=min(0,float(data.min()));high=max(float(data.max()),.1)
-    pad=(high-low)*.12;low-=pad;high+=pad
+    pad=(high-low)*.12;low=low-pad if low<0 else 0;high+=pad
     times=np.asarray(plot['times']);end=spec['simulation_duration']
     def xy(t,v):return (left+(rightx-left)*t/end,bottom-(bottom-top)*(v-low)/(high-low))
     for level in np.linspace(low,high,3):
         yy=xy(0,level)[1];draw.line((left,yy,rightx,yy),fill='#dce6e1',width=1)
         if n!=12:draw.text((4,yy-6),f'{level:.1f}',font=font(10),fill=muted)
+    if n in [5,8]:
+        threshold=2.5 if n==5 else 2.2;yy=xy(0,threshold)[1]
+        for xx in range(left,rightx,12):draw.line((xx,yy,min(xx+7,rightx),yy),fill='#88a37c',width=1)
+        draw.text((rightx-104,yy-16),f'{threshold} threshold',font=font(11),fill=green)
     for series_index,(values,color) in enumerate(zip(plot['series'],plot['colors'])):
         if n==12:
             yy=top+12+series_index*37

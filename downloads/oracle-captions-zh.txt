@@ -1,0 +1,44 @@
+01 Normal control
+灰色地砖不会改变物体的运动。
+
+02 Red attraction
+红球互相吸引，蓝球不参与。
+
+03 Mass-dependent fall
+重的蓝球反而比轻的红球落得慢。
+
+04 Oscillating gravity
+重力每六秒完成一次由强到弱、再变强的循环。
+
+05 High-speed braking
+物体速度够快时会受到额外制动，慢下来就没有了。
+
+06 Automatic side force
+球运动时，总会受到一个朝自身右侧的力。
+
+07 Tile rebounds
+一样的球，在红地砖上弹得高，在蓝地砖上弹得低。
+
+08 Speed has a limit
+推得再用力，速度也只能接近一个永远达不到的上限。
+
+09 Slows in, speeds out
+球进入灰色区域就减速，离开时就加速。
+
+10 Acceleration zone
+黄色区域会给球额外的动力。
+
+11 Collision boost
+两球碰撞后分开时，都会获得一次额外加速。
+
+12 Contact color swap
+两个球一接触，就交换颜色。
+
+13 Third-contact jump
+两球每相撞三次，就一起向上跳一下。
+
+14 Velocity copy
+推动红球十二秒后，绿球会获得红球刚被推动时的速度和方向。
+
+15 Northward force
+红球受到向北的拉力，但推动任意物体都会让这股力暂停十秒。

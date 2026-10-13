@@ -28,7 +28,7 @@
     '15': {trigger:'Observe red’s northward drive, then act on either ball.', label:'Intervention at count 3', options:[['blue','Nonzero push on blue'],['red','Nonzero push on red'],['zero','Zero-impulse push']], initial:'blue', note:'Extra-force contribution only. The nonzero command pauses it for 10 counts; ordinary post-push motion is omitted.'}
   };
   let id = '01', value = configs[id].initial, time = 0, playing = false, touring = false;
-  let visible = false, frame = 0, previous = 0, lastDraw = 0, exportMode = false, view = window.PHYSICS_DEMOS?.length ? 'physics' : 'motion';
+  let visible = false, frame = 0, previous = 0, lastDraw = 0, exportMode = false, view = window.SCENE_INDEX?.length ? 'physics' : 'motion';
   let initialPreview = false;
   const duration = 8;
 
@@ -279,7 +279,7 @@
   // The original scene thumbnails connect the illustrations to the paper.
   document.querySelectorAll('#scene-picker button').forEach(button => {
     const scene = window.LONGCHANG.scenes.find(s => s.id === button.dataset.scene);
-    button.innerHTML = `<img src="${scene.image}" alt="" width="90" height="65" loading="lazy"><span class="atlas-tile-copy"><span>${scene.id} <i>${scene.family}</i></span><strong>${scene.name}</strong></span>`;
+    button.innerHTML = `<span class="scene-choice-number">${scene.id}</span><strong class="scene-choice-name">${scene.name}</strong>`;
     button.addEventListener('click', () => { touring = false; render(); });
   });
   $('#atlas-play').addEventListener('click', () => { if (time >= duration) time = 0; playing = !playing; if (!playing) touring = false; render(); syncClock(); });

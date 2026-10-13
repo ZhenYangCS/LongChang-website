@@ -4,9 +4,12 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import re
+import gzip
+import io
 
 
 class PreviewHandler(SimpleHTTPRequestHandler):
+    compressed = {}
     def end_headers(self):
         if self.path.split('?')[0].endswith(('.html','.js','.css','.json')) or self.path.split('?')[0].endswith('/'):
             self.send_header('Cache-Control', 'no-cache')
@@ -16,6 +19,19 @@ class PreviewHandler(SimpleHTTPRequestHandler):
         self.byte_range = None
         path = Path(self.translate_path(self.path))
         header = self.headers.get('Range')
+        if not header and path.is_file() and path.suffix in {'.js','.css','.json','.xml','.wasm','.svg'} and 'gzip' in self.headers.get('Accept-Encoding',''):
+            stat=path.stat();key=str(path)
+            cached=self.compressed.get(key)
+            if not cached or cached[0]!=stat.st_mtime_ns:
+                cached=(stat.st_mtime_ns,gzip.compress(path.read_bytes(),compresslevel=6));self.compressed[key]=cached
+            payload=cached[1]
+            self.send_response(200)
+            self.send_header('Content-Type',self.guess_type(str(path)))
+            self.send_header('Content-Encoding','gzip')
+            self.send_header('Vary','Accept-Encoding')
+            self.send_header('Content-Length',str(len(payload)))
+            self.end_headers()
+            return io.BytesIO(payload)
         if not header or not path.is_file():
             return super().send_head()
         size = path.stat().st_size
