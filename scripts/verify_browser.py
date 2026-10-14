@@ -31,8 +31,10 @@ def main():
         assert page.locator('#result-details').count()==0
         assert page.locator('.result-control strong').inner_text()=='0 / 3'
         assert page.locator('#scene-picker button').count()==15
-        assert page.locator('.controlled-card td').count()==30
-        assert page.locator('#evolution-results tbody tr').count()==5
+        assert page.locator('.controlled-finding').count()==3
+        assert page.locator('.controlled-table td').count()==30
+        assert not page.locator('.controlled-details').evaluate('e=>e.open')
+        assert page.locator('#evolution-results tbody tr').count()==3
         assert not page.locator('#controlled-comparisons').evaluate('(e)=>!!e.closest("details")')
         assert not page.locator('#evolution-results').evaluate('(e)=>!!e.closest("details")')
         assert page.locator('[data-behavior="L"]').inner_text()=='39.3'

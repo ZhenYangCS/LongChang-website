@@ -121,7 +121,16 @@ def main():
         assert page.evaluate('LongChangEvolution.view()==="demo" && !LongChangEvolution.current()')
         expect(page.locator('[data-evo-view=demo]')).to_have_attribute('aria-pressed', 'true')
         expect(page.locator('#evo-experiment-view')).to_be_hidden()
-        assert demo.evaluate('v=>v.controls && v.loop && v.muted')
+        page.locator('#evo-demo-play').click()
+        page.locator('#evo-demo-progress').evaluate('e=>{e.value=500;e.dispatchEvent(new Event("input",{bubbles:true}));}')
+        page.wait_for_function('Math.abs(document.querySelector("#evo-demo-video").currentTime-5)<.1')
+        page.locator('#evo-demo-fullscreen').click()
+        page.wait_for_function('document.fullscreenElement?.id==="evo-demo-view"')
+        page.locator('#evo-demo-fullscreen').click()
+        page.wait_for_function('!document.fullscreenElement')
+        assert demo.evaluate('v=>!v.controls && v.loop && v.muted')
+        assert page.locator('[data-component=scene-playback]').count() == 2
+        assert page.locator('[data-component=scene-live]').count() == 2
         for key in ['mutate','compose','generate']:
             page.locator(f'#evo-tab-{key}').click()
             page.wait_for_function('(key)=>{const v=document.querySelector("#evo-demo-video");return v.currentSrc.endsWith(`evolution-${key}.mp4`) && !v.paused && v.currentTime>.1}', arg=key)
@@ -129,19 +138,20 @@ def main():
         for quote, selector in [(trace['weakness']['evidence'][0]['quote'], '#evo-trace-error'), (trace['weakness']['contradiction'][0]['quote'], '#evo-trace-correction')]:
             assert page.locator(selector).text_content().strip('“”') == quote
         assert page.locator('#controlled #evolution-results').count() == 0
-        assert page.locator('#evolution .evo-workspace #evolution-results tbody tr').count() == 5
+        assert page.locator('#evolution .evo-workspace #evolution-results tbody tr').count() == 3
+        assert page.locator('#evolution-results tbody td').count() == 15
+        assert page.locator('.evolution-evaluation').bounding_box()['height'] < 190
         page.locator('.evo-design summary').click()
         expect(page.locator('#evo-trace-error')).to_be_visible()
         page.locator('.evo-design summary').click()
-        # Try it yourself opens an untouched live world, with no scripted actions.
-        page.locator('#evo-try').click()
+        # The same native Experiment component opens a fresh world.
+        page.locator('[data-evo-view=experiment]').click()
         page.wait_for_function('!!LongChangEvolution.current()')
         assert not page.evaluate('LongChangEvolution.current().isRunning()')
         assert page.evaluate('LongChangEvolution.current().getState().time') == 0
         assert demo.evaluate('v=>v.paused')
         expect(page.locator('[data-evo-view=experiment]')).to_have_attribute('aria-pressed', 'true')
         expect(page.locator('#evo-demo-view')).to_be_hidden()
-        expect(page.locator('#evo-start')).to_be_hidden()
         canvas = page.locator('#evo-stage canvas.room-canvas')
         canvas.focus(); canvas.press('ArrowRight')
         page.wait_for_function('LongChangEvolution.current().getState().time>.2')
@@ -238,9 +248,9 @@ def main():
         phone.route('**/data/evolution/mutate.json', lambda route:route.abort())
         phone.locator('#evo-tab-mutate').tap()
         phone.locator('#evo-stage').scroll_into_view_if_needed()
-        expect(phone.locator('#evo-start')).to_have_text('Retry experiment')
+        expect(phone.locator('#evo-hint')).to_have_text('Could not load. Tap Push to retry.')
         phone.unroute('**/data/evolution/mutate.json')
-        phone.locator('#evo-start').tap()
+        phone.locator('[data-evo-mode=push]').tap()
         phone.wait_for_function('LongChangEvolution.current()?.getState().scene==="mutate"')
         phone.evaluate('LongChangEvolution.select("compose");LongChangEvolution.select("generate")')
         phone.wait_for_function('LongChangEvolution.current()?.getState().scene==="generate"')
@@ -248,6 +258,7 @@ def main():
         # Demo failures can be retried independently of the live world.
         phone.route('**/evolution-compose.mp4',lambda route:route.abort())
         phone.locator('[data-evo-view=demo]').tap(); phone.locator('#evo-tab-compose').tap()
+        phone.locator('#evo-visual').scroll_into_view_if_needed()
         expect(phone.locator('#evo-demo-error')).to_be_visible()
         phone.unroute('**/evolution-compose.mp4')
         phone.locator('#evo-demo-retry').tap()

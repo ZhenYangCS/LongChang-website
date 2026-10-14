@@ -10,6 +10,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import sys
 
 import mujoco
 import numpy as np
@@ -153,6 +154,10 @@ def main():
                       frames=j['originals'],frame_map=j['frame_map']) for j in jobs.values()]
         ids={j['id'] for j in updated}
         write(audit_path,dict(revision=REVISION,tracks=[j for j in previous if j['id'] not in ids]+updated))
+    if any(case['id']=='question' for case in selected):
+        command=[sys.executable,str(SITE/'scripts/prepare_case_question.py'),'--ffmpeg',args.ffmpeg]
+        if args.preview:command.append('--preview')
+        subprocess.run(command,check=True)
 
 
 if __name__=='__main__': main()

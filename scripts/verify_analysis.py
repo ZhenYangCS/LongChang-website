@@ -10,7 +10,7 @@ def main():
         browser=p.chromium.launch(headless=True,args=['--no-sandbox','--enable-unsafe-swiftshader'])
         page=browser.new_page(viewport={'width':1366,'height':768});page.on('pageerror',lambda e:errors.append(str(e)))
         page.goto(args.url+'/#worlds');page.wait_for_load_state('networkidle')
-        assert page.locator('.atlas-view-switch button').all_text_contents()==['Demo','Experiment']
+        assert page.locator('#worlds .atlas-view-switch button').all_text_contents()==['Demo','Experiment']
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>/\\.(wasm|mp4)/.test(r.name))')
         page.locator('[data-atlas-view=physics]').click();page.locator('#demo-explanation').scroll_into_view_if_needed()
         for i in range(1,16):

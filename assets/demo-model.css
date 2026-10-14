@@ -2,40 +2,40 @@
 .demo-explanation { display:flex; flex-direction:column; min-width:0; min-height:0; margin:0; border:1px solid #d5e1d8; border-radius:11px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:#c5d5ca transparent; background:#fbfdfb; }
 .demo-model { min-width:0; display:flex; flex-direction:column; background:#f5f8f6; }
 .model-heading { display:block; padding:18px 20px 12px; }
-#model-heading { margin:0; font:600 16px/1.4 var(--sans); color:#315d47; letter-spacing:0; }
+:is(#model-heading,#evo-model-heading) { margin:0; font:600 16px/1.4 var(--sans); color:#315d47; letter-spacing:0; }
 .model-heading #analysis-model-note { margin:5px 0 0; font:400 12px/1.5 var(--sans); color:#5d7467; }
 .model-heading .model-control-scope { margin:5px 0 0; font:400 12px/1.5 var(--sans); color:#5d7467; }
-#model-controls { padding:0 20px 8px; }
-#demo-explanation .atlas-playback { display:grid!important; grid-template-columns:minmax(0,1fr) repeat(3,28px); align-items:center; gap:7px; height:auto; min-height:0; padding:0; margin:0; border:0; background:none; }
-#demo-explanation .atlas-playback #atlas-controls { display:contents!important; margin:0; padding:0; border:0; background:none; }
-#demo-explanation #atlas-controls>label { grid-column:1; grid-row:1; margin:0; font:500 12px/1.4 var(--sans); color:#365d49; }
-#demo-explanation #atlas-controls>select,#demo-explanation .atlas-range { grid-column:1/-1; grid-row:2; min-width:0; width:100%; }
-#demo-explanation #atlas-controls select { padding:8px 10px; font:400 13px/1.4 var(--sans); color:#365d49; border-color:#cbdad0; border-radius:6px; background:#fff; }
-#demo-explanation .atlas-range { gap:10px; min-height:35px; }
-#demo-explanation .atlas-range input { width:100%; min-width:30px; }
-#demo-explanation #atlas-parameter-value { font:500 12px/1.4 var(--sans); font-variant-numeric:tabular-nums; }
-#demo-explanation .round-control { width:28px; height:28px; font-size:12px; }
-#demo-explanation #atlas-play { grid-column:2; grid-row:1; }
-#demo-explanation #atlas-reset { grid-column:3; grid-row:1; }
-#demo-explanation #analysis-fullscreen { grid-column:4; grid-row:1; }
-#demo-explanation #atlas-progress,#demo-explanation #atlas-time { display:none; }
-#model-diagram { position:relative; min-width:0; flex:1; display:grid; place-items:center; }
-#model-diagram #atlas-canvas { display:block!important; position:static; width:100%; height:auto; max-height:240px; aspect-ratio:640/410; }
-#model-diagram text { font-size:14px; }
-#model-diagram .model-hit { r:var(--model-hit-radius,23px); }
-#demo-explanation .atlas-scene-readout { position:static; display:flex!important; flex-direction:column; gap:5px; margin:0; padding:12px 20px; border-top:1px solid #dce7df; background:#eef5f0; }
-#demo-explanation .atlas-scene-readout>span,#demo-explanation .atlas-scene-readout>strong { font:400 13px/1.45 var(--sans); letter-spacing:0; color:#486957; }
-#demo-explanation .atlas-scene-readout>strong { font-weight:600; font-variant-numeric:tabular-nums; }
+:is(#model-controls,#evo-model-controls) { padding:0 20px 8px; }
+:is(#demo-explanation,#evo-explanation) .atlas-playback { display:grid!important; grid-template-columns:minmax(0,1fr) repeat(3,28px); align-items:center; gap:7px; height:auto; min-height:0; padding:0; margin:0; border:0; background:none; }
+:is(#demo-explanation,#evo-explanation) .atlas-playback :is(#atlas-controls,#evo-model-settings) { display:contents!important; margin:0; padding:0; border:0; background:none; }
+:is(#demo-explanation,#evo-explanation) :is(#atlas-controls,#evo-model-settings)>label { grid-column:1; grid-row:1; margin:0; font:500 12px/1.4 var(--sans); color:#365d49; }
+:is(#demo-explanation,#evo-explanation) :is(#atlas-controls,#evo-model-settings)>select,:is(#demo-explanation,#evo-explanation) .atlas-range { grid-column:1/-1; grid-row:2; min-width:0; width:100%; }
+:is(#demo-explanation,#evo-explanation) :is(#atlas-controls,#evo-model-settings) select { padding:8px 10px; font:400 13px/1.4 var(--sans); color:#365d49; border-color:#cbdad0; border-radius:6px; background:#fff; }
+:is(#demo-explanation,#evo-explanation) .atlas-range { gap:10px; min-height:35px; }
+:is(#demo-explanation,#evo-explanation) .atlas-range input { width:100%; min-width:30px; }
+:is(#demo-explanation,#evo-explanation) :is(#atlas-parameter-value,#evo-model-parameter-value) { font:500 12px/1.4 var(--sans); font-variant-numeric:tabular-nums; }
+:is(#demo-explanation,#evo-explanation) .round-control { width:28px; height:28px; font-size:12px; }
+:is(#demo-explanation,#evo-explanation) :is(#atlas-play,#evo-model-play) { grid-column:2; grid-row:1; }
+:is(#demo-explanation,#evo-explanation) :is(#atlas-reset,#evo-model-reset) { grid-column:3; grid-row:1; }
+:is(#demo-explanation,#evo-explanation) :is(#analysis-fullscreen,#evo-model-fullscreen) { grid-column:4; grid-row:1; }
+:is(#demo-explanation,#evo-explanation) #atlas-progress,:is(#demo-explanation,#evo-explanation) #atlas-time { display:none; }
+:is(#model-diagram,#evo-model-diagram) { position:relative; min-width:0; flex:1; display:grid; place-items:center; }
+:is(#model-diagram,#evo-model-diagram) :is(#atlas-canvas,#evo-model-canvas) { display:block!important; position:static; width:100%; height:auto; max-height:240px; aspect-ratio:640/410; }
+:is(#model-diagram,#evo-model-diagram) text { font-size:14px; }
+:is(#model-diagram,#evo-model-diagram) .model-hit { r:var(--model-hit-radius,23px); }
+:is(#demo-explanation,#evo-explanation) .atlas-scene-readout { position:static; display:flex!important; flex-direction:column; gap:5px; margin:0; padding:12px 20px; border-top:1px solid #dce7df; background:#eef5f0; }
+:is(#demo-explanation,#evo-explanation) .atlas-scene-readout>span,:is(#demo-explanation,#evo-explanation) .atlas-scene-readout>strong { font:400 13px/1.45 var(--sans); letter-spacing:0; color:#486957; }
+:is(#demo-explanation,#evo-explanation) .atlas-scene-readout>strong { font-weight:600; font-variant-numeric:tabular-nums; }
 #demo-rule { min-width:0; padding:18px; border-top:1px solid #dce7df; }
 #demo-rule #scene-law { margin:0; padding:0; border:0; }
 #demo-rule .full-rule h4 { font:600 14px/1.4 var(--sans); margin:0 0 8px; }
 #demo-rule #scene-law-text { font:400 13px/1.75 var(--sans); color:#486556; }
-#demo-explanation #analysis-formula { margin:4px 18px 0; padding:10px 0; min-height:0; border-block:1px solid #e0e8e1; background:none; }
-#demo-explanation .typeset-rule { gap:8px 18px; }
-#demo-explanation .typeset-rule math { font-size:20px; }
-#demo-explanation .formula-label { font-size:11px; }
-#demo-explanation .typeset-rule .formula-part { flex-wrap:wrap; justify-content:center; gap:6px; }
-#demo-explanation .full-rule { min-height:0; }
+:is(#demo-explanation,#evo-explanation) :is(#analysis-formula,#evo-model-formula) { margin:4px 18px 0; padding:10px 0; min-height:0; border-block:1px solid #e0e8e1; background:none; }
+:is(#demo-explanation,#evo-explanation) .typeset-rule { gap:8px 18px; }
+:is(#demo-explanation,#evo-explanation) .typeset-rule math { font-size:20px; }
+:is(#demo-explanation,#evo-explanation) .formula-label { font-size:11px; }
+:is(#demo-explanation,#evo-explanation) .typeset-rule .formula-part { flex-wrap:wrap; justify-content:center; gap:6px; }
+:is(#demo-explanation,#evo-explanation) .full-rule { min-height:0; }
 #demo-rule #oracle-chart-wrap { margin-top:16px; padding-top:0; border-top:0; }
 #demo-rule #oracle-signal { font:500 12px/1.5 var(--sans); }
 #demo-rule #oracle-chart { max-height:190px; }
@@ -49,11 +49,15 @@
   #worlds .atlas-copy h3 { max-width:calc(100% - 160px); margin:0; text-align:left; font-size:22px; }
   #worlds #oracle-plain { justify-content:flex-start; text-align:left; }
   #worlds .scene-choice-name { font-size:11px; }
-  #demo-explanation { height:100%; }
-  #demo-explanation .demo-model,#demo-rule { flex-shrink:0; }
-  #demo-explanation .model-heading { padding:15px 16px 10px; }
-  #model-controls { padding-inline:16px; }
-  #demo-explanation .atlas-scene-readout { padding:10px 16px; }
+  :is(#demo-explanation,#evo-explanation) { height:100%; }
+  :is(#demo-explanation,#evo-explanation) .demo-model,#demo-rule { flex-shrink:0; }
+  :is(#demo-explanation,#evo-explanation) .demo-model { height:100%; min-height:0; }
+  :is(#demo-explanation,#evo-explanation) .model-heading,:is(#model-controls,#evo-model-controls),:is(#analysis-formula,#evo-model-formula),:is(#demo-explanation,#evo-explanation) .atlas-scene-readout { flex-shrink:0; }
+  #worlds :is(#model-diagram,#evo-model-diagram) { min-height:100px; }
+  #worlds :is(#model-diagram,#evo-model-diagram) :is(#atlas-canvas,#evo-model-canvas) { position:absolute; inset:0; width:100%; height:100%; max-height:none; aspect-ratio:auto; }
+  :is(#demo-explanation,#evo-explanation) .model-heading { padding:15px 16px 10px; }
+  :is(#model-controls,#evo-model-controls) { padding-inline:16px; }
+  :is(#demo-explanation,#evo-explanation) .atlas-scene-readout { padding:10px 16px; }
 }
 @media(min-width:801px) and (max-width:1099px) {
   #worlds .scene-workspace[data-view],#worlds .scene-workspace[data-view=physics] { height:auto; grid-template-columns:minmax(0,1.4fr) minmax(300px,1fr); grid-template-rows:auto clamp(520px,calc(100svh - 240px),700px); }
@@ -63,14 +67,14 @@
   #worlds .scene-workspace[data-view=motion] #scene-detail { grid-column:1/-1; }
   #worlds .atlas-copy h3 { max-width:calc(100% - 140px); font-size:20px; }
 }
-@media(max-width:800px) { .model-heading { padding:16px 16px 12px; } #model-controls { padding-inline:16px; } #demo-explanation .atlas-scene-readout { padding:12px 16px; } #demo-rule { padding:16px; } }
-@media(max-width:420px) { #demo-explanation .typeset-rule math { font-size:18px; } }
-#demo-explanation:fullscreen { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(250px,1fr); width:100%; height:100dvh; margin:0; border:0; border-radius:0; overflow-y:auto; }
-#demo-explanation:fullscreen #demo-rule { border-top:0; border-left:1px solid #dce7df; }
-#demo-explanation:fullscreen #model-diagram #atlas-canvas { max-height:min(60vh,600px); }
-@media(max-width:800px) { #demo-explanation:fullscreen { display:flex; } }
+@media(max-width:800px) { .model-heading { padding:16px 16px 12px; } :is(#model-controls,#evo-model-controls) { padding-inline:16px; } :is(#demo-explanation,#evo-explanation) .atlas-scene-readout { padding:12px 16px; } #demo-rule { padding:16px; } }
+@media(max-width:420px) { :is(#demo-explanation,#evo-explanation) .typeset-rule math { font-size:18px; } }
+:is(#demo-explanation,#evo-explanation):fullscreen { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(250px,1fr); width:100%; height:100dvh; margin:0; border:0; border-radius:0; overflow-y:auto; }
+:is(#demo-explanation,#evo-explanation):fullscreen #demo-rule { border-top:0; border-left:1px solid #dce7df; }
+:is(#demo-explanation,#evo-explanation):fullscreen :is(#model-diagram,#evo-model-diagram) :is(#atlas-canvas,#evo-model-canvas) { max-height:min(60vh,600px); }
+@media(max-width:800px) { :is(#demo-explanation,#evo-explanation):fullscreen { display:flex; } }
 .atlas-export #worlds .scene-workspace { display:block!important; }
 .atlas-export #worlds .scene-index,.atlas-export #scene-detail { display:none!important; }
-.atlas-export #demo-explanation { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(250px,1fr); position:fixed; inset:0; width:100vw; height:100vh; margin:0; border:0; border-radius:0; }
-.atlas-export #model-diagram #atlas-canvas { max-height:none; }
+.atlas-export :is(#demo-explanation,#evo-explanation) { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(250px,1fr); position:fixed; inset:0; width:100vw; height:100vh; margin:0; border:0; border-radius:0; }
+.atlas-export :is(#model-diagram,#evo-model-diagram) :is(#atlas-canvas,#evo-model-canvas) { max-height:none; }
 .atlas-export #demo-rule #oracle-measurements { display:none; }

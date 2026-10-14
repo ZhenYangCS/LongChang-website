@@ -59,7 +59,7 @@ def main():
             # Selecting a case starts the complete film without a second choice.
             page.wait_for_function('(key)=>{const v=document.getElementById(`case-${key}-video`);return !v.paused&&v.currentTime>.1}',arg=key)
             assert video.evaluate('(v,d)=>Math.abs(v.duration-d)<.1',case['duration'])
-            assert video.evaluate('v=>v.videoWidth===1280&&v.videoHeight===720')
+            assert video.evaluate('(v,size)=>v.videoWidth===size[0]&&v.videoHeight===size[1]',[case.get('width',manifest['width']),case.get('height',manifest['height'])])
             assert not video.evaluate('v=>v.controls')
             expect(video).to_have_js_property('playbackRate',4)
             film.locator('.case-speed').select_option('1')
@@ -67,6 +67,10 @@ def main():
             for chapter in case['chapters']:
                 slider.evaluate('(e,v)=>{e.value=v;e.dispatchEvent(new Event("input",{bubbles:true}));}',chapter['start']/case['duration']*1000)
                 page.wait_for_function('([key,t])=>{const v=document.getElementById(`case-${key}-video`);return !v.paused&&Math.abs(v.currentTime-t)<.75}',arg=[key,chapter['start']])
+                if key=='question':
+                    step=case['chapters'].index(chapter)
+                    expect(panel.locator(f'[data-case-stage="{step}"]')).to_be_visible()
+                    assert panel.locator('[data-case-stage]:visible').count()==1
             # A real pointer drag previews frames, preserving play/pause state.
             drag_progress(page,slider,.3)
             expect(video).to_have_js_property('paused',False)
@@ -86,6 +90,7 @@ def main():
             slider.press('Home')
             expect(slider).to_have_value('0')
             assert video.evaluate('v=>v.paused&&v.currentTime===0')
+            if key=='question':expect(panel.locator('[data-case-stage="0"]')).to_be_visible()
             film.locator('.case-speed').select_option('2')
             expect(video).to_have_js_property('playbackRate',2)
             film.locator('.case-speed').select_option('1')

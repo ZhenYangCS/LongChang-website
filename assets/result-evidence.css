@@ -48,6 +48,21 @@
 .evidence-turn-body > label { margin-right:10px; font-size:12px; }
 .evidence-turn-body > select { margin-bottom:20px; padding:7px; border:1px solid var(--line); border-radius:5px; background:#fff; color:var(--ink); }
 .evidence-turn-body details { margin-top:16px; }
+@media(min-width:801px) and (max-height:850px) {
+  .evidence-header { padding:14px 20px 12px; }
+  .evidence-header p { margin-bottom:4px; }
+  .evidence-runs { gap:8px; padding:0 20px 12px; }
+  .evidence-run { padding:8px 10px; }
+  .evidence-checks { padding:10px 20px; }
+  .evidence-columns { gap:22px; padding:18px 20px; }
+  .result-evidence-dialog h4 { margin-bottom:9px; }
+  .evidence-claim { margin-bottom:10px; }
+  .result-evidence-dialog .evidence-claim > summary { padding-bottom:10px; }
+  .evidence-more-claims { margin-bottom:14px; }
+  .evidence-columns aside section { margin-bottom:14px; padding:14px; }
+  .evidence-columns aside section:last-child { margin-bottom:0; }
+  .evidence-actions { padding:10px 20px; }
+}
 @media(max-width:800px) {
   .evidence-columns { grid-template-columns:1fr; gap:20px; }
   .evidence-columns aside section { padding:14px; }

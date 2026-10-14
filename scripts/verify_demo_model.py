@@ -13,7 +13,7 @@ def main():
         page = browser.new_page(viewport={'width':1366, 'height':900})
         page.on('pageerror', lambda e: errors.append(str(e)))
         page.goto(args.url, wait_until='networkidle')
-        assert page.locator('.atlas-view-switch button').all_text_contents() == ['Demo', 'Experiment']
+        assert page.locator('#worlds .atlas-view-switch button').all_text_contents() == ['Demo', 'Experiment']
         page.locator('#physics-speed').select_option('1')
         for i in range(1, 16):
             scene = f'{i:02}'

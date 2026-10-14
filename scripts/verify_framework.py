@@ -125,10 +125,21 @@ def main():
                     .map(text => ({box:text.getBoundingClientRect(), name:text.textContent}))
                     .filter(label => label.box.width);
                 const overlaps = (a,b,gap) => a.left < b.right+gap && a.right > b.left-gap && a.top < b.bottom+gap && a.bottom > b.top-gap;
-                labels.forEach(label => {
+                labels.forEach((label,index) => {
                     if (textBoxes.some(text => overlaps(label.box,text.box,3)))
                         problems.push('label overlaps node or heading: '+label.name);
+                    if (labels.slice(index+1).some(other => overlaps(label.box,other.box,3)))
+                        problems.push('labels overlap: '+label.name);
                 });
+                const detail = document.querySelector('#fw-detail').getBoundingClientRect();
+                const stages = document.querySelector('.fw-stages').getBoundingClientRect();
+                if (detail.top < stages.bottom || detail.bottom > map.top)
+                    problems.push('step summary must sit between navigation and diagram');
+                const lawLabel = document.querySelector('[data-edge="law"] .fw-edge-label').getBoundingClientRect();
+                const judgeBox = document.querySelector('[data-node="judge"]').getBoundingClientRect();
+                const evaluationBox = document.querySelector('.fw-evaluation').getBoundingClientRect();
+                if (!lawLabel.width || lawLabel.left < evaluationBox.left || lawLabel.top < evaluationBox.top || lawLabel.bottom > judgeBox.top)
+                    problems.push('hidden-law label must stay beside the judge input');
                 const protectedText = [...textBoxes, ...labels];
                 if (document.documentElement.scrollWidth > innerWidth) problems.push('page overflow');
                 document.querySelectorAll('.fw-node').forEach(node => {

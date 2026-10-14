@@ -79,7 +79,7 @@
     try{await next.decode();if(token===version&&!pending&&!image.hidden)image.src=next.src;}catch(_){ }
   }
   new IntersectionObserver(entries=>{posterVisible=entries[0].isIntersecting;if(posterVisible)sharpenPoster();},{rootMargin:'300px'}).observe($('.physics-video-frame'));
-  function loading(value){$('.physics-video-frame').setAttribute('aria-busy',String(value));playButton.textContent=value?'…':video.paused?'▶':'Ⅱ';overlay.textContent=value?'Loading…':'▶ Play';}
+  function loading(value){$('.physics-video-frame').setAttribute('aria-busy',String(value));playButton.textContent=value?'…':video.paused?'▶':'II';overlay.textContent=value?'Loading…':'▶ Play';}
   function stop(){wants=false;video.pause();cancelProgress();clearTimeout(timer);loading(false);progress();}
   function fail(){pending=null;stop();video.removeAttribute('src');video.load();source=false;image.hidden=false;overlay.hidden=false;overlay.textContent='↻ Retry';$('#physics-error').textContent='Video unavailable. Tap Retry.';$('#physics-error').hidden=false;}
   function start(){
@@ -99,7 +99,7 @@
     $('#physics-progress').value=Math.round(video.currentTime/demo.duration*1000);
     $('#physics-clock').textContent=demo.proof?`${simTime().toFixed(1)} s`:`${clock(video.currentTime)} / ${clock(demo.duration)}`;
     $('#physics-clock').title=demo.proof?'Simulation time':'Playback time';
-    playButton.textContent=video.paused?'▶':'Ⅱ';playButton.setAttribute('aria-label',video.paused?'Play scene video':'Pause scene video');
+    playButton.textContent=video.paused?'▶':'II';playButton.setAttribute('aria-label',video.paused?'Play scene video':'Pause scene video');
     let phase='';for(const [t,text]of demo.phases){if(t>video.currentTime)break;phase=text;}
     $('#simple-phase').textContent=phase;$('#simple-phase').hidden=Boolean(demo.proof)||!image.hidden||!phase;
     if(details&&measurementsVisible&&shown)plot();
@@ -177,15 +177,20 @@
     try{const response=await fetch(demo.details,{signal:detailAbort.signal});if(!response.ok)throw Error();const data=await response.json();if(id!==demo.id)return;details=data;$('#oracle-chart').dataset.drawn='';$('#oracle-chart-wrap').hidden=false;plot();}
     catch(e){if(e.name!=='AbortError'){ $('#oracle-chart-wrap').hidden=false;$('#oracle-signal').textContent='Demo data unavailable. Select the scene again to retry.'; }}
   }
-  playButton.addEventListener('click',()=>{if(video.paused&&!wants)start();else{stop();}});
-  overlay.addEventListener('click',start);
-  $('#physics-reset').addEventListener('click',()=>{stop();if(source){pending=null;video.currentTime=0;}poster();overlay.hidden=false;progress();});
-  $('#physics-progress').addEventListener('input',event=>{
-    const destination=Number(event.target.value)/1000*demo.duration;stop();
-    if(!source)loadSource(destination);else{pending={time:destination};video.currentTime=destination;}
-    overlay.hidden=true;progress();
+  window.LongChangScenePlayer.playback({
+    host: $('#atlas-physics-view'), prefix: 'physics', video,
+    existing: $('#worlds .physics-playback'), speed: Number(speed.value),
+    handlers: {
+      toggle: () => { if(video.paused&&!wants)start();else stop(); },
+      reset: () => { stop();if(source){pending=null;video.currentTime=0;}poster();overlay.hidden=false;progress(); },
+      seek: fraction => {
+        const destination=fraction*demo.duration;stop();
+        if(!source)loadSource(destination);else{pending={time:destination};video.currentTime=destination;}
+        overlay.hidden=true;progress();
+      },
+    },
   });
-  speed.addEventListener('change',()=>{video.playbackRate=Number(speed.value);});
+  overlay.addEventListener('click',start);
   video.addEventListener('loadedmetadata',()=>{video.playbackRate=Number(speed.value);if(pending)video.currentTime=pending.time;progress();});
   video.addEventListener('canplay',ready);
   video.addEventListener('playing',()=>{clearTimeout(timer);if(!pending)image.hidden=true;overlay.hidden=true;loading(false);progress();cancelProgress();animateProgress();});
@@ -193,7 +198,6 @@
   video.addEventListener('pause',()=>{cancelProgress();progress();});video.addEventListener('timeupdate',progress);video.addEventListener('seeked',()=>{if(pending)ready();else progress();});
   video.addEventListener('error',()=>{if(source)fail();});
   video.addEventListener('ended',()=>{wants=false;overlay.hidden=false;overlay.textContent='↺ Replay';progress();});
-  $('#physics-fullscreen').addEventListener('click',async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await $('#atlas-physics-view').requestFullscreen();}catch(_){start();video.controls=true;}});
   document.addEventListener('fullscreenchange',()=>{
     video.controls=false;
   });

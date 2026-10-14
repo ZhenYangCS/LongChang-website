@@ -99,7 +99,9 @@
 
 
     edge.labelText.textContent = edge.label;
-    if (anchor.maxWidth && edge.labelText.getComputedTextLength() > anchor.maxWidth) {
+    if (anchor.lines) {
+      edge.labelText.replaceChildren(...anchor.lines.map((line,index) => element('tspan',{x:0,dy:index ? 13 : 0},line)));
+    } else if (anchor.maxWidth && edge.labelText.getComputedTextLength() > anchor.maxWidth) {
       edge.labelText.replaceChildren();
       edge.label.split(' ').forEach((word,index) => {
         edge.labelText.append(element('tspan',{x:0,dy:index ? 12 : 0},word));
@@ -128,7 +130,7 @@
       build:{points:[[middle,actY],[middle,b.tools.t]]},
       install:{points:[[b.tools.l,b.tools.y],[b.world.l+16,b.tools.y],[b.world.l+16,b.world.b]],label:{x:b.world.l+16,y:(actY+b.tools.t)/2,side:'right'}},
       record:{points:[[b.explorer.r-10,b.explorer.b],[b.explorer.r-10,b.traces.t-12],[b.traces.x,b.traces.t-12],[b.traces.x,b.traces.t]],label:{x:b.explorer.r-10,y:(actY+b.tools.t)/2,side:'left'}},
-      claims:{points:[[b.report.x,b.report.b],[b.judge.x,b.judge.t]],label:{x:b.report.x,y:(b.report.b+b.judge.t)/2,side:'right'}},
+      claims:{points:[[b.report.x,b.report.b],[b.judge.x,b.judge.t]],label:{x:b.report.x,y:(b.report.b+b.judge.t)/2,side:'left'}},
       assess:{points:[[b.judge.x,b.judge.b],[b.assessment.x,b.assessment.t]],label:{x:b.judge.x,y:(b.judge.b+b.assessment.t)/2,side:'right'}}
     };
     if (!stacked.matches) {
@@ -139,7 +141,7 @@
       Object.assign(routes,{
         enter:{points:[[b.scenes.r,b.scenes.y],[entryX,b.scenes.y],[entryX,b.world.y],[b.world.l,b.world.y]]},
         report:{points:[[b.explorer.r,b.explorer.y],[b.report.l,b.report.y]]},
-        law:{points:[[b.scenes.r,b.scenes.t+18],[entryX-10,b.scenes.t+18],[entryX-10,lawY],[lawX,lawY],[lawX,b.judge.y],[b.judge.r,b.judge.y]],label:{x:(entryX+lawX)/2,y:lawY}},
+        law:{points:[[b.scenes.r,b.scenes.t+18],[entryX-10,b.scenes.t+18],[entryX-10,lawY],[lawX,lawY],[lawX,b.judge.y],[b.judge.r,b.judge.y]],label:{x:lawX,y:b.judge.t-22,side:'left',lines:['Hidden law','Evaluation only']}},
         evidence:{points:[[b.traces.r,b.traces.y],[evidenceX,b.traces.y],[evidenceX,b.judge.y+15],[b.judge.l,b.judge.y+15]]},
         feedback:{points:[[b.traces.l,b.traces.y],[b.evolution.r,b.evolution.y]],label:{x:(b.traces.l+b.evolution.r)/2,y:b.traces.y,maxWidth:b.traces.l-b.evolution.r-24}},
         evolve:{points:[[b.evolution.l,b.evolution.y],[returnX,b.evolution.y],[returnX,b.designer.y],[b.designer.l,b.designer.y]]}
@@ -151,7 +153,7 @@
       Object.assign(routes,{
         enter:{points:[[b.scenes.r,b.scenes.y],[right-9,b.scenes.y],[right-9,enterY],[enterX,enterY],[enterX,b.world.t]]},
         report:{points:[[b.explorer.r,b.explorer.y],[right-9,b.explorer.y],[right-9,reportY],[b.report.x,reportY],[b.report.x,b.report.t]]},
-        law:{points:[[b.scenes.r,b.scenes.t+18],[right,b.scenes.t+18],[right,b.judge.y],[b.judge.r,b.judge.y]]},
+        law:{points:[[b.scenes.r,b.scenes.t+18],[right,b.scenes.t+18],[right,b.judge.y],[b.judge.r,b.judge.y]],label:{x:right,y:b.judge.t-22,side:'left',lines:['Hidden law','Evaluation only']}},
         evidence:{points:[[b.traces.l,b.traces.y],[left+8,b.traces.y],[left+8,b.judge.y],[b.judge.l,b.judge.y]]},
         feedback:{points:[[b.traces.l,b.traces.y+13],[left,b.traces.y+13],[left,b.evolution.y],[b.evolution.l,b.evolution.y]]},
         evolve:{points:[[b.evolution.l,b.evolution.y-12],[left+8,b.evolution.y-12],[left+8,b.designer.y],[b.designer.l,b.designer.y]]}
@@ -173,7 +175,6 @@
   const phaseDuration = 6400;
   function displayDetail(detail, userInitiated) {
     $('#fw-detail').setAttribute('aria-live',userInitiated ? 'polite' : 'off');
-    $('#fw-detail-kicker').textContent = detail.kicker || phases[detail.phase].kicker;
     $('#fw-detail-title').textContent = detail.title;
     $('#fw-detail-description').textContent = detail.description;
     $('#fw-detail-input').textContent = detail.input;

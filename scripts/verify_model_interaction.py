@@ -33,10 +33,13 @@ def main():
         assert page.locator('#atlas-parameter').input_value()=='2' and not page.evaluate('LongChangAtlas.getState().playing');page.mouse.up()
         choose('07');start(0,-20);page.evaluate('window.dispatchEvent(new Event("blur"))')
         assert page.locator('#atlas-parameter').input_value()=='2' and not page.evaluate('LongChangAtlas.getState().playing');page.mouse.up()
+        assert not page.evaluate('window.SceneRoom || document.querySelector("#physics-video").hasAttribute("src")')
         page.locator('#analysis-fullscreen').click();page.wait_for_function('!!document.fullscreenElement');page.locator('#atlas-reset').click();start(0,-35)
         assert float(page.locator('#atlas-parameter').input_value())>2;page.mouse.up();page.locator('#analysis-fullscreen').click();page.wait_for_function('!document.fullscreenElement')
         choose('12');x,y=center(page);page.mouse.click(x,y);page.wait_for_function('LongChangAtlas.getState().time>.2')
-        assert not page.evaluate('performance.getEntriesByType("resource").some(r=>/\\.(wasm|mp4)/.test(r.name))')
+        # Other parts of the page can warm their own runtime on pointer entry.
+        # The model must never activate the native scene or its recorded video.
+        assert not page.evaluate('window.SceneRoom || document.querySelector("#physics-video").hasAttribute("src")')
         phone=browser.new_page(viewport={'width':390,'height':844},is_mobile=True,has_touch=True);phone.on('pageerror',lambda e:errors.append(str(e)))
         phone.goto(args.url+'/#worlds');phone.locator('[data-atlas-view=physics]').tap();phone.locator('#demo-explanation').scroll_into_view_if_needed();phone.locator('#atlas-reset').tap();phone.locator('#atlas-canvas').scroll_into_view_if_needed()
         x,y=center(phone);x+=20;cdp=phone.context.new_cdp_session(phone)
@@ -47,6 +50,6 @@ def main():
         assert phone.evaluate('document.documentElement.scrollWidth<=innerWidth')
         browser.close()
     assert not errors,errors
-    print('PASS: mouse and touch lift, live rebound prediction, braking threshold, impulse response, aiming, phase selection, cancellation, fullscreen scaling and replay; no native engine or video download.')
+    print('PASS: mouse and touch lift, rebound prediction, braking threshold, impulse response, aiming, phase selection, cancellation, fullscreen scaling and replay; model controls stay independent of scene physics and video.')
 
 if __name__=='__main__':main()

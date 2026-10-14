@@ -1,6 +1,7 @@
 """Export accepted evolution models and the exact frozen trace/design references."""
 import hashlib
 import json
+import math
 from pathlib import Path
 
 from render_physics_demos import ROOT, SITE, World, load_scene, arrange
@@ -53,7 +54,15 @@ def main():
         design = dict(source=str(frozen_path.relative_to(ROOT)), source_sha256=sha(frozen_path),
                       reference_sources=frozen['sources'], weakness=candidate, **case)
         (folder / f'{key}-design.json').write_text(json.dumps(design, ensure_ascii=False, indent=2) + '\n')
-    print('Exported three native models, frozen designs and the verified source trace.')
+    demos = json.loads((SITE / 'data/evolution-demos.json').read_text())['demos']
+    signals = {}
+    for demo in demos:
+        body = 'object_1' if demo['id'] == 'mutate' else 'red_ball'
+        signals[demo['id']] = dict(duration=demo['simulation_duration'], samples=[
+            [round(sample['time'], 4), round(math.hypot(*sample['objects'][body]['applied_force'][:2]), 5)]
+            for sample in demo['samples']])
+    (SITE / 'data/evolution-signals.json').write_text(json.dumps(signals, separators=(',', ':')) + '\n')
+    print('Exported three native models, frozen designs, verified source trace and recorded force signals.')
 
 
 if __name__ == '__main__':

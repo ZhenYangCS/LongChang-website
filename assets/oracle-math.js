@@ -31,7 +31,10 @@
     '12': [['Colors', row(parens(row(sub(variable('c'), variable('A')), operator(','), sub(variable('c'), variable('B')))), operator('→'), parens(row(sub(variable('c'), variable('B')), operator(','), sub(variable('c'), variable('A'))))) ]],
     '13': [['Every third contact', row(sub(v, variable('z')), operator('←'), number(4))]],
     '14': [['', row(sub(vector, word('green')), parens(row(t, operator('+'), number(12))), operator('←'), sub(vector, word('red')), parens(sup(t, operator('+'))))]],
-    '15': [['', row(sub(variable('F'), variable('y')), equals, number('1.5'), m)], ['Launch pauses', row(number(10), '<mspace width="0.25em"/>', word('counts'))]]
+    '15': [['', row(sub(variable('F'), variable('y')), equals, number('1.5'), m)], ['Launch pauses', row(number(10), '<mspace width="0.25em"/>', word('counts'))]],
+    'evo-generate': [['Repulsion', row(variable('a'), equals, number('1.5'))], ['After push', row(variable('Δt'), operator('≥'), number(10))]],
+    'evo-mutate': [['Drift', row(sub(variable('a'), variable('y')), equals, number('1.5'))], ['When', row(variable('Δt'), operator('≥'), number(10), operator('∧'), word('blue outside'))]],
+    'evo-compose': [['Drift resumes', row(variable('Δt'), operator('≥'), number(10))], ['Velocity copy', row(sub(vector, word('green')), parens(number(12)), operator('←'), sub(vector, word('red')), parens(sup(number(0), operator('+'))))]]
   };
   function render(element, id) {
     if (!element) return;

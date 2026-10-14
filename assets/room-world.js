@@ -22,7 +22,12 @@ export async function createRoom(stage,status,options={}) {
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
   const canvas=renderer.domElement;canvas.className='room-canvas';canvas.tabIndex=0;
-  canvas.setAttribute('aria-label','Push or drag objects; use arrow keys to push the selected object.');
+  canvas.setAttribute('aria-label','Push or drag objects; hold Ctrl or Command while scrolling to zoom. Use arrow keys to push the selected object.');
+  // Leave ordinary wheel events to the page. OrbitControls receives deliberate
+  // modifier gestures, trackpad pinches and wheel input inside fullscreen only.
+  canvas.addEventListener('wheel',event=>{
+    if(!event.ctrlKey&&!event.metaKey&&!document.fullscreenElement?.contains(canvas))event.stopImmediatePropagation();
+  },{capture:true,passive:true});
   const scene=new T.Scene(),env=new RoomEnvironment(),pmrem=new T.PMREMGenerator(renderer);
   scene.environment=pmrem.fromScene(env,.04).texture;scene.environmentIntensity=.65;env.dispose();pmrem.dispose();
   const ceiling=live?simulation.config.physics_bounds[4]:5.8,roomCenter=live?ceiling/2:2.9;
@@ -294,9 +299,10 @@ export async function createRoom(stage,status,options={}) {
   function reset(){cancelAnimationFrame(frame);frame=0;active=false;quietSince=null;releaseDrag();pickHistory.length=0;forces=[];until=0;accumulated=0;arrow.visible=false;if(live)simulation.reset();else{mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);}renderer.shadowMap.needsUpdate=true;draw();setMode(mode);}
   function setMode(value){
     if(value!==mode)releaseDrag();mode=value;
-    orbit.enabled=live||value==='view';orbit.enableRotate=value==='view';orbit.enablePan=live&&value==='view';canvas.style.cursor=value==='view'?'grab':'default';
-    const touch=matchMedia('(pointer:coarse)').matches,zoom=touch?'pinch to zoom':'scroll to zoom';
-    const instructions={push:'Drag, then release to push.',drag:'Drag up to lift; release to drop.',view:'Drag to rotate.'};
+    orbit.enabled=true;orbit.enableRotate=value==='view';orbit.enablePan=live&&value==='view';canvas.style.cursor=value==='view'?'grab':'default';
+    const touch=matchMedia('(pointer:coarse)').matches,zoom=touch?'pinch to zoom':document.fullscreenElement?.contains(canvas)?'scroll to zoom':'Ctrl/⌘ + scroll to zoom';
+    canvas.title=touch?'Pinch to zoom':document.fullscreenElement?.contains(canvas)?'Scroll to zoom':'Ctrl/⌘ + scroll to zoom';
+    const instructions={push:'Drag, then release to push.',drag:'Drag up to lift; release to drop.',view:`Drag to rotate · ${zoom}`};
     status(live?instructions[value]:value==='view'?`Drag to rotate · ${zoom}`:value==='drag'?(touch?'Drag up to lift · release to drop':'Drag up to lift · Shift-drag to slide'):'Drag to push · tap to nudge');
   }
   function resize(){
@@ -307,11 +313,12 @@ export async function createRoom(stage,status,options={}) {
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(stage);
   const visibilityObserver=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(!visible){cancelAnimationFrame(frame);frame=0;}else if(active)wake(0);});visibilityObserver.observe(stage);
   const visibility=()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;pointers.clear();releaseDrag();}else if(active)wake(0);};document.addEventListener('visibilitychange',visibility);
+  const fullscreen=()=>setMode(mode);document.addEventListener('fullscreenchange',fullscreen);
   canvas.addEventListener('webglcontextlost',e=>{if(disposed)return;e.preventDefault();status('Graphics paused. Reload to retry.');cancelAnimationFrame(frame);});
   if(softwareRenderer){renderer.setPixelRatio(Math.min(devicePixelRatio,1));useContactShadows();}
   function pause(){active=false;cancelAnimationFrame(frame);frame=0;releaseDrag();}
   function destroy(){
-    pause();disposed=true;resizeObserver.disconnect();visibilityObserver.disconnect();document.removeEventListener('visibilitychange',visibility);document.removeEventListener('pointerup',clearPointer);document.removeEventListener('pointercancel',clearPointer);window.removeEventListener('blur',blur);orbit.dispose();marker.remove();
+    pause();disposed=true;resizeObserver.disconnect();visibilityObserver.disconnect();document.removeEventListener('visibilitychange',visibility);document.removeEventListener('fullscreenchange',fullscreen);document.removeEventListener('pointerup',clearPointer);document.removeEventListener('pointercancel',clearPointer);window.removeEventListener('blur',blur);orbit.dispose();marker.remove();
     const geometries=new Set(),mats=new Set(Object.values(materials)),textures=new Set([texture,scene.environment]);
     scene.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)mats.add(o.material);});for(const m of bakedMaterials.values())mats.add(m);
     for(const m of mats){for(const v of Object.values(m))if(v?.isTexture)textures.add(v);m.dispose();}for(const g of geometries)g.dispose();for(const t of textures)t?.dispose();

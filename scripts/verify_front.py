@@ -73,7 +73,7 @@ def main():
             page.locator('[data-atlas-view='+mode+']').click()
             for i in range(1,16):
                 page.evaluate('(id)=>showWorld(id)',f'{i:02}')
-                panel=page.locator('#scene-detail').bounding_box();art=page.locator('.physics-video-frame' if mode=='physics' else '#scene-live-stage').bounding_box();dock=page.locator('.physics-playback' if mode=='physics' else '.scene-live-playback').bounding_box()
+                panel=page.locator('#scene-detail').bounding_box();art=page.locator('#worlds .physics-video-frame' if mode=='physics' else '#scene-live-stage').bounding_box();dock=page.locator('#worlds .physics-playback' if mode=='physics' else '#worlds .scene-live-playback').bounding_box()
                 assert art['height']>180 and art['y']+art['height']<=dock['y']+.5,(mode,i,art,dock)
                 assert abs(dock['y']+dock['height']-(panel['y']+panel['height']-1))<1,(mode,i)
                 if mode=='motion':

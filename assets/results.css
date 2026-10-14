@@ -19,6 +19,13 @@
 .results-axis span:last-child { direction:rtl; }
 .results-chart { display:flex; flex-direction:column; }
 @media(min-width:801px) {
+  #main > #results.chapter > .section { padding-block:18px; }
+  #main #results .chapter-heading { margin-bottom:14px; }
+  .main-results-figure { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px 20px; padding:14px 20px; }
+  .main-results-figure > figcaption { align-self:center; margin:0; }
+  .results-toolbar { margin:0; }
+  .results-layout,.results-source,#results-announcement { grid-column:1/-1; }
+  .results-layout { grid-template-columns:minmax(0,1fr) 360px; height:clamp(420px,calc(100svh - 250px),480px); gap:22px; }
   .results-plot { display:flex; flex-direction:column; }
   .results-chart { flex:1; }
   .result-row { flex:1; }
@@ -91,6 +98,32 @@
   .results-layout { grid-template-columns:minmax(0,1fr) 280px; gap:18px; }
   .results-plot { --result-label:127px; --result-gap:8px; }
   .results-inspector { padding:16px; }
+}
+@media(min-width:801px) {
+  .results-source { margin-top:0; }
+  .result-row { min-height:32px; padding-block:5px; }
+  .results-inspector { display:flex; flex-direction:column; align-self:stretch; min-height:0; padding:14px; }
+  .results-inspector > :not(.result-scenes) { flex-shrink:0; }
+  .result-scores { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:10px 0 0; }
+  .result-score { display:block; padding:0 0 8px; }
+  .result-score dt { gap:4px; }
+  .result-score dd { display:block; }
+  .result-score dd > span { display:block; line-height:1.25; }
+  .result-behavior-heading { margin-top:10px; }
+  .result-behavior { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:3px 16px; margin:6px 0 0; }
+  .result-behavior > div { gap:6px; padding:2px 0; line-height:1.4; }
+  .result-behavior dd { flex-shrink:0; }
+  .result-scene-heading { margin-block:12px 6px; }
+  .result-scene-table-head { padding-bottom:5px; }
+  .result-scenes { flex:1; min-height:80px; max-height:none; scrollbar-gutter:stable; scrollbar-color:#aac2b5 transparent; }
+  .result-scene { padding-block:4px; }
+  .result-control { margin-top:6px; padding-top:7px; }
+}
+@media(min-width:801px) and (max-width:1100px) {
+  .results-layout { grid-template-columns:minmax(0,1fr) 330px; gap:18px; }
+  .results-plot { --result-label:115px; }
+  .results-toolbar { gap:10px; }
+  .result-behavior { column-gap:12px; }
 }
 @media(max-width:800px) {
   .main-results-figure { padding:20px; }

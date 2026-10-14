@@ -31,8 +31,7 @@
   for(const key of ['05','08'])configs[key].gesture='strength';
   configs['06'].gesture='direction';configs['04'].gesture='phase';
   let id = '01', value = configs[id].initial, time = 0, playing = false, touring = false;
-  let visible = false, frame = 0, previous = 0, lastDraw = 0, exportMode = false, view = window.SCENE_INDEX?.length ? 'physics' : 'motion';
-  let initialPreview = false;
+  let visible = false, exportMode = false, view = window.SCENE_INDEX?.length ? 'physics' : 'motion';
   const duration = 8;
   const playbackRate = 2;
   const modelNote=document.createElement('p');modelNote.id='analysis-model-note';modelNote.className='model-note';$('#model-heading').after(modelNote);
@@ -269,18 +268,15 @@
     setView(view); render(); syncClock();
   }
   function running() { return !exportMode && !document.hidden && !$('#motion-dialog').open && visible && playing && view === 'physics'; }
-  function tick(now) {
-    frame = 0;
-    if (!running()) return;
-    time += Math.min(.08, (now - previous) / 1000) * playbackRate; previous = now;
+  const modelClock = window.LongChangScenePlayer.modelClock({running, tick(elapsed) {
+    time += elapsed * playbackRate;
     if (time >= duration) {
       if (touring) { window.showWorld(String(Number(id) % 15 + 1).padStart(2, '0')); playing = true; time = 0; }
       else { time = duration; playing = false; }
     }
-    render(); lastDraw = now;
-    if (running() && !frame) frame = requestAnimationFrame(tick);
-  }
-  function syncClock() { cancelAnimationFrame(frame); frame = 0; if (running()) { previous = performance.now(); frame = requestAnimationFrame(tick); } }
+    render();
+  }});
+  function syncClock() { modelClock.sync(); }
   document.addEventListener('longchang:scene', event => setup(event.detail));
 
   document.querySelectorAll('#scene-picker button').forEach(button => {
@@ -307,7 +303,6 @@
   document.querySelectorAll('[data-atlas-view]').forEach(button => button.addEventListener('click', () => setView(button.dataset.atlasView)));
   new IntersectionObserver(entries => {
     visible = entries[0].isIntersecting;
-    if (visible && !initialPreview && !reduced.matches) { initialPreview = true; playing = true; render(); }
     syncClock();
   }, {threshold:.05}).observe($('#model-diagram'));
   document.addEventListener('visibilitychange', syncClock);
@@ -323,7 +318,7 @@
     pause(){playing=false;render();syncClock();},
     restore(snapshot){if(snapshot.id!==id)return;setParameter(snapshot.value,{preview:true,activate:false});time=snapshot.time;playing=snapshot.playing;render();syncClock();},
     renderFrame(sceneId, seconds, option) {
-      exportMode = true; cancelAnimationFrame(frame);
+      exportMode = true; modelClock.stop();
       if (sceneId !== id) window.showWorld(sceneId);
       if (option !== undefined) { value = option; $('#atlas-parameter').value = option; }
       time = clamp(seconds, 0, duration); playing = false; touring = false;

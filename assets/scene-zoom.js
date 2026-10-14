@@ -7,7 +7,7 @@ window.createSceneZoom = (frame, video, poster) => {
   const toggle=document.createElement('button');toggle.id='physics-view';toggle.className='physics-view';
   toggle.innerHTML='<span class="room-context"><img loading="lazy" alt="Full room"><span class="focus-rectangle"></span></span><span class="view-label">Detail ↗</span>';
   const controls=document.createElement('div');controls.className='scene-zoom-tools';controls.hidden=true;
-  controls.innerHTML='<div class="scene-zoom-buttons" role="group" aria-label="Zoom controls"><button id="scene-zoom-out" aria-label="Zoom out">−</button><button id="scene-zoom-reset" aria-label="Fit the whole room">1.0×</button><button id="scene-zoom-in" aria-label="Zoom in">+</button></div><span id="scene-zoom-hint">Scroll to zoom · Drag to pan</span>';
+  controls.innerHTML='<div class="scene-zoom-buttons" role="group" aria-label="Zoom controls"><button id="scene-zoom-out" aria-label="Zoom out">−</button><button id="scene-zoom-reset" aria-label="Fit the whole room">1.0×</button><button id="scene-zoom-in" aria-label="Zoom in">+</button></div><span id="scene-zoom-hint"></span>';
   frame.append(toggle,controls);frame.tabIndex=0;
   const rect=toggle.querySelector('.focus-rectangle'),out=controls.querySelector('#scene-zoom-out'),inside=controls.querySelector('#scene-zoom-in'),resetButton=controls.querySelector('#scene-zoom-reset');
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
@@ -35,8 +35,12 @@ window.createSceneZoom = (frame, video, poster) => {
     toggle.setAttribute('aria-pressed',String(value));
     toggle.setAttribute('aria-label',value?'Return to the whole room':'Explore details: zoom and pan');
     toggle.querySelector('.view-label').textContent=value?'Room ↗':'Detail ↗';
-    frame.setAttribute('aria-label',value?'Scene detail: scroll or pinch to zoom, drag to pan. Double-click or press 0 to fit the room.':'Scene demonstration');
-    controls.querySelector('#scene-zoom-hint').textContent=matchMedia('(pointer:coarse)').matches?'Pinch to zoom · Drag to pan':'Scroll to zoom · Drag to pan';
+    updateHint();
+  }
+  function updateHint(){
+    const zoom=matchMedia('(pointer:coarse)').matches?'Pinch':document.fullscreenElement?.contains(frame)?'Scroll':'Ctrl/⌘ + scroll';
+    controls.querySelector('#scene-zoom-hint').textContent=`${zoom} to zoom · Drag to pan`;
+    frame.setAttribute('aria-label',editing?`Scene detail: ${zoom.toLowerCase()} to zoom, drag to pan. Double-click or press 0 to fit the room.`:'Scene demonstration');
   }
   function clearPointers(){
     for(const id of pointers.keys())if(frame.hasPointerCapture(id))frame.releasePointerCapture(id);
@@ -63,7 +67,8 @@ window.createSceneZoom = (frame, video, poster) => {
   });
   out.addEventListener('click',()=>zoom(scale/1.25));inside.addEventListener('click',()=>zoom(scale*1.25));resetButton.addEventListener('click',reset);
   frame.addEventListener('wheel',e=>{
-    if(!editing||e.target.closest('button'))return;
+    if(!(e.ctrlKey||e.metaKey||document.fullscreenElement?.contains(frame))||e.target.closest('input,select'))return;
+    if(!editing)mode(true);
     e.preventDefault();const p=local(e),unit=e.deltaMode===1?16:e.deltaMode===2?height:1;
     zoom(scale*Math.exp(-clamp(e.deltaY*unit,-250,250)*.0025),p.x,p.y);
   },{passive:false});
@@ -92,7 +97,7 @@ window.createSceneZoom = (frame, video, poster) => {
   new ResizeObserver(resize).observe(frame);
   video.addEventListener('loadedmetadata',()=>{if(video.videoWidth&&video.videoHeight){aspect=useDetail?1.5:video.videoWidth/video.videoHeight;resize();}});
 
-  document.addEventListener('fullscreenchange',resize);
+  document.addEventListener('fullscreenchange',()=>{resize();updateHint();});
   reset();
   return {setScene(scene){
     aspect=1.5;crop=scene.detail_crop||[0,0,1440,960];focus=[(crop[0]+crop[2])/2880,(crop[1]+crop[3])/1920];

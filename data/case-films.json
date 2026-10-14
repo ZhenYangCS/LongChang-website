@@ -32,16 +32,16 @@
   "cases": [
     {
       "id": "question",
-      "title": "Follow an anomaly",
+      "title": "Red restarts. Who investigates?",
       "scene": "15",
       "video": "assets/videos/case-question.mp4",
       "poster": "assets/images/case-question.webp",
       "chapters": [
         {
-          "title": "Notice the restart",
+          "title": "The unexpected observation",
           "start": 0,
           "end": 8,
-          "caption": "Red starts moving while blue is held still. Red stops, then starts moving again during the wait.",
+          "caption": "Red moves without a new push. Astra was holding blue still when red restarted. The log also reports a restart. Red is against the wall, so its motion is barely visible.",
           "tracks": [
             {
               "source": "astra",
@@ -67,7 +67,7 @@
                 "blue_ball"
               ],
               "label": "GPT-6-Astra",
-              "caption": "Red starts moving while blue is held still."
+              "caption": "Red moves without a new push. Astra was holding blue still when red restarted."
             },
             {
               "source": "gemini",
@@ -92,15 +92,15 @@
                 "red_ball"
               ],
               "label": "Gemini-3.7-Flash",
-              "caption": "Red stops, then starts moving again during the wait."
+              "caption": "The log also reports a restart. Red is against the wall, so its motion is barely visible."
             }
           ]
         },
         {
-          "title": "Choose what to test",
+          "title": "What do they test next?",
           "start": 8,
           "end": 20,
-          "caption": "Astra pushes red south and waits. The northward motion returns. Gemini continues its planned tests with a vertical throw.",
+          "caption": "Astra changes the plan: pushes red, then waits to time its restart. Gemini keeps the planned gravity test, without investigating the restart.",
           "tracks": [
             {
               "source": "astra",
@@ -127,7 +127,7 @@
                 "red_ball"
               ],
               "label": "GPT-6-Astra",
-              "caption": "Astra pushes red south and waits. The northward motion returns."
+              "caption": "Astra changes the plan: pushes red, then waits to time its restart."
             },
             {
               "source": "gemini",
@@ -153,15 +153,15 @@
                 "red_ball"
               ],
               "label": "Gemini-3.7-Flash",
-              "caption": "Gemini continues its planned tests with a vertical throw."
+              "caption": "Gemini keeps the planned gravity test, without investigating the restart."
             }
           ]
         },
         {
-          "title": "Follow the evidence",
+          "title": "Follow-up and outcome",
           "start": 20,
           "end": 32,
-          "caption": "After a push to blue, red pauses and then restarts. Gemini proceeds to a collision test without pursuing the restart.",
+          "caption": "Astra pushes blue too: red again restarts about 10 seconds later. Gemini runs a collision test, then ends without investigating the restart.",
           "tracks": [
             {
               "source": "astra",
@@ -186,7 +186,7 @@
                 "red_ball"
               ],
               "label": "GPT-6-Astra",
-              "caption": "After a push to blue, red pauses and then restarts."
+              "caption": "Astra pushes blue too: red again restarts about 10 seconds later."
             },
             {
               "source": "gemini",
@@ -213,22 +213,25 @@
                 "blue_ball"
               ],
               "label": "Gemini-3.7-Flash",
-              "caption": "Gemini proceeds to a collision test without pursuing the restart."
+              "caption": "Gemini runs a collision test, then ends without investigating the restart."
             }
           ]
         }
       ],
       "duration": 32,
-      "video_sha256": "6dde5d4b9c32c9dc7c3894c3d086ec5d48184ba17a9932c1d992ea17ce9105b5",
-      "poster_sha256": "5b30ad5c0a3da6befeb38a9797b7b8ba29cdfdaf8ac34ae6a80c1bc25d0080c4",
+      "video_sha256": "11bc807503e03d667bb64768325c6c6a176bc972526931253df098e1c572cdd7",
+      "poster_sha256": "d297acbf2d2947bff04b804a9af3c5764c5fc777bccdb244e245873fc78131f5",
       "render": {
         "revision": "figure1-studio-v2",
         "engine": "Blender Cycles",
         "samples": 64,
         "reference": "ACL/materials/teaser/blender_scene.py",
         "reference_sha256": "bee6692648e3c9fbcafcba9093a48f6eff62f09d674317121d404fc85d2e2f8c",
-        "method": "Exact archived geometry and poses; Figure 1 enamel, porcelain and metal materials, studio area lighting and AgX. Static backgrounds with rendered moving regions; no physics stepping or pose interpolation."
-      }
+        "method": "Exact archived geometry and poses; Figure 1 enamel, porcelain and metal materials, studio area lighting and AgX. Static backgrounds with rendered moving regions; no physics stepping or pose interpolation.",
+        "annotation": "Motion state from returned observations; seconds since the original push/throw; ring highlights the recorded red-ball position. Tiny wall motion is not enlarged."
+      },
+      "width": 1280,
+      "height": 512
     },
     {
       "id": "color",

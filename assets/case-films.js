@@ -8,7 +8,7 @@
 
   const players = films.map(film => {
     const video = film.querySelector('video');
-    film.append(template.content.cloneNode(true));
+    film.querySelector('.case-film-screen').after(template.content.cloneNode(true));
     video.controls = false;
     const controls = film.querySelector('.case-playback');
     const playButton = controls.querySelector('.case-play');
@@ -19,6 +19,7 @@
     const fullscreen = controls.querySelector('.case-fullscreen');
     const status = film.querySelector('.case-film-status');
     const retry = status.querySelector('button');
+    const storySteps = [...film.querySelectorAll('[data-case-stage]')];
     let playRequested = false;
     let loadFailed = false;
     let loadingMetadata = false;
@@ -33,6 +34,10 @@
     function update() {
       const total = duration();
       const current = pendingSeek !== null ? pendingSeek * total : video.currentTime;
+      if (storySteps.length) {
+        const step = storySteps.findLast(item => current >= Number(item.dataset.start)) || storySteps[0];
+        storySteps.forEach(item => { item.hidden = item !== step; });
+      }
       if (!scrubbing) progress.value = total ? current / total * 1000 : 0;
       progress.style.setProperty('--case-progress', `${Number(progress.value) / 10}%`);
       progress.setAttribute('aria-valuetext', `${timeLabel(current)} of ${timeLabel(total)}`);
