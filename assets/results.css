@@ -75,6 +75,7 @@
 .results-source { display:flex; align-items:baseline; justify-content:space-between; flex-wrap:wrap; gap:8px 20px; margin:18px 0 0; color:var(--muted); font-size:11px; line-height:1.6; }
 .results-source a { color:var(--teal); font-size:12px; }
 .results-source a:hover { text-decoration:underline; text-underline-offset:3px; }
+.results-downloads { display:flex; gap:16px; flex-wrap:wrap; }
 .result-details { margin-top:18px; border-bottom:1px solid var(--line); }
 .result-details > summary { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:16px 0; list-style:none; cursor:pointer; font-size:12px; }
 .result-details > summary::-webkit-details-marker { display:none; }

@@ -17,6 +17,7 @@ def main():
         sealed=entry.get('render_revision') in ['unified-v1','explained-v1']
         render_cache=Path('/tmp/longchang-explained-scenes' if entry.get('render_revision')=='explained-v1' else '/tmp/longchang-unified-scenes')
         if entry.get('camera_revision')=='front-v1':render_cache=Path('/tmp/longchang-front-view')
+        if entry.get('camera_revision')=='oblique-v1':render_cache=Path('/tmp/longchang-low-oblique-view')
         if sealed:folder=render_cache/id/'room'
         job=json.loads((folder/'job.json').read_text());source=json.loads((SOURCE/id/'studio-job.json').read_text())
         signature_folder=Path('/tmp/longchang-detail-views')/id/'room' if entry.get('detail_video') else cache/id

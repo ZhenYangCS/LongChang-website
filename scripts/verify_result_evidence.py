@@ -115,6 +115,7 @@ def main():
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>r.name.includes("/result-json/")||r.name.endsWith("longchang-main-study-json.zip"))')
         assert page.locator('#evidence-provenance').count() == 0
         assert page.locator('#results-json-download').get_attribute('href') == manifest['archive']['path']
+        assert page.locator('#results-summary-download').get_attribute('href') == 'downloads/longchang-judge-summaries-en.json'
         assert page.locator('#model-chart .result-lane:visible').count() == 12
         assert page.locator('#model-chart [data-result-metric="D"]').count() == 12
         assert page.locator('[data-result-view]').count() == 0
@@ -131,29 +132,26 @@ def main():
             expect(page.locator('#evidence-content')).to_be_visible()
             group = json.loads((DATA/model.lower()/f'{scene}.json').read_text())
             assert page.locator('#evidence-runs button').count() == 3
+            assert page.locator('#evidence-views button').all_text_contents() == ['Summary','Full report']
+            expect(page.locator('#evidence-summary-view')).to_be_visible()
+            expect(page.locator('#evidence-full-view')).not_to_be_visible()
             for i, run in enumerate(group['runs']):
                 page.locator(f'#evidence-run-{run["repeat"]}').click()
                 expect(page.locator('#result-evidence-dialog')).to_have_attribute('data-run', str(run['repeat']))
                 assert page.locator('#evidence-record-download').get_attribute('href') == run['archive']
-                assert page.locator('.evidence-claim-text').all_text_contents() == [claim['claim'] for claim in run['report']['conclusions']]
-                assert page.locator('.evidence-claim > summary:visible').count() == min(3, len(run['report']['conclusions']))
-                assert page.locator('.evidence-claim-text:visible').count() == 0
+                page.locator('#evidence-summary-tab').click()
                 expect(page.locator('#evidence-summary')).to_have_text(english_summaries[run['id']]['summary'])
                 assert page.locator('#evidence-summary').get_attribute('lang') == 'en'
-                expect(page.locator('#evidence-reason')).not_to_be_visible()
-                page.locator('.evidence-judgement summary').click()
+                assert page.locator('.evidence-claim-text:visible').count() == 0
+                assert page.locator('#result-evidence-dialog details').count() == 0
+                page.locator('#evidence-full-tab').click()
+                assert page.locator('.evidence-claim-text').all_text_contents() == [claim['claim'] for claim in run['report']['conclusions']]
+                assert page.locator('.evidence-claim-text:visible').count() == len(run['report']['conclusions'])
+                assert page.locator('.evidence-experiment').count() == len(run['report']['experiments'])
                 assert page.locator('#evidence-reason').inner_text() == run['reason']
-                page.locator('.evidence-judgement summary').click()
                 if not run['control']:
-                    assert page.locator(f'#evidence-run-{run["repeat"]} .evidence-check').evaluate_all('(items)=>items.map(x=>x.dataset.pass)') == [str(run[key]).lower() for key in ['D','C','S']]
-                else:
-                    assert page.locator('#evidence-checks .evidence-check').count() == 0
+                    assert page.locator(f'#evidence-run-{run["repeat"]}').evaluate('(b)=>[b.dataset.d,b.dataset.c,b.dataset.s]') == [str(run[key]).lower() for key in ['D','C','S']]
                 if i == 0 and run['report']['conclusions']:
-                    if len(run['report']['conclusions']) > 3:
-                        page.locator('.evidence-more-claims > summary').click()
-                        assert page.locator('.evidence-claim > summary:visible').count() == len(run['report']['conclusions'])
-                        page.locator('.evidence-more-claims > summary').click()
-                    page.locator('.evidence-claim > summary').first.click()
                     number = run['report']['conclusions'][0]['evidence_turns'][0]
                     page.locator(f'[data-evidence-turn="{number}"]').first.click()
                     expect(page.locator('#evidence-turn-content')).to_be_visible(timeout=15000)
@@ -182,7 +180,7 @@ def main():
         with zipfile.ZipFile(download.value.path()) as archive:
             verify_archive(archive.read)
         page.keyboard.press('Escape')
-        print('PASS: D-only chart in paper order, all model/scene counts, English judge summaries, expandable original text and citations, normal controls and exact-run film links.', flush=True)
+        print('PASS: D-only chart in paper order, all model/scene counts, two reading modes, complete findings and experiments, English summaries and original citations, normal controls and exact-run film links.', flush=True)
         page.route('**/result-evidence/qwen3-max/03.json', lambda route: route.fulfill(status=503,body='unavailable'))
         page.evaluate('showResultEvidence("Qwen3-Max","03")')
         expect(page.locator('#evidence-retry')).to_be_visible()

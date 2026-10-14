@@ -30,6 +30,23 @@
   for(const key of ['01','07']){configs[key].gesture='height';configs[key].range[0]=.2;}
   for(const key of ['05','08'])configs[key].gesture='strength';
   configs['06'].gesture='direction';configs['04'].gesture='phase';
+  const illustrationHelp = {
+    '01':'Drag a ball to change the drop height.',
+    '02':'Choose a pair and watch their motion.',
+    '03':'Compare equal height, speed, or impulse.',
+    '04':'Pick a launch time and watch the fall.',
+    '05':'Change the launch speed to test braking.',
+    '06':'Pick a direction or drag the ball to aim.',
+    '07':'Drag a ball to compare the bounce heights.',
+    '08':'Change the impulse and compare speeds.',
+    '09':'Choose a path across or beside the tile.',
+    '10':'Choose where the ball starts.',
+    '11':'Compare a ball collision with a wall hit.',
+    '12':'Follow A and B as their colors change.',
+    '13':'Choose a touch; watch for the jump.',
+    '14':'Hold red and watch what green does.',
+    '15':'Push either ball and watch red’s drift.',
+  };
   let id = '01', value = configs[id].initial, time = 0, playing = false, touring = false, choices = null;
   let visible = false, exportMode = false, view = window.SCENE_INDEX?.length ? 'physics' : 'motion';
   const duration = 8;
@@ -101,7 +118,7 @@
     svg += '</g>';
     const state = wall ? 'Qualifying touches' : hold ? 'Holding contact' : count ? ['','First touch','Second touch','Third touch'][count] : 'Ready';
     const reading = wall ? '0 · no jump' : hold ? `${count} touch · no jump` : count===3 ? 'Both jump ↑' : count ? 'No extra jump' : 'Choose 1, 2 or 3 above';
-    const caption=wall?'Touching a wall does not trigger a jump.':hold&&count?'Still touching: this counts once, so neither ball jumps.':count===3?'Third touch: both balls received an upward kick.':count?`${count===1?'First':'Second'} touch: neither ball gets an extra jump.`:hold?'The balls are approaching their first touch.':'Watch three separate touches between the balls.';
+    const caption=wall?'Wall contact: no jump.':hold&&count?'Still one touch: no jump.':count===3?'Third touch: both jump.':count?`${count===1?'First':'Second'} touch: no extra jump.`:hold?'Approaching the first touch.':'Watch three separate touches.';
     return {svg,state,reading,caption,contactCount:count,observation:message};
   }
 
@@ -121,7 +138,7 @@
       if(!special){art += annotation(171,336,'GRAY TILE');art += annotation(398,352,'ORDINARY FLOOR');}
       state = special ? 'First rebound · bricks' : 'Matched drops';
       reading = special ? `Red ${(height * .81).toFixed(2)} · Blue ${(height * .0225).toFixed(3)}` : 'Same motion';
-      caption = special ? `First rebound: red tile ${(height*.81).toFixed(2)}, blue tile ${(height*.0225).toFixed(3)} bricks.` : 'Both balls bounce the same way.';
+      caption = special ? `Heights: red ${(height*.81).toFixed(2)} · blue ${(height*.0225).toFixed(3)}` : 'Both balls bounce alike.';
       observation = special ? 'The same release produces very different rebounds. Changing height preserves the surface-dependent ratios.' : 'Both drops behave the same. A visually distinct tile is not evidence of a new physical law.';
     } else if (sceneId === '02') {
       let separation = 3.4, speed = 0;
@@ -137,7 +154,7 @@
       if (attracts && separation > .8) { art += arrow(point(a + .35, 3, .3), point(a + .85, 3, .3)); art += arrow(point(b - .35, 3, .3), point(b - .85, 3, .3)); }
       state = attracts ? 'Red attracts red' : 'No extra attraction';
       reading = attracts ? 'The gap closes' : 'Blue does not participate';
-      caption = attracts ? 'The red balls pull toward each other.' : 'This pair has no extra attraction.';
+      caption = attracts ? 'Red balls pull toward each other.' : 'No extra attraction in this pair.';
       observation = attracts ? 'The red pair accelerates toward each other as the distance decreases. Try replacing either one with blue.' : 'The altered force does not act on this pair. Blue neither attracts nor is attracted.';
     } else if (sceneId === '03') {
       const t = Math.max(0, s - .5) * .19;
@@ -151,7 +168,7 @@
       });
       state = control === 'drop' ? 'Equal release height' : control === 'speed' ? 'Equal initial speeds' : 'Equal impulses';
       reading = 'Heavy blue: half the acceleration';
-      caption = 'Blue’s downward acceleration is half of red’s.';
+      caption = 'Blue falls with half the acceleration.';
       observation = control === 'impulse' ? 'Equal impulses launch the heavy ball four times slower. Equal impulse and equal speed are different experiments.' : control === 'speed' ? 'With equal upward speeds, blue rises higher and stays airborne longer because its downward acceleration is smaller.' : 'The heavy blue ball falls more slowly. Its mass is four times greater, and its downward acceleration is half as large.';
     } else if (sceneId === '04') {
       const t = Math.max(0, s - .5) * .2, phase = n, w = Math.PI / 3, g = 9.81, a = .3;
@@ -160,9 +177,9 @@
       art += trace(point(3, 3), point(3, 3, 2.8)) + sphere(3, 3, Math.max(0, z), 'red');
       art += wavePath(v => (1 + Math.sin(Math.PI * v / 3)) / 2);
       const px = 90 + ((phase + t) % 6) / 6 * 190, py = 64 + 55 * (1 - (ratio - .7) / .6);
-      art += `<circle cx="${px}" cy="${py}" r="4" fill="#d4846d"/>` + annotation(90, 140, 'ONE GRAVITY CYCLE · 6 COUNTS');
+      art += `<circle cx="${px}" cy="${py}" r="4" fill="#d4846d"/>` + annotation(90, 140, 'Gravity cycle · 6 s');
       state = 'Gravity now'; reading = `${ratio.toFixed(2)} × baseline`;
-      caption = `Gravity is now ${ratio.toFixed(2)} times its usual strength.`;
+      caption = `Gravity: ${ratio.toFixed(2)}× its usual strength.`;
       observation = 'The launch is identical; the phase is different. Gravity varies continuously during the flight, not just at release.';
     } else if (sceneId === '05') {
       const t = Math.max(0, s - .5) * .12, excess = Math.max(0, n - 2.5);
@@ -170,9 +187,8 @@
       const travel = n > 2.5 ? 2.5 * t + excess * (1 - Math.exp(-8 * t)) / 8 : n * t;
       art += trace(point(.8, 3), point(5.6, 3)) + sphere(.8 + travel, 3, .04, 'red');
       art += arrow(point(.8 + travel, 3, .25), point(.8 + travel + speed * .24, 3, .25));
-      art += annotation(148, 340, 'EXTRA BRAKING ONLY ABOVE 2.5');
       state = n > 2.5 ? 'Extra brake active' : 'Below threshold · brake off'; reading = `Speed ${speed.toFixed(2)}`;
-      caption = `Speed ${speed.toFixed(2)}: the extra brake is ${n>2.5?'on':'off'}.`;
+      caption = `Speed ${speed.toFixed(2)} · extra brake ${n>2.5?'on':'off'}`;
       observation = n > 2.5 ? 'A faster launch activates the extra brake. The braking force shrinks as speed approaches the threshold.' : 'No extra brake is triggered. Ordinary physics still applies below the threshold.';
     } else if (sceneId === '06') {
       const t = Math.max(0, s - .5) * .58, a = n * Math.PI / 180, w = 1.2, r = 1.05;
@@ -183,7 +199,7 @@
       art += sphere(...position, .04, 'red');
       art += arrow(point(...position, .25), point(position[0] + .7 * Math.cos(a - w * t), position[1] - .7 * Math.sin(a - w * t), .25));
       state = 'Clockwise turn'; reading = 'Force stays right of motion';
-      caption = 'The sideways force bends the path clockwise.';
+      caption = 'Force bends the path clockwise.';
       observation = 'Changing the launch direction rotates the trajectory. The extra force turns with the velocity and does no work.';
     } else if (sceneId === '08') {
       const speed = p => 2 * p / (1 + Math.sqrt(1 + 4 * (p / 2.2) ** 2)), v = speed(n);
@@ -192,9 +208,8 @@
       art += wavePath(p => speed(p) / 2.2, 210, 75, 95, 54, 0, 12);
       art += line([95, 54], [305, 54], '#b8cabc', 'stroke-dasharray="3 5"');
       art += `<circle cx="${95 + n / 12 * 210}" cy="${54 + 75 * (1 - v / 2.2)}" r="4" fill="#638ab4"/>`;
-      art += annotation(95, 149, 'MORE IMPULSE → DIMINISHING SPEED GAINS');
       state = 'Launch speed'; reading = `${v.toFixed(3)} · limit 2.2`;
-      caption = `Speed ${v.toFixed(3)} stays below the 2.2 limit.`;
+      caption = `Speed ${v.toFixed(3)} stays below 2.2.`;
       observation = 'Increase the impulse. Momentum keeps increasing, but velocity approaches 2.2 without reaching it.';
     } else if (sceneId === '09') {
       const t = Math.max(0, s - .5), crossing = control !== 'beside';
@@ -205,10 +220,10 @@
       art += sphere(x, control === 'beside' ? 4.9 : 3, control === 'above' ? 1.2 : .09, 'red');
       if (control === 'above') art += trace(point(x, 3), point(x, 3, 1.2));
       state = inside ? 'Inside the gray region' : exited ? 'Left the gray region' : 'Outside the gray region'; reading = control === 'above' ? 'The rule also acts above the tile' : 'Entry ×0.4 · exit ×2.5';
-      caption = !crossing ? 'Passing beside gray triggers no speed change.'
-        : exited ? 'Past the gray tile: speed returned to its starting value.'
-        : inside ? control==='above' ? 'Over the gray tile: speed dropped to 40% on entry.' : 'Entered gray: speed dropped to 40%.'
-        : control==='above' ? 'Flying toward the gray tile; speed unchanged.' : 'Approaching the gray tile; speed unchanged.';
+      caption = !crossing ? 'Beside gray: speed unchanged.'
+        : exited ? 'Left gray: starting speed restored.'
+        : inside ? control==='above' ? 'Over gray: speed fell to 40%.' : 'Entered gray: speed fell to 40%.'
+        : control==='above' ? 'In the air: approaching gray.' : 'Before gray: speed unchanged.';
       observation = control === 'beside' ? 'The route avoids the footprint, so neither boundary multiplier is triggered.' : 'Velocity changes at the boundaries, even above the tile. The real world still applies friction and gravity between crossings.';
     } else if (sceneId === '10') {
       const outside = control === 'outside', u = Math.max(0, s - .6);
@@ -216,19 +231,18 @@
       art += polygon([[2, 2.05], [4.5, 2.05], [4.5, 3.95], [2, 3.95]].map(p => point(...p)), '#ebd696', 'stroke="#c7b575"');
       art += sphere(x, 3, control === 'above' ? 1.05 : .07, 'red');
       if (active) art += arrow(point(x, 3, .25 + (control === 'above' ? 1 : 0)), point(x + .7, 3, .25 + (control === 'above' ? 1 : 0)));
-      art += annotation(226, 348, 'YELLOW REGION · ACTIVE ENERGY INPUT', '#a08a49');
       state = outside ? 'At rest outside' : active ? 'Inside the yellow region' : 'Left the yellow region'; reading = active ? 'Extra drive active' : 'Extra drive off';
-      caption = outside ? 'Outside yellow, the ball stays at rest.' : active ? `${control==='above'?'Above':'Inside'} yellow: the ball gains speed.` : 'Past yellow: the rule no longer adds speed.';
+      caption = outside ? 'Outside yellow: still at rest.' : active ? `${control==='above'?'Above':'Inside'} yellow: gaining speed.` : 'Left yellow: extra force off.';
       observation = outside ? 'At rest outside the region, the ball receives no active seed or amplification.' : 'Inside the footprint, a resting ball gets an eastward seed, then active amplification. The rule also acts above the tile.';
     } else if (sceneId === '11') {
       const wall = control === 'wall', contact = 2.8, after = Math.max(0, s - 3.5);
       const a = s < contact ? 1.2 + s * .5 : wall ? 2.6 - after * .3 : 2.6 - after * .12;
       art += sphere(a, 3, .06, 'red');
       if (wall) art += polygon([point(3.05, 2.2), point(3.05, 3.8), point(3.05, 3.8, 1.2), point(3.05, 2.2, 1.2)], '#c3d0c7', 'stroke="#9fae9f"');
-      else { art += sphere(3.2 + Math.min(2.4, after * .48), 3, .06, 'blue'); art += sphere(4.6, 1.4, .06, 'green'); art += annotation(433, 267, 'GREEN · UNINVOLVED'); }
+      else { art += sphere(3.2 + Math.min(2.4, after * .48), 3, .06, 'blue'); art += sphere(4.6, 1.4, .06, 'green'); }
       if (after > 0 && !wall) art += arrow(point(3.2 + Math.min(2.4, after * .48), 3, .28), point(3.2 + Math.min(2.4, after * .48) + .7, 3, .28));
       state = wall ? 'Wall contact' : s < contact ? 'Approaching' : s < 3.5 ? 'In contact' : 'Contact has ended'; reading = wall?'No boost':s>3.5?'Both velocities ×1.8':'No boost yet';
-      caption = wall ? 'A wall collision gives no extra speed boost.' : s<contact ? 'The balls are approaching; no boost yet.' : s<=3.5 ? 'The balls are touching; the boost waits for separation.' : 'The balls separated; both speeds were multiplied by 1.8.';
+      caption = wall ? 'Wall contact: no speed boost.' : s<contact ? 'Approaching: no boost yet.' : s<=3.5 ? 'Still touching: no speed boost.' : 'Separated: both speeds ×1.8.';
       observation = wall ? 'A wall collision does not trigger the programmed speed gain.' : 'The boost happens when ball–ball contact ends. Both participants’ remaining velocities are multiplied; green is unaffected.';
     } else if (sceneId === '12') {
       const colors = sceneId === '12', hold = control === 'hold', wall = control === 'wall';
@@ -246,7 +260,7 @@
       if (!colors) for (let i = 1; i <= 3; i++) art += `<circle cx="${180 + i * 42}" cy="352" r="12" fill="${count >= i ? '#79a184' : '#e2eade'}"/>` + text(180 + i * 42, 356, String(i), `text-anchor="middle" fill="${count >= i ? 'white' : '#90a48e'}"`);
       state = colors ? 'Same objects, changing colors' : count === 3 ? 'Third contact · both jump' : 'Ball contacts';
       reading = colors ? swapped?'A is blue · B is red':'A is red · B is blue' : `${count} of 3`;
-      caption = `${count?`Touch ${count}`:'Before contact'}: A is ${swapped?'blue':'red'}, B is ${swapped?'red':'blue'}.`;
+      caption = `${count?`Touch ${count}`:'Before contact'}: A ${swapped?'blue':'red'} · B ${swapped?'red':'blue'}`;
       observation = wall ? 'Wall contacts do not count toward the third-contact jump.' : hold ? 'One sustained contact counts once. Holding contact does not repeatedly trigger the rule.' : colors ? 'A and B keep their identities. Their colors swap once when a new contact begins, then swap back at the next contact.' : 'The first two contacts do not trigger a jump. On the third distinct ball–ball contact, both balls receive an upward kick.';
     } else if (sceneId === '14') {
       const t = s * 2, travel = u => { const v = clamp(u, 0, 3); return 1.5 * v - .25 * v * v; };
@@ -257,7 +271,7 @@
       if (control === 'hold' && t > .35) { const [x, y] = point(rx, 1.8); art += `<rect x="${x - 21}" y="${y - 35}" width="42" height="45" rx="7" stroke="#98b6a4" fill="none" stroke-dasharray="3 4"/>`; }
       if (t >= 12) art += arrow(point(gx, gy, .25), point(gx + .75, gy, .25));
       state = t < 12 ? control==='hold'&&t>.35?'Red held · copy stays scheduled':'Red’s launch velocity stored' : 'Green takes the stored velocity'; reading = t<12?`Copy in ${(12-t).toFixed(1)} s`:'Copied at 12 s';
-      caption = t>=12 ? 'Green received red’s stored launch velocity.' : control==='hold'&&t>.35 ? `Red is held; green copies red’s launch velocity in ${(12-t).toFixed(1)} s.` : control==='moving' ? `Green’s current velocity will be replaced in ${(12-t).toFixed(1)} s.` : `Green copies red’s launch velocity in ${(12-t).toFixed(1)} s.`;
+      caption = t>=12 ? 'Green copied red’s launch velocity.' : control==='hold'&&t>.35 ? `Red held; copy in ${(12-t).toFixed(1)} s.` : control==='moving' ? `Velocity replaced in ${(12-t).toFixed(1)} s.` : `Green copies velocity in ${(12-t).toFixed(1)} s.`;
       observation = control === 'hold' ? 'Stopping red does not cancel the scheduled transfer. Green still takes the stored velocity twelve counts after launch.' : control === 'moving' ? 'Green’s northward motion is replaced by the stored eastward velocity. The transfer does not add the two velocities.' : 'Red can stop before green starts. The delay separates the cause and effect into different observations.';
     } else if (sceneId === '15') {
       const t = s * 2, zero = control === 'zero', active = zero || t < 3 || t >= 13;
@@ -272,7 +286,7 @@
       }
       state = zero ? 'Zero impulse · no pause' : t < 3 ? 'Northward force active' : t < 13 ? `Push ${control} · force paused` : 'Northward force returns';
       reading = active?'Force on':`Resumes in ${(13-t).toFixed(1)} s`;
-      caption = zero&&t>=3 ? 'A zero push leaves the northward force active.' : t<3 ? 'The northward force is moving red.' : t<13 ? `Pushing ${control} paused red’s force; it returns in ${(13-t).toFixed(1)} s.` : 'The 10 s pause ended; red’s northward force is back.';
+      caption = zero&&t>=3 ? 'Zero push: red keeps drifting.' : t<3 ? 'Red is drifting north.' : t<13 ? `Push ${control}: drift resumes in ${(13-t).toFixed(1)} s.` : 'Red’s northward drift resumes.';
       observation = zero ? 'A zero-impulse push does not suppress the extra force. This control distinguishes an action command from a physical launch.' : `A push on ${control} pauses red’s extra force for ten counts. Acting on a different movable object can suppress red’s behavior.`;
     }
     return {svg:base(uid) + art + '</g>', state, reading, observation, caption};
@@ -326,7 +340,7 @@
     id = scene.id; value = configs[id].initial; time = 0;
     $('#demo-explanation').dataset.scene = id;
     contactSteps.hidden = id!=='13';
-    $('#model-heading').textContent = id==='13' ? 'Count the touches' : 'Simplified model';
+    $('#model-heading').textContent = 'Rule illustration';
     $('#demo-explanation').scrollTop=0;
     const config = configs[id];
     $('#atlas-trigger-text').textContent = config.trigger;
@@ -339,7 +353,7 @@
       $('#atlas-controls').innerHTML = `<label class="model-setting-label" for="atlas-parameter">${config.label}</label><div class="atlas-range"><input id="atlas-parameter" type="range" min="${config.range[0]}" max="${config.range[1]}" step="${config.range[2]}" value="${value}"><output for="atlas-parameter" id="atlas-parameter-value">${Number(value).toFixed(1)} ${config.unit}</output></div>`;
       $('#atlas-parameter').addEventListener('input', event => setParameter(event.target.value));
     }
-    modelNote.textContent=id==='13' ? config.note : window.ORACLE_CATALOG?.[id]?.model_note||config.note;
+    modelNote.textContent=illustrationHelp[id];
     $('#atlas-parameter').value = value;
     $('#atlas-evidence').hidden = !['06','07','14','15'].includes(id);
     playing = autoplay && !reduced.matches;

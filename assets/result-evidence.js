@@ -4,6 +4,7 @@
   const dialog = $('#result-evidence-dialog'), turnDialog = $('#evidence-turn-dialog');
   const reports = new Map(), records = new Map(), english = new Map();
   let summaries = new Map();
+  let reportView = 'summary';
   const metrics = [{key:'D', name:'Discovery'}, {key:'C', name:'Correct law'}, {key:'S', name:'Evidence support'}];
   let group = null, selected = 0, version = 0, turnVersion = 0, origin = null, turnOrigin = null, currentRecord = null, request = null;
   const node = (tag, className, text) => {
@@ -41,6 +42,26 @@
     $('#evidence-retry').hidden = !retry;
   }
   function format(value) { return typeof value === 'string' ? value : JSON.stringify(value, null, 2); }
+  function setReportView(view, focus=false) {
+    if (!['summary','full'].includes(view)) return;
+    reportView=view;
+    for (const button of $('#evidence-views').querySelectorAll('[data-evidence-view]')) {
+      const active=button.dataset.evidenceView===view;
+      button.setAttribute('aria-selected',String(active));button.tabIndex=active?0:-1;
+      if(active&&focus)button.focus({preventScroll:true});
+    }
+    $('#evidence-summary-view').hidden=view!=='summary';$('#evidence-full-view').hidden=view!=='full';
+    dialog.scrollTop=0;
+  }
+  function fields(object, excluded=[]) {
+    const list=node('dl','evidence-report-fields');
+    for(const [key,value] of Object.entries(object)) {
+      if(excluded.includes(key)||value===null||value===undefined||value==='')continue;
+      const title=key==='preconditions'?'Conditions':key.replaceAll('_',' ');
+      list.append(node('dt','',title[0].toUpperCase()+title.slice(1)),textBlock('dd','',format(value)));
+    }
+    return list;
+  }
   function renderRun(index) {
     selected = index;
     const run = group.runs[index];
@@ -62,16 +83,12 @@
     const claims = $('#evidence-claims');
     claims.replaceChildren();
     if (!run.report.conclusions.length) claims.append(node('p', '', 'The report contains no conclusions.'));
-    const more = node('details', 'evidence-more-claims');
-    more.append(node('summary', '', `${run.report.conclusions.length-3} more findings`));
     run.report.conclusions.forEach((claim, claimIndex) => {
-      const article = node('details', 'evidence-claim');
-      const summary = node('summary');
-      summary.append(node('span', 'evidence-claim-number', String(claimIndex+1).padStart(2, '0')));
-      summary.append(textBlock('span', 'evidence-claim-preview', preview(claim.claim)));
-      article.append(summary);
+      const article = node('article', 'evidence-claim');
+      article.append(node('h5','',`Finding ${claimIndex+1}`));
       const body = node('div', 'evidence-claim-body');
       body.append(textBlock('p', 'evidence-claim-text', claim.claim));
+      body.append(fields(claim,['claim','evidence_turns']));
       const citations = node('div', 'evidence-citations');
       citations.append(node('span', '', 'Cited turns'));
       for (const turn of claim.evidence_turns || []) {
@@ -82,29 +99,28 @@
         citations.append(button);
       }
       body.append(citations);
-      const details = node('details', 'evidence-reasoning');
-      details.append(node('summary', '', 'Conditions and reasoning'));
-      if (claim.preconditions) details.append(textBlock('p', '', claim.preconditions));
-      if (claim.reasoning) details.append(textBlock('p', '', claim.reasoning));
-      if (claim.result) details.append(textBlock('p', '', claim.result));
-      body.append(details);
       article.append(body);
-      (claimIndex < 3 ? claims : more).append(article);
+      claims.append(article);
     });
-    if (run.report.conclusions.length > 3) claims.append(more);
+    const experiments=$('#evidence-experiments');experiments.replaceChildren();
+    for(const [index,experiment] of run.report.experiments.entries()) {
+      const article=node('article','evidence-experiment'),heading=node('h5','',`Experiment ${index+1}`);
+      const turn=Number(experiment.turn);
+      if(Number.isInteger(turn)&&turn>0&&turn<=run.turn_count){const link=node('button','evidence-original-turn',`Original turn ${turn} ↗`);link.type='button';link.dataset.evidenceTurn=String(turn);heading.append(link);}
+      article.append(heading,fields(experiment));experiments.append(article);
+    }
+    if(!run.report.experiments.length)experiments.append(node('p','','No experiments were included in the report.'));
     const summary = summaries.get(run.id);
     const matchedSummary = summary?.evaluation_sha256 === run.evaluation_sha256 && summary.scene === group.scene && summary.repeat === run.repeat;
-    $('#evidence-summary').textContent = matchedSummary ? summary.summary : 'English summary unavailable. The original judge reason is available below.';
+    $('#evidence-summary').textContent = matchedSummary ? summary.summary : 'Summary unavailable. Open Full report for the original assessment.';
     $('#evidence-reason').replaceChildren(textBlock('span', '', run.reason));
     $('#evidence-truth').textContent = format(run.truth);
-    $('#evidence-rule-preview').textContent = preview(format(run.truth));
-    $('#evidence-full-report').textContent = JSON.stringify(run.report, null, 2);
     const clip = (window.DISCOVERIES || []).find(item => item.episode_id === run.id);
     $('#evidence-film').hidden = !clip;
     $('#evidence-film').dataset.scene = clip?.id || '';
     $('#evidence-record-download').href = run.archive;
     $('#evidence-record-download').download = `${group.model}-scene-${group.scene}-run-${run.repeat}.zip`;
-    $('#evidence-content').querySelectorAll('details').forEach(details => { details.open = false; });
+    setReportView(reportView);
     $('#evidence-content').hidden = false;
   }
   async function loadReports(model, scene) {
@@ -136,6 +152,7 @@
     if (!dialog.open) origin = document.activeElement;
     const token = ++version;
     request = {model, scene};
+    setReportView('summary');
     group = null;
     summaries = new Map();
     dialog.dataset.scene = scene;
@@ -160,8 +177,8 @@
         button.setAttribute('aria-controls', 'evidence-content');
         button.dataset.runIndex = String(index);
         button.append(node('strong', '', `Run ${run.repeat}`));
-        if (run.control) button.append(node('span', '', run.accepted ? 'Accepted' : 'Rejected'));
-        else button.append(...metrics.map(({key}) => resultMark(key, run[key])));
+        button.setAttribute('aria-label',`Run ${run.repeat}. ${run.control?(run.accepted?'Control accepted.':'Control rejected.'):metrics.map(({key,name})=>`${name}: ${run[key]?'pass':'fail'}.`).join(' ')}`);
+        for(const {key} of metrics)button.dataset[key.toLowerCase()]=run[key]===null?'na':String(run[key]);
         $('#evidence-runs').append(button);
       });
       status('');
@@ -171,6 +188,11 @@
     }
   };
   $('#evidence-retry').addEventListener('click', () => { if (request) window.showResultEvidence(request.model, request.scene); });
+  $('#evidence-views').addEventListener('click',event=>{const button=event.target.closest('[data-evidence-view]');if(button)setReportView(button.dataset.evidenceView);});
+  $('#evidence-views').addEventListener('keydown',event=>{
+    if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+    event.preventDefault();setReportView(event.key==='Home'?'summary':event.key==='End'?'full':reportView==='summary'?'full':'summary',true);
+  });
   $('#evidence-runs').addEventListener('click', event => {
     const button = event.target.closest('[data-run-index]');
     if (button) renderRun(Number(button.dataset.runIndex));
@@ -230,7 +252,7 @@
       if (token === turnVersion) $('#evidence-turn-status').textContent = error.message.startsWith('Download') ? error.message : 'The original record could not load. Close this view and select the turn to retry.';
     }
   }
-  $('#evidence-claims').addEventListener('click', event => {
+  $('#evidence-full-view').addEventListener('click', event => {
     const button = event.target.closest('[data-evidence-turn]');
     if (button) openTurn(Number(button.dataset.evidenceTurn));
   });

@@ -88,7 +88,7 @@ def main():
             actual = float(page.locator('.evo-recorded-cursor').get_attribute('data-time'))
             assert abs(actual-expected) < .05, (key, expected, actual)
             frozen = page.locator('.evo-recorded-cursor').get_attribute('transform')
-            page.locator('#evo-model-parameter').evaluate('e=>{e.selectedIndex=e.options.length-1;e.dispatchEvent(new Event("change",{bubbles:true}));}')
+            page.locator('#evo-model-settings input[type=radio]').last.check()
             page.wait_for_timeout(100)
             assert page.locator('.evo-recorded-cursor').get_attribute('transform') == frozen
         print('PASS: all three evolution charts follow their recorded videos and ignore the separate model clock.', flush=True)

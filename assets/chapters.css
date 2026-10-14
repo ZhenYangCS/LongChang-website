@@ -22,7 +22,18 @@
   color:var(--teal);
 }
 #main .chapter-heading > button { margin-top:18px; font-size:14px; }
-#main > #worlds.chapter { padding-block:40px; }
+#main > #worlds.chapter { padding-block:40px 64px; }
+#main > #framework.chapter {
+  position:relative;
+  border-top:1px solid #cadbd3;
+  background:linear-gradient(180deg,#e8f0eb 0%,#f0f5f1 100%);
+}
+#main > #framework.chapter::before {
+  content:''; position:absolute; top:-2px; left:50%;
+  width:48px; height:3px; border-radius:2px;
+  transform:translateX(-50%); background:#648a76;
+}
+#main > #framework.chapter > .section { padding-top:56px; }
 #worlds .chapter-heading { margin-bottom:24px; }
 #main > #controlled.chapter { padding-block:28px; }
 #main #controlled .chapter-heading { margin-bottom:16px; }
@@ -55,6 +66,8 @@
 }
 @media(max-width:800px) {
   #main > .chapter.section,#main > .chapter > .section { padding-block:44px; }
+  #main > #worlds.chapter { padding-bottom:44px; }
+  #main > #framework.chapter > .section { padding-top:40px; }
   #main .chapter-heading { margin-bottom:26px; }
   #main .chapter-heading h2 { font-size:30px; line-height:1.25; }
   #main .chapter-heading .section-number { font-size:14px; margin-right:10px; }

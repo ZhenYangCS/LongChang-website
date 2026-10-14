@@ -43,6 +43,7 @@ def main():
                 sealed=entry.get('render_revision') in ['unified-v1','explained-v1']
                 render_cache=Path('/tmp/longchang-explained-scenes' if explained else '/tmp/longchang-unified-scenes')
                 if published.get('camera_revision')=='front-v1':render_cache=Path('/tmp/longchang-front-view')
+                if published.get('camera_revision')=='oblique-v1':render_cache=Path('/tmp/longchang-low-oblique-view')
                 detail_path=render_cache/id/'detail/job.json' if sealed else Path('/tmp/longchang-detail-views')/id/'job.json'
                 detail=json.loads(detail_path.read_text())
                 if sealed:

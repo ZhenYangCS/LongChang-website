@@ -113,7 +113,7 @@
       </div>
       <section id="demo-explanation" class="demo-explanation" aria-labelledby="model-heading">
         <div class="demo-model">
-          <header class="model-heading"><h3 id="model-heading" title="These controls change only the model.">Simplified model</h3><p class="model-control-scope sr-only">These controls change only the model.</p></header>
+          <header class="model-heading"><h3 id="model-heading">Rule illustration</h3></header>
           <aside id="demo-rule" aria-label="Scene rule"></aside>
           <div id="model-controls"></div>
           <div id="model-diagram"></div>
@@ -179,7 +179,7 @@
             <aside id="results-inspector" class="results-inspector" aria-labelledby="result-model-title"></aside>
           </div>
           <p id="results-announcement" class="sr-only" role="status"></p>
-          <figcaption id="main-results-caption" class="results-source"><span>Judge: GPT-6.1-Sol · 3 runs per model per scene.</span><a id="results-json-download" href="downloads/longchang-main-study-json.zip" download title="Complete original session and evaluation JSON files for all 540 main-study runs">Original JSON · 540 runs ↓</a></figcaption>
+          <figcaption id="main-results-caption" class="results-source"><span>Judge: GPT-6.1-Sol · 3 runs per model per scene.</span><span class="results-downloads"><a id="results-json-download" href="downloads/longchang-main-study-json.zip" download title="Complete original records for all 540 runs">All records ↓</a><a id="results-summary-download" href="downloads/longchang-judge-summaries-en.json" download title="Evaluation summaries for all 540 runs">Summaries ↓</a></span></figcaption>
         </figure>
       </div>
     </section>
@@ -287,7 +287,7 @@
           </div>
           <section id="evo-explanation" class="demo-explanation" aria-labelledby="evo-model-heading">
             <div class="demo-model">
-              <header class="model-heading"><h3 id="evo-model-heading" title="These controls change only the model.">Simplified model</h3><p class="model-control-scope sr-only">Video unchanged</p></header>
+              <header class="model-heading"><h3 id="evo-model-heading">Rule illustration</h3></header>
               <aside class="evo-model-rule" aria-label="Evolved scene rule"><div class="evo-rule-copy"><h4>Scene rule</h4><p id="evo-model-rule"></p></div><div class="evo-demo-data"><h4>Demo data <span>Recorded force</span></h4><svg id="evo-demo-chart" viewBox="0 0 320 132" role="img" aria-label="Extra force measured in the recorded demo"></svg><p id="evo-chart-status" role="status">Loading recorded data…</p><button id="evo-chart-retry" type="button" hidden>Retry data</button></div></aside>
               <div id="evo-model-controls"><div class="atlas-playback">
                 <div id="evo-model-settings" class="atlas-controls"><label for="evo-model-parameter">Push schedule</label><select id="evo-model-parameter"><option value="once">Once at 0 s</option><option value="repeat">Every 8 s</option></select></div>
@@ -322,16 +322,13 @@
   </main>
   <footer><svg class="footer-logo longchang-logo" width="40" height="40" viewBox="0 0 40 40" role="img" aria-label="LongChang"><defs><linearGradient id="footer-mark-glass" x2="1" y2="1"><stop stop-color="#f6fcfa"/><stop offset="1" stop-color="#dceceb"/></linearGradient><radialGradient id="footer-mark-red" cx="30%" cy="25%" r="75%"><stop stop-color="#ffd3ba"/><stop offset=".42" stop-color="#d97861"/><stop offset="1" stop-color="#a53f36"/></radialGradient><radialGradient id="footer-mark-blue" cx="30%" cy="25%" r="75%"><stop stop-color="#cce4f9"/><stop offset=".42" stop-color="#6d9fc6"/><stop offset="1" stop-color="#365d85"/></radialGradient></defs><path d="M20 3 36 12v17L20 38 4 29V12Z" fill="url(#footer-mark-glass)" stroke="#315e68" stroke-width="1.3"/><path d="m4 12 16 9 16-9M20 21v17" fill="none" stroke="#527c80" stroke-width="1.1"/><g class="logo-eye"><circle cx="13" cy="24" r="4.4" fill="url(#footer-mark-red)"/><g class="logo-gaze"><ellipse cx="13.3" cy="24" rx=".85" ry="2.25" fill="#66322e" opacity=".85"/></g><circle cx="11.6" cy="22.5" r="1" fill="#fff" opacity=".8"/></g><g class="logo-eye"><circle cx="27" cy="24" r="4.4" fill="url(#footer-mark-blue)"/><g class="logo-gaze"><ellipse cx="26.7" cy="24" rx=".85" ry="2.25" fill="#263f5b" opacity=".85"/></g><circle cx="25.6" cy="22.5" r="1" fill="#fff" opacity=".8"/></g></svg></footer>
   <dialog id="result-evidence-dialog" class="result-evidence-dialog" aria-labelledby="evidence-title">
-    <header class="evidence-header"><div><p id="evidence-model"></p><h3 id="evidence-title"></h3></div><button id="evidence-close" type="button" aria-label="Close reports">×</button></header>
-    <div id="evidence-runs" class="evidence-runs" role="tablist" aria-label="Choose one of three runs"></div>
+    <header class="evidence-header"><div><p id="evidence-model"></p><h3 id="evidence-title"></h3></div><button id="evidence-close" type="button" aria-label="Close reports">×</button><div class="evidence-toolbar"><div id="evidence-views" class="evidence-views" role="tablist" aria-label="Report content"><button id="evidence-summary-tab" type="button" role="tab" aria-selected="true" aria-controls="evidence-summary-view" data-evidence-view="summary">Summary</button><button id="evidence-full-tab" type="button" role="tab" aria-selected="false" aria-controls="evidence-full-view" tabindex="-1" data-evidence-view="full">Full report</button></div><div id="evidence-runs" class="evidence-runs" role="tablist" aria-label="Choose one of three runs"></div></div></header>
     <div id="evidence-status" class="evidence-status" role="status"><span></span><button id="evidence-retry" type="button" hidden>Retry</button></div>
     <div id="evidence-content" role="tabpanel" hidden>
       <div id="evidence-checks" class="evidence-checks"></div>
-      <div class="evidence-columns">
-        <section><h4>Original report</h4><div id="evidence-claims"></div><details class="evidence-full-report"><summary>Full model report</summary><pre id="evidence-full-report"></pre></details></section>
-        <aside><section class="evidence-judgement"><h4>Evaluation</h4><p class="evidence-summary-label">English summary</p><p id="evidence-summary" lang="en"></p><details><summary>Original judge reason</summary><p class="evidence-attribution">GPT-6.1-Sol · original evaluation</p><p id="evidence-reason"></p></details></section><section class="evidence-reference"><h4>Reference rule</h4><p id="evidence-rule-preview"></p><details><summary>Full rule</summary><p id="evidence-truth"></p></details></section></aside>
-      </div>
-      <footer class="evidence-actions"><button id="evidence-film" type="button" hidden>Watch experiments ↗</button><a id="evidence-record-download" download title="Complete original session.json and evaluation.json for this run">Original JSON · ZIP ↓</a></footer>
+      <section id="evidence-summary-view" class="evidence-view" role="tabpanel" aria-labelledby="evidence-summary-tab"><h4>Judge’s summary</h4><p id="evidence-summary" lang="en"></p></section>
+      <section id="evidence-full-view" class="evidence-view" role="tabpanel" aria-labelledby="evidence-full-tab" hidden><section><h4>Model findings</h4><div id="evidence-claims"></div></section><section><h4>Reported experiments</h4><div id="evidence-experiments"></div></section><section class="evidence-judgement"><h4>Original judge assessment</h4><p id="evidence-reason"></p></section><section class="evidence-reference"><h4>Reference rule</h4><p id="evidence-truth"></p></section></section>
+      <footer class="evidence-actions"><button id="evidence-film" type="button" hidden>Watch experiments ↗</button><a id="evidence-record-download" download title="Complete original session.json and evaluation.json for this run">Full record ↓</a></footer>
     </div>
   </dialog>
   <dialog id="evidence-turn-dialog" class="evidence-turn-dialog" aria-labelledby="evidence-turn-title">

@@ -22,16 +22,21 @@ SOURCE=Path('/tmp/longchang-oracle-studio/production')
 ROOM_BOUNDS=[-6.,6.,-6.,6.,12.]
 
 
-def room_camera():
-    # An elevated front view keeps all vertical glass edges at the room sides,
-    # instead of projecting the nearest corner through the experiment.
-    direction=np.array([0.,-12.,9.]);direction/=np.linalg.norm(direction)
+def room_camera(direction=(2.,-12.,5.5)):
+    # A low, slightly oblique view separates height from floor motion while
+    # retaining enough of the tiles to read contact and region boundaries.
+    direction=np.array(direction,dtype=float);direction/=np.linalg.norm(direction)
     forward=-direction;right=np.cross(forward,[0,0,1]);right/=np.linalg.norm(right);up=np.cross(right,forward)
     corners=np.array([[x,y,z] for x in ROOM_BOUNDS[:2] for y in ROOM_BOUNDS[2:4] for z in [-.18,ROOM_BOUNDS[4]]])
     u,v=corners@right,corners@up
     span=max(np.ptp(v),np.ptp(u)/1.5)*1.09
     look=right*((min(u)+max(u))/2)+up*((min(v)+max(v))/2)
     return dict(position=(look+direction*30).tolist(),forward=forward.tolist(),right=right.tolist(),up=up.tolist(),span=float(span))
+
+
+def interactive_camera():
+    # The live view shows three faces, making the full cube easy to recognize.
+    return room_camera((7.,-10.,8.))
 
 
 def prepare(number):

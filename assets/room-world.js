@@ -244,13 +244,15 @@ export async function createRoom(stage,status,options={}) {
     if((live&&active)||drag||forces.length||data.time<until||quietSince===null||data.time-quietSince<.5)frame=requestAnimationFrame(tick);else active=false;
   }
   function wake(seconds=12){if(disposed)return;active=true;quietSince=null;until=Math.max(until,data.time+seconds);if(!frame&&visible&&!document.hidden){last=performance.now();frame=requestAnimationFrame(tick);}}
-  function push(body,impulse,point){const bid=typeof body==='number'?body:bodyIds[body];if(live){const name=Object.keys(bodyIds).find(n=>bodyIds[n]===bid);if(simulation.info().held===name){status('Release the object to push it.');return;}simulation.launch(name,impulse);options.onInteraction?.();wake();draw();return;}forces.push({body:bid,force:impulse.map(v=>v/.12),point:point||new T.Vector3().fromArray(data.xpos,bid*3),end:data.time+.12});wake();}
+  let lastPush=null,pushSequence=0;
+  const recordPush=(name,impulse)=>{lastPush={body:name,impulse:Array.from(impulse),time:data.time,sequence:++pushSequence};};
+  function push(body,impulse,point){const bid=typeof body==='number'?body:bodyIds[body];if(live){const name=Object.keys(bodyIds).find(n=>bodyIds[n]===bid);if(simulation.info().held===name){status('Release the object to push it.');return;}simulation.launch(name,impulse);recordPush(name,impulse);options.onInteraction?.();wake();draw();return;}forces.push({body:bid,force:impulse.map(v=>v/.12),point:point||new T.Vector3().fromArray(data.xpos,bid*3),end:data.time+.12});recordPush(Object.keys(bodyIds).find(n=>bodyIds[n]===bid),impulse);wake();}
   const labels={red_ball:'Red ball',blue_ball:'Blue ball',test_block:'Block',pendulum_arm:'Pendulum',balance_arm:'Balance'};
   function releaseDrag(){const pointer=drag?.pointer;drag=null;simulation?.releaseGrip();arrow.visible=false;markHit(null);marker.classList.remove('is-held');canvas.style.cursor=mode==='view'?'grab':'default';if(pointer!==undefined&&canvas.hasPointerCapture(pointer))canvas.releasePointerCapture(pointer);}
-  function beginInteraction(e){
+  function beginInteraction(e,{capture=true}={}){
     pointers.add(e.pointerId);if(pointers.size>1){releaseDrag();return;}if(e.button!==0||mode==='view')return;
     const hit=pick(e,true);if(!hit){status('Choose a ball or a movable part.');return;}
-    e.preventDefault?.();canvas.focus({preventScroll:true});const body=hit.object.userData.body;selected=Object.keys(bodyIds).find(n=>bodyIds[n]===body)||selected;canvas.setPointerCapture(e.pointerId);
+    e.preventDefault?.();canvas.focus({preventScroll:true});const body=hit.object.userData.body;selected=Object.keys(bodyIds).find(n=>bodyIds[n]===body)||selected;if(capture)canvas.setPointerCapture(e.pointerId);
     const plane=new T.Plane().setFromNormalAndCoplanarPoint(mode==='drag'?camera.getWorldDirection(new T.Vector3()):new T.Vector3(0,0,1),hit.point);
     const q=data.xquat,rotation=new T.Quaternion(q[body*4+1],q[body*4+2],q[body*4+3],q[body*4]);
     drag={kind:mode,pointer:e.pointerId,body,point:hit.point.clone(),target:hit.point.clone(),plane,centerOffset:hit.point.clone().sub(new T.Vector3().fromArray(data.xpos,body*3)),localOffset:hit.point.clone().sub(new T.Vector3().fromArray(data.xpos,body*3)).applyQuaternion(rotation.invert()),startX:e.clientX,startY:e.clientY};
@@ -262,6 +264,7 @@ export async function createRoom(stage,status,options={}) {
     if(live&&mode==='drag'){const center=new T.Vector3().fromArray(data.xpos,body*3);drag.centerOffset=hit.point.clone().sub(center);simulation.setGrip(selected,center.toArray());}
     markHit(hit);marker.classList.add('is-held');canvas.style.cursor='grabbing';
     status(`${labels[selected]||selected.replaceAll('_',' ')} · ${mode==='push'?'release to push':'release to drop'}`);if(mode==='drag'){options.onInteraction?.();wake(20);}
+    return true;
   }
   function moveInteraction(e){
     if(!drag){
@@ -278,25 +281,35 @@ export async function createRoom(stage,status,options={}) {
       p=center.add(drag.point.clone().sub(lift.center));
     }else p=ray.ray.intersectPlane(drag.lift?drag.floorPlane:drag.plane,new T.Vector3());
     if(!p)return;
-    const limit=live?5.8:3.7;if(!(live&&drag.kind==='drag')){p.x=T.MathUtils.clamp(p.x,-limit,limit);p.y=T.MathUtils.clamp(p.y,-limit,limit);p.z=T.MathUtils.clamp(p.z,.15,live?simulation.config.grip.reach_height:5.4);}drag.target=p;
+    // A push target describes a direction, so it may extend beyond a wall.
+    // Clamping that aim point could reverse or erase a near-wall push.
+    if(!live&&drag.kind==='drag'){p.x=T.MathUtils.clamp(p.x,-3.7,3.7);p.y=T.MathUtils.clamp(p.y,-3.7,3.7);p.z=T.MathUtils.clamp(p.z,.15,5.4);}drag.target=p;
     if(live&&drag.kind==='drag'){const target=p.clone().sub(drag.centerOffset),clamped=simulation.clampGripTarget(selected,target.toArray(),ceiling);simulation.setGrip(selected,clamped);}
     if(drag.kind==='push'){const d=p.clone().sub(drag.point);d.z=0;arrow.position.copy(drag.point);if(d.length()>.01){arrow.setDirection(d.clone().normalize());arrow.setLength(Math.min(d.length(),2.5),.22,.13);}arrow.visible=d.length()>.04;draw();}
   }
   canvas.addEventListener('pointerdown',beginInteraction);
   canvas.addEventListener('pointermove',moveInteraction);
   canvas.addEventListener('pointerleave',()=>{if(!drag)markHit(null);});
-  canvas.addEventListener('pointerup',e=>{
+  function endInteraction(e){
     pointers.delete(e.pointerId);if(!drag||drag.pointer!==e.pointerId)return;
+    // A quick flick can end beyond the last delivered pointermove.
+    moveInteraction(e);
     if(drag.kind==='push'){const d=drag.target.clone().sub(drag.point);d.z=0;if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)<5)d.set(0,.7,0);d.multiplyScalar(3).clampLength(0,8);push(drag.body,d.toArray(),drag.point);}
     releaseDrag();setMode(mode);draw();
-  });
+  }
+  function applyPushGesture(start,end){
+    if(disposed||mode!=='push'||drag)return false;
+    if(!beginInteraction(start,{capture:false})){pointers.delete(start.pointerId);return false;}
+    endInteraction(end);return true;
+  }
+  canvas.addEventListener('pointerup',endInteraction);
   canvas.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);releaseDrag();draw();});
   canvas.addEventListener('lostpointercapture',e=>{pointers.delete(e.pointerId);if(drag?.pointer===e.pointerId){releaseDrag();draw();}});
   const clearPointer=e=>{pointers.delete(e.pointerId);if(drag?.pointer===e.pointerId){releaseDrag();draw();}};
   document.addEventListener('pointerup',clearPointer);document.addEventListener('pointercancel',clearPointer);
   const blur=()=>{pointers.clear();releaseDrag();};window.addEventListener('blur',blur);
   canvas.addEventListener('keydown',e=>{if(e.key==='Escape'){reset();return;}const d={ArrowUp:[0,2,0],ArrowDown:[0,-2,0],ArrowLeft:[-2,0,0],ArrowRight:[2,0,0],' ':[0,0,3]};if(d[e.key]){e.preventDefault();push(selected,d[e.key]);}});
-  function reset(){cancelAnimationFrame(frame);frame=0;active=false;quietSince=null;releaseDrag();pickHistory.length=0;forces=[];until=0;accumulated=0;arrow.visible=false;if(live)simulation.reset();else{mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);}renderer.shadowMap.needsUpdate=true;draw();setMode(mode);}
+  function reset(){lastPush=null;pushSequence=0;cancelAnimationFrame(frame);frame=0;active=false;quietSince=null;releaseDrag();pickHistory.length=0;forces=[];until=0;accumulated=0;arrow.visible=false;if(live)simulation.reset();else{mj.mj_resetDataKeyframe(model,data,0);mj.mj_forward(model,data);}renderer.shadowMap.needsUpdate=true;draw();setMode(mode);}
   function setMode(value){
     if(value!==mode)releaseDrag();mode=value;
     orbit.enabled=true;orbit.enableRotate=value==='view';orbit.enablePan=live&&value==='view';canvas.style.cursor=value==='view'?'grab':'default';
@@ -325,5 +338,5 @@ export async function createRoom(stage,status,options={}) {
     renderer.dispose();renderer.forceContextLoss();canvas.remove();if(live)simulation.destroy();else{data.delete();model.delete();}
   }
   stage.append(canvas);resize();setMode(mode);
-  return {setMode,reset,push,pause,beginInteraction,moveInteraction,setSpeed(value){if([.5,1,2,4].includes(value))playbackRate=value;},play:()=>wake(),isRunning:()=>active,destroy,getRenderInfo:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,pixelRatio:renderer.getPixelRatio(),frameMs:frameAverage,renderMs,physicsMs,softShadows,room:live?{bounds:simulation.config.physics_bounds,camera:simulation.config.camera,roofBottom:new T.Box3().setFromObject(scene.getObjectByName('Native ceiling glass')).min.z}:null}),getState:()=>({time:data.time,rate:playbackRate,mode,selected,scene:simulation?.config.id,oracle:simulation?.info(),qvel:Array.from(data.qvel),colors:live?Object.fromEntries(Object.values(simulation.bodies).map(b=>[b.name,Array.from(model.geom_rgba.subarray(b.g*4,b.g*4+4))])):{},qpos:Array.from(data.qpos),positions:Object.fromEntries(Object.entries(bodyIds).map(([n,b])=>[n,Array.from(data.xpos.slice(b*3,b*3+3))])),contacts:data.ncon}),project:name=>{const p=(Array.isArray(name)?new T.Vector3().fromArray(name):name in geomIds?new T.Vector3().fromArray(data.geom_xpos,geomIds[name]*3):new T.Vector3().fromArray(data.xpos,bodyIds[name]*3)).project(camera),r=stage.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
+  return {setMode,reset,push,pause,beginInteraction,moveInteraction,applyPushGesture,setSpeed(value){if([.5,1,2,4].includes(value))playbackRate=value;},play:()=>wake(),isRunning:()=>active,destroy,getRenderInfo:()=>({calls:renderer.info.render.calls,triangles:renderer.info.render.triangles,pixelRatio:renderer.getPixelRatio(),frameMs:frameAverage,renderMs,physicsMs,softShadows,room:live?{bounds:simulation.config.physics_bounds,camera:simulation.config.camera,roofBottom:new T.Box3().setFromObject(scene.getObjectByName('Native ceiling glass')).min.z}:null}),getState:()=>({time:data.time,lastPush,rate:playbackRate,mode,selected,scene:simulation?.config.id,oracle:simulation?.info(),qvel:Array.from(data.qvel),colors:live?Object.fromEntries(Object.values(simulation.bodies).map(b=>[b.name,Array.from(model.geom_rgba.subarray(b.g*4,b.g*4+4))])):{},qpos:Array.from(data.qpos),positions:Object.fromEntries(Object.entries(bodyIds).map(([n,b])=>[n,Array.from(data.xpos.slice(b*3,b*3+3))])),contacts:data.ncon}),project:name=>{const p=(Array.isArray(name)?new T.Vector3().fromArray(name):name in geomIds?new T.Vector3().fromArray(data.geom_xpos,geomIds[name]*3):new T.Vector3().fromArray(data.xpos,bodyIds[name]*3)).project(camera),r=stage.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};}};
 }

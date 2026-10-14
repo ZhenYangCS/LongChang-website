@@ -1,14 +1,16 @@
 
-window.createSceneZoom = (frame, video, poster) => {
-  'use strict';
+'use strict';
+window.createSceneZoom = (frame, video, poster, {interactive=true}={}) => {
   const layer=document.createElement('div');layer.className='physics-media';
   const background=document.createElement('img');background.className='physics-room-background';background.alt='';background.loading='lazy';background.decoding='async';background.hidden=true;
+  poster.draggable=false;background.draggable=false;
   layer.append(background,poster,video);frame.prepend(layer);
   const toggle=document.createElement('button');toggle.id='physics-view';toggle.className='physics-view';
   toggle.innerHTML='<span class="room-context"><img loading="lazy" alt="Full room"><span class="focus-rectangle"></span></span><span class="view-label">Detail ↗</span>';
   const controls=document.createElement('div');controls.className='scene-zoom-tools';controls.hidden=true;
   controls.innerHTML='<div class="scene-zoom-buttons" role="group" aria-label="Zoom controls"><button id="scene-zoom-out" aria-label="Zoom out">−</button><button id="scene-zoom-reset" aria-label="Fit the whole room">1.0×</button><button id="scene-zoom-in" aria-label="Zoom in">+</button></div><span id="scene-zoom-hint"></span>';
-  frame.append(toggle,controls);frame.tabIndex=0;
+  if(interactive){frame.append(toggle,controls);frame.tabIndex=0;}
+  else frame.dataset.camera='fixed';
   const rect=toggle.querySelector('.focus-rectangle'),out=controls.querySelector('#scene-zoom-out'),inside=controls.querySelector('#scene-zoom-in'),resetButton=controls.querySelector('#scene-zoom-reset');
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
   const pointers=new Map();let editing=false,scale=1,cx=.5,cy=.5,width=0,height=0,fitWidth=0,fitHeight=0,aspect=1.5,focus=[.5,.5],crop=[0,0,1440,960],fitFocus=false,useDetail=false;
@@ -38,6 +40,7 @@ window.createSceneZoom = (frame, video, poster) => {
     updateHint();
   }
   function updateHint(){
+    if(!interactive){frame.setAttribute('aria-label','Recorded demonstration. Use the playback controls below.');return;}
     const zoom=matchMedia('(pointer:coarse)').matches?'Pinch':document.fullscreenElement?.contains(frame)?'Scroll':'Ctrl/⌘ + scroll';
     controls.querySelector('#scene-zoom-hint').textContent=`${zoom} to zoom · Drag to pan`;
     frame.setAttribute('aria-label',editing?`Scene detail: ${zoom.toLowerCase()} to zoom, drag to pan. Double-click or press 0 to fit the room.`:'Scene demonstration');
@@ -62,6 +65,7 @@ window.createSceneZoom = (frame, video, poster) => {
     const p=[...pointers.values()];
     return p.length>1?{x:(p[0].x+p[1].x)/2,y:(p[0].y+p[1].y)/2,d:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y)}:{...p[0],d:0};
   }
+  if(interactive){
   toggle.addEventListener('click',()=>{
     if(editing){reset();return;}showDetail();frame.focus({preventScroll:true});
   });
@@ -94,6 +98,7 @@ window.createSceneZoom = (frame, video, poster) => {
     else if(e.key==='-')zoom(scale/1.25);
     else{fitFocus=false;cx+=({'ArrowLeft':-48,'ArrowRight':48}[e.key]||0)/(fitWidth*scale);cy+=({'ArrowUp':-48,'ArrowDown':48}[e.key]||0)/(fitHeight*scale);paint();}
   });
+  }
   new ResizeObserver(resize).observe(frame);
   video.addEventListener('loadedmetadata',()=>{if(video.videoWidth&&video.videoHeight){aspect=useDetail?1.5:video.videoWidth/video.videoHeight;resize();}});
 
@@ -107,7 +112,7 @@ window.createSceneZoom = (frame, video, poster) => {
 
 
     for(const element of [video,poster])Object.assign(element.style,{inset:'auto',left:l/1440*100+'%',top:t/960*100+'%',width:(r-l)/1440*100+'%',height:(b-t)/960*100+'%'});
-    if(scene.context_poster)toggle.querySelector('img').src=scene.context_poster;
+    if(interactive&&scene.context_poster)toggle.querySelector('img').src=scene.context_poster;
     reset();showDetail();
   }};
 };

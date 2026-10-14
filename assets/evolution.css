@@ -20,7 +20,6 @@
 #evo-explanation .demo-model { height:100%; min-height:0; flex-shrink:0; }
 #evo-explanation .model-heading,#evo-model-controls,#evo-model-formula,#evo-explanation .atlas-scene-readout,.model-timebar,#evo-model-note { flex-shrink:0; }
 #evo-explanation .model-heading { display:flex; align-items:baseline; justify-content:space-between; gap:8px; padding:10px 14px 7px; }
-#evo-explanation .model-heading .model-control-scope { margin:0; font-size:10px; white-space:nowrap; }
 #evo-model-controls { padding:0 14px 4px; }
 #evo-explanation .atlas-playback { gap:5px; }
 #evo-explanation #evo-model-settings select { padding-block:5px; }

@@ -71,7 +71,10 @@
       if (!pending || !world || !allowed()) return;
       const gesture = pending; pending = null;
       // Transfer only a pointer that is still held. A finished click is never replayed.
-      try { world.beginInteraction(restore(gesture.start)); world.moveInteraction(restore(gesture.latest)); }
+      try {
+        if (gesture.released && gesture.kind === 'push') world.applyPushGesture(restore(gesture.start), restore(gesture.latest));
+        else { world.beginInteraction(restore(gesture.start)); world.moveInteraction(restore(gesture.latest)); }
+      }
       finally { if (stage.hasPointerCapture(gesture.start.pointerId)) stage.releasePointerCapture(gesture.start.pointerId); }
     }
     function publish() { if (active && world && !published) { published = true; onWorld(world); } }
@@ -132,12 +135,19 @@
     stage.addEventListener('pointerdown', event => {
       if (!event.isPrimary) { clearPending(); return; }
       if (world || !active || event.button !== 0 || mode === 'view') return;
-      event.preventDefault(); pending = {start:sample(event), latest:sample(event)};
+      event.preventDefault(); pending = {kind:mode, start:sample(event), latest:sample(event), released:false};
       stage.setPointerCapture(event.pointerId); open();
     });
     stage.addEventListener('pointermove', event => { if (pending?.start.pointerId === event.pointerId) pending.latest = sample(event); }, {passive:true});
-    for (const type of ['pointerup','pointercancel','lostpointercapture']) stage.addEventListener(type, clearPending);
+    stage.addEventListener('pointerup', event => {
+      if (pending?.start.pointerId !== event.pointerId) return;
+      if (pending.kind === 'push') { pending.latest = sample(event); pending.released = true; if (world) handoff(); }
+      else clearPending(event);
+    });
+    stage.addEventListener('pointercancel', clearPending);
+    stage.addEventListener('lostpointercapture', event => { if (!pending?.released) clearPending(event); });
     window.addEventListener('blur', clearPending);
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') clearPending(); });
     stage.addEventListener('pointerup', () => queueMicrotask(() => labels()));
     new IntersectionObserver(sync).observe(host);
     // A show-and-scroll in the same frame can skip an intersection transition.

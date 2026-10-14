@@ -16,8 +16,8 @@ from launch_cues import add_launch_cues
 from render_clear_scenes import room_camera, ROOM_BOUNDS
 
 SITE = Path(__file__).resolve().parents[1]
-CACHE = Path('/tmp/longchang-front-view')
-REVISION = 'front-v1'
+CACHE = Path('/tmp/longchang-low-oblique-view')
+REVISION = 'oblique-v1'
 
 
 def source_job(entry):
@@ -53,13 +53,13 @@ def render(entry, ffmpeg, sample=False):
         if key in ['12','13']:
             video = add_launch_cues(ffmpeg, video, folder/'cued.mp4', entry)
         prefix = 'video' if mode == 'room' else 'detail_video'
-        entry[prefix] = f'assets/videos/front-{mode}/scene-{key}.mp4'
+        entry[prefix] = f'assets/videos/oblique-{mode}/scene-{key}.mp4'
         entry[prefix+'_sha256'] = hashlib.sha256(video.read_bytes()).hexdigest()
-        entry['poster' if mode == 'room' else 'detail_poster'] = f'assets/images/front-{mode}-{key}.webp'
+        entry['poster' if mode == 'room' else 'detail_poster'] = f'assets/images/oblique-{mode}-{key}.webp'
         if mode == 'room':
             entry['studio_poster'] = entry['poster']
-            entry['context_poster'] = f'assets/images/front-context-{key}.webp'
-            entry['room_background'] = f'assets/images/front-background-{key}.webp'
+            entry['context_poster'] = f'assets/images/oblique-context-{key}.webp'
+            entry['room_background'] = f'assets/images/oblique-background-{key}.webp'
             background.convert('RGB').resize((360,240),Image.Resampling.LANCZOS).save(folder/'context.webp',quality=85)
             background.convert('RGB').save(folder/'background.webp',quality=94,method=6)
             signature = json.loads((folder/'room-signature.json').read_text())
@@ -100,8 +100,6 @@ def publish(entries):
         assert len({entry['room_signature'] for entry in current}) == 1
         detail.write(SITE/'data/shared-room.json',dict(bounds=ROOM_BOUNDS,camera=room_camera(),dimensions=[12,12,12],
                      enclosed=True,render_signature=current[0]['room_signature']))
-        for path in (SITE/'data/interactive-scenes').glob('*.json'):
-            config = json.loads(path.read_text()); config['camera'] = room_camera(); detail.write(path, config)
     index()
     print('PUBLISHED: recorded trajectories and timing preserved; all new camera assets ready.',flush=True)
 

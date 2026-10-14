@@ -42,11 +42,11 @@
 :is(#demo-explanation,#evo-explanation) .atlas-scene-readout>span,
 :is(#demo-explanation,#evo-explanation) .atlas-scene-readout>strong { font-size:12px; line-height:1.4; }
 :is(#demo-explanation,#evo-explanation) .atlas-scene-readout>strong { color:#2f6549; font-weight:600; }
-#atlas-model-caption { flex:1; min-width:0; margin:0; color:#365e48; font:500 13px/1.5 var(--sans); text-align:left; text-wrap:pretty; }
+:is(#atlas-model-caption,#evo-model-caption) { flex:1; min-width:0; margin:0; color:#365e48; font:500 13px/1.5 var(--sans); font-variant-numeric:tabular-nums; text-align:left; text-wrap:wrap; }
 #evo-explanation .demo-model { gap:5px 6px; }
 #evo-explanation .model-timebar { grid-column:1/-1; grid-row:8; margin:-5px -14px 0; padding:4px 14px 9px; min-height:20px; background:#edf5ed; border-radius:0 0 14px 14px; }
 #evo-explanation .atlas-scene-readout { border-radius:0; }
-#demo-rule,#evo-explanation .evo-model-rule { grid-column:1/-1; grid-row:3; min-height:0; padding:8px 0; border:0; border-top:1px solid #e0e9df; }
+#demo-rule,#evo-explanation .evo-model-rule { grid-column:1/-1; grid-row:3; min-height:0; padding:10px 0; border:0; border-block:1px solid #d0ddd3; }
 #demo-rule .full-rule { display:block; }
 #demo-explanation[data-scene="13"] #analysis-formula { display:none; }
 #contact-steps { grid-column:1/-1; grid-row:5; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; margin:3px 0; }
@@ -127,3 +127,19 @@
 #evo-explanation:fullscreen .evo-model-rule { display:block; }
 #evo-explanation:fullscreen .evo-demo-data { margin-top:12px; }
 .atlas-export :is(#demo-explanation,#evo-explanation) { grid-template-columns:minmax(0,1fr); }
+
+/* Keep the mode switch anchored when the model pane opens or closes. */
+#scene-detail,#evo-detail { container:scene-panel / inline-size; }
+#worlds .atlas-topline,#evo-detail .atlas-topline {
+  position:static; justify-content:flex-start; flex-shrink:0;
+  min-height:44px; padding:5px 14px 0; border:0; background:none;
+}
+#worlds .atlas-view-switch,#evo-detail .atlas-view-switch { margin:0; gap:20px; }
+#worlds .atlas-view-switch button,#evo-detail .atlas-view-switch button { min-height:36px; font-size:12px; }
+#scene-detail .atlas-copy,#evo-detail .atlas-copy { align-items:center; text-align:center; }
+#worlds #scene-detail .atlas-copy,#evo-detail .atlas-copy { padding:8px 16px 12px; }
+#worlds #scene-detail .atlas-copy h3,#evo-detail .atlas-copy h3 { max-width:100%; margin-inline:auto; text-align:center; text-wrap:balance; }
+#worlds #oracle-plain,#evo-detail #evo-law { width:100%; justify-content:center; text-align:center; text-wrap:balance; }
+@media(min-width:1100px) {
+  #evolution .evo-workspace[data-view=motion] { grid-template-columns:150px minmax(0,1fr); }
+}

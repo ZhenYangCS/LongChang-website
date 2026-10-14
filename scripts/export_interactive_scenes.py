@@ -4,7 +4,7 @@ from pathlib import Path
 from render_physics_demos import demonstration,SOURCE,SPECS
 from paper_scenes import paper_scene_names
 from tools import FORCE_LIMIT,MOVE_SPEED,GRIP_K,REACH_HEIGHT
-from render_clear_scenes import room_camera
+from render_clear_scenes import interactive_camera
 
 SITE=Path(__file__).resolve().parents[1]
 
@@ -19,7 +19,7 @@ def main():
                   source='scenes/base_15.json',source_sha256=hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
                   program_sha256=hashlib.sha256(json.dumps(definition['program'],sort_keys=True).encode()).hexdigest(),
                   grip=dict(force_limit=FORCE_LIMIT,move_speed=MOVE_SPEED,stiffness=GRIP_K,reach_height=REACH_HEIGHT),
-                  camera=room_camera(),
+                  camera=interactive_camera(),
                   physics_bounds=[-6,6,-6,6,12])
         (folder/f'{id}.json').write_text(json.dumps(item,separators=(',',':'))+'\n')
     print('Exported 15 native models, source hashes, parameters and explicit initial preparations.')

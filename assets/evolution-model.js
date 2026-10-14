@@ -5,6 +5,10 @@
   const $ = suffix => root.querySelector(`#evo-model-${suffix}`);
   const {base, point, line, text, polygon, ball} = window.LongChangMotion.draw;
   const uid = 'evolution-model', duration = 20, reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const modelCaption=document.createElement('p');modelCaption.id='evo-model-caption';
+  const readout=root.querySelector('.atlas-scene-readout');readout.append(modelCaption);
+  readout.setAttribute('role','note');readout.setAttribute('aria-label','Current model result');
+  $('state').hidden=true;$('value').hidden=true;
   new ResizeObserver(()=>{
     const svg=$('canvas'),matrix=svg.getScreenCTM(),scale=matrix&&Math.hypot(matrix.a,matrix.b);
     if(scale>0){
@@ -23,6 +27,11 @@
     generate: 'Red and blue repel. Any nonzero push pauses repulsion for 10 s; another push restarts the pause.',
     mutate: 'Red drifts north after 10 s without a nonzero push, only while blue is outside the square. Moving blue by hand keeps the timer.',
     compose: 'Any nonzero push pauses red’s drift for 10 s. Each red launch also queues a separate velocity copy to green, 12 s later.',
+  };
+  const illustrationHelp = {
+    generate:'Compare one push with repeated pushes.',
+    mutate:'Move blue and watch the northward force.',
+    compose:'Time blue’s push after red’s launch at 0 s.',
   };
   let id = document.querySelector('[data-evolution][aria-selected=true]').dataset.evolution;
   let value = configs[id].initial, time = 0, playing = !reduced.matches, visible = false, choices = null;
@@ -73,7 +82,11 @@
     $('canvas').innerHTML = diagram(state);
     $('state').textContent = state.blocked ? 'Blue inside · force blocked' : state.active ? 'Extra force active' : 'Extra force paused';
     $('value').textContent = id === 'compose' ? `${state.copied ? 'Copy applied at 12 s' : `Green copies in ${(12-time).toFixed(1)} s`} · ${state.active ? 'drift on' : `drift in ${remaining.toFixed(1)} s`}` : state.blocked ? 'Moving blue by hand does not reset the timer.' : state.active ? 'Acceleration: 1.5 bricks/s²' : `Resumes in ${remaining.toFixed(1)} s`;
-    $('note').textContent = id === 'compose' ? 'Red pushed at 0 s. Positions are schematic.' : id === 'mutate' ? 'A push at 0 s; positions are schematic.' : 'Force timing; positions are schematic.';
+    modelCaption.textContent = id==='compose'
+      ? state.copied ? state.active ? 'Velocity copied · drift on.' : `Copied · drift in ${remaining.toFixed(1)} s.` : `Drift ${state.active?'on':'paused'} · copy in ${(12-time).toFixed(1)} s.`
+      : id==='mutate' ? state.blocked ? 'Blue inside: northward force blocked.' : state.active ? 'Blue outside: red drifts north.' : `Drift resumes in ${remaining.toFixed(1)} s.`
+      : state.active ? 'The balls repel again.' : value==='repeat' ? 'Repeated pushes keep repulsion off.' : `Repulsion resumes in ${remaining.toFixed(1)} s.`;
+    $('note').textContent = illustrationHelp[id];
     $('progress').value = Math.round(time*10); $('time').textContent = `${time.toFixed(1)} s`;
     $('play').textContent = playing ? 'II' : '▶';
     $('play').setAttribute('aria-label', `${playing ? 'Pause' : 'Play'} explanatory model`);

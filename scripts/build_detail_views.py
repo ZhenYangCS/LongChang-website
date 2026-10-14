@@ -88,6 +88,24 @@ def compose(job,background,sprites,index):
             dd.ellipse((sw/2-sw*scale/2,sh/2-sh*scale/2,sw/2+sw*scale/2,sh/2+sh*scale/2),fill=(50,70,77,alpha))
         shadow_layer.alpha_composite(disc,(round(center[0]-sw/2),round(center[1]-sh/2)))
     im=Image.alpha_composite(im,shadow_layer)
+    # A vertical drop line distinguishes airborne motion from sliding across
+    # the floor. Endpoints use the recorded position and its true footprint.
+    # Scene 10 already includes these guides in its story overlay.
+    if job.get('story')!='10':
+        height_layer=Image.new('RGBA',im.size);guide=ImageDraw.Draw(height_layer)
+        for name,obj in frame['objects'].items():
+            p=np.array(obj['position']);radius=job['radii'][name]
+            if p[2]-radius<.18:continue
+            a=project(camera,w,h,p);b=project(camera,w,h,[p[0],p[1],.012])
+            length=float(np.linalg.norm(b-a))
+            if length<8:continue
+            color=story_overlays.COLORS.get(name,'#687f85')
+            stroke=story_overlays.rgba(color,150);dash=max(4,w/240)
+            for distance in np.arange(radius*ppu+3,length,dash*2):
+                guide.line([tuple(a+(b-a)*distance/length),tuple(a+(b-a)*min(length,distance+dash)/length)],fill=stroke,width=max(2,round(w/600)))
+            rx=max(4,w/230);ry=rx*max(.25,abs(camera['forward'][2]))
+            guide.ellipse((b[0]-rx,b[1]-ry,b[0]+rx,b[1]+ry),outline=stroke,width=max(2,round(w/700)))
+        im=Image.alpha_composite(im,height_layer)
     if job.get('story'):im=story_overlays.underlay(im,job,index,project)
     if job['id']=='10' and not job.get('story'):
         draw=ImageDraw.Draw(im)

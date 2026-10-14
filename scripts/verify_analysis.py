@@ -45,13 +45,13 @@ def main():
         for i in range(1,16):
             page.evaluate('(id)=>showWorld(id)',f'{i:02}');page.evaluate('document.fonts.ready')
             assert page.locator('#analysis-model-note').is_visible()
-            assert page.locator('#model-heading').text_content()==('Count the touches' if i==13 else 'Simplified model') and page.locator('#analysis-model-note').text_content()
+            assert page.locator('#model-heading').text_content()=='Rule illustration' and page.locator('#analysis-model-note').text_content()
             assert page.locator('#full-rule-label').text_content()=='Scene rule'
             text=page.locator('#scene-law-text').text_content()
             assert '^' not in text and '_' not in text,(i,text)
             page.locator('#demo-rule').scroll_into_view_if_needed()
             page.wait_for_function('!document.querySelector("#oracle-chart-wrap").hidden')
-            assert page.locator('#oracle-signal').text_content().startswith('Video data · ')
+            assert page.locator('#oracle-signal').text_content()=='Video data' and page.locator('#oracle-y-label').text_content()
             assert page.locator('#oracle-chart').is_visible() and page.locator('#scene-law a[download]').count()==0
             assert page.locator('#scene-law summary').count()==0
             if i==8:

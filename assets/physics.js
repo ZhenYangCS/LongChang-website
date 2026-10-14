@@ -56,7 +56,7 @@
     const [,label,values,ratio]=rows[index];proof.querySelector('.proof-state').textContent=label;
     proof.querySelectorAll('output').forEach((node,i)=>node.textContent=values[i]||'');proof.style.setProperty('--timer-progress',Math.max(0,ratio)+'%');
   }
-  const zoom=window.createSceneZoom(frame,video,image);
+  const zoom=window.createSceneZoom(frame,video,image,{interactive:false});
   video.controls=false;video.preload='none';
   const media=()=>demo.room_background&&demo.detail_video?{url:demo.detail_video,hash:demo.detail_video_sha256,poster:demo.detail_poster,preview:demo.detail_preview}:{url:demo.video,hash:demo.video_sha256,poster:demo.studio_poster,preview:demo.preview};
   function poster(){image.src=media().preview||media().poster;image.hidden=false;posterLoading=false;sharpenPoster();}
@@ -164,19 +164,24 @@
       const nodes=item.children;if(nodes[0].textContent!==label)nodes[0].textContent=label;if(nodes[1].textContent!==value)nodes[1].textContent=value;
     });
     const width=Math.max(240,Math.round(chart.clientWidth||320));
-    const p=entry.plot,left=38,right=width-10,top=10,bottom=66,max=Math.max(.1,...p.series.flat()),min=entry.id==='12'?Math.min(...p.series.flat()):Math.min(0,...p.series.flat());
+    const p=entry.plot,left=38,right=width-10,top=26,bottom=82,max=Math.max(.1,...p.series.flat()),min=entry.id==='12'?Math.min(...p.series.flat()):Math.min(0,...p.series.flat());
+    const quantities={'01':'Height','02':'Attraction','03':'Height','04':'Gravity / g₀','05':'Red speed','06':'Northward force','07':'Vertical velocity','08':'Blue speed','09':'Red speed','10':'Added energy','11':'Blue speed','12':'Color','13':'Red height','14':'Green speed','15':'Northward force'};
+    const unit=['04','12'].includes(entry.id)?'':(entry.oracle.unit||'').replace('bricks/count','bricks/s');
+    const axisLabel=quantities[entry.id]+(unit?` (${unit})`:'');
     const xy=(x,y)=>[left+x/entry.simulation_duration*(right-left),bottom-(y-min)/(max-min||1)*(bottom-top)];
     const key=`${entry.id}:${width}`;
     chartGeometry={left,right,duration:entry.simulation_duration};
-    if(chart.dataset.drawn!==key){let svg='';
+    if(chart.dataset.drawn!==key){let svg=`<text id="oracle-y-label" x="${left}" y="12" fill="#456553" font-size="11.5" font-weight="500">${axisLabel}</text><path d="M${left} ${top}V${bottom}H${right}" fill="none" stroke="#afc2b4"/>`;
     const ticks=entry.id==='12'?[min,max]:[min,min<0?0:(min+max)/2,max];
     for(const value of ticks){const y=xy(0,value)[1],label=entry.id==='12'?(value===min?'Blue':'Red'):Number(value.toPrecision(2));svg+=`<path d="M${left} ${y}H${right}" stroke="#e0e8e1"/><text x="32" y="${y+4}" text-anchor="end" fill="#71867c" font-size="12">${label}</text>`;}
     p.series.forEach((values,i)=>{const d=p.times.map((time,j)=>(j?'L':'M')+xy(time,values[j]).map(x=>x.toFixed(2)).join(' ')).join('');svg+=`<path d="${d}" stroke="${p.colors[i]}" stroke-width="2" fill="none"/>`;});
-    svg+=`<g id="oracle-cursor" class="video-time-marker"><title>Current video time</title><path class="video-time-halo" d="M0 ${top}V${bottom}"/><path class="video-time-line" d="M0 ${top}V${bottom}"/><path class="video-time-head" d="M-4 ${top-6}H4L0 ${top}Z"/></g><text x="${left}" y="84" fill="#71867c" font-size="12">0</text><text x="${right}" y="84" text-anchor="end" fill="#71867c" font-size="12">${entry.simulation_duration} s</text>`;
-    chart.setAttribute('viewBox',`0 0 ${width} 90`);
+    svg+=`<g id="oracle-cursor" class="video-time-marker"><title>Current video time</title><path class="video-time-halo" d="M0 ${top}V${bottom}"/><path class="video-time-line" d="M0 ${top}V${bottom}"/><path class="video-time-head" d="M-4 ${top-6}H4L0 ${top}Z"/></g><text x="${left}" y="100" fill="#71867c" font-size="12">0</text><text x="${(left+right)/2}" y="100" text-anchor="middle" fill="#71867c" font-size="11">Simulation time (s)</text><text x="${right}" y="100" text-anchor="end" fill="#71867c" font-size="12">${entry.simulation_duration}</text>`;
+    chart.setAttribute('viewBox',`0 0 ${width} 106`);
+    chart.setAttribute('aria-label',`${axisLabel} versus simulation time in seconds.`);
+    chart.dataset.quantity=entry.oracle.measure;chart.dataset.unit=unit;
     chart.innerHTML=svg;chart.dataset.drawn=key;
     $('#oracle-chart-legend').replaceChildren(...p.labels.map((label,i)=>{const item=document.createElement('span');item.textContent=label.replace('Ordinary physics reference','Ordinary physics').replace('Oracle active','Altered rule');item.style.color=p.colors[i];return item;}));
-    $('#oracle-signal').textContent='Video data · '+entry.oracle.measure;
+    $('#oracle-signal').textContent='Video data';
     }
     updateChartCursor();
   }

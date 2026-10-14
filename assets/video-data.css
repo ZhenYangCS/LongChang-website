@@ -1,6 +1,6 @@
 /* Recorded measurements live with the video whose clock drives them. */
 :is(#atlas-physics-view,#evo-demo-view) .video-data {
-  flex:0 0 auto; height:132px; min-height:132px; margin:0; padding:6px 10px 5px;
+  flex:0 0 auto; height:148px; min-height:148px; margin:0; padding:6px 10px 5px;
   border:0; border-top:1px solid #dce7df; border-radius:0; background:#fbfdfb;
 }
 #atlas-physics-view .video-data .physics-readout { display:none; }
@@ -13,6 +13,8 @@
 #atlas-physics-view #oracle-signal { font:500 11px/14px var(--sans); }
 .video-data .video-data-clock { margin:0; padding:0; white-space:nowrap; font:500 11px/14px var(--sans); font-variant-numeric:tabular-nums; color:#254f46; }
 #atlas-physics-view #oracle-chart,#evo-demo-view #evo-demo-chart { display:block; width:100%; height:90px; max-height:none; margin:2px 0 0; }
+#atlas-physics-view #oracle-chart { height:106px; }
+#worlds .physics-video-frame[data-camera=fixed] { cursor:default; touch-action:auto; }
 #evo-demo-view .video-data { height:118px; min-height:118px; }
 #evo-demo-view .video-data:has(button:not([hidden])) { height:142px; }
 #evo-demo-view #evo-chart-status { font:500 11px/14px var(--sans); }

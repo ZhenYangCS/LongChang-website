@@ -4,7 +4,6 @@
 .model-heading { display:block; padding:18px 20px 12px; }
 :is(#model-heading,#evo-model-heading) { margin:0; font:600 16px/1.4 var(--sans); color:#315d47; letter-spacing:0; }
 .model-heading #analysis-model-note { margin:5px 0 0; font:400 12px/1.5 var(--sans); color:#5d7467; }
-.model-heading .model-control-scope { margin:5px 0 0; font:400 12px/1.5 var(--sans); color:#5d7467; }
 :is(#model-controls,#evo-model-controls) { padding:0 20px 8px; }
 :is(#demo-explanation,#evo-explanation) .atlas-playback { display:grid!important; grid-template-columns:minmax(0,1fr) repeat(3,28px); align-items:center; gap:7px; height:auto; min-height:0; padding:0; margin:0; border:0; background:none; }
 :is(#demo-explanation,#evo-explanation) .atlas-playback :is(#atlas-controls,#evo-model-settings) { display:contents!important; margin:0; padding:0; border:0; background:none; }

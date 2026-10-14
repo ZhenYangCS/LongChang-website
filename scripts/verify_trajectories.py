@@ -68,16 +68,15 @@ def main():
         page.wait_for_timeout(160)
         assert page.locator('.scene-motion-path').first.get_attribute('d') == before
 
-        # One compositor transform moves both the film and its guides.
-        source = page.locator('#physics-video').evaluate('video => video.currentSrc')
-        time = page.locator('#physics-video').evaluate('video => video.currentTime')
-        for _ in range(2):
-            page.locator('#physics-view').click()
-            assert page.locator('.scene-motion-path').first.get_attribute('d') == before
-            assert page.locator('#physics-video').evaluate('video => video.currentSrc') == source
-            assert abs(page.locator('#physics-video').evaluate('video => video.currentTime')-time) < .01
-            font_size=page.locator('.scene-motion-action-label').first.evaluate('e=>parseFloat(getComputedStyle(e).fontSize)*e.getScreenCTM().a')
-            assert abs(font_size-12)<.1, 'Action label must remain readable in both full-room and detail views'
+        # Fixed framing keeps the film and overlays aligned without camera controls.
+        assert page.locator('#physics-view,.scene-zoom-tools').count() == 0
+        frame=page.locator('#worlds .physics-video-frame')
+        expect(frame).to_have_attribute('data-camera','fixed')
+        transform=page.locator('#worlds .physics-media').evaluate('e=>e.style.transform')
+        box=frame.bounding_box();x=box['x']+box['width']/2;y=box['y']+box['height']/2
+        page.mouse.move(x,y);page.mouse.down();page.mouse.move(x+40,y-20,steps=5);page.mouse.up()
+        assert page.locator('#worlds .physics-media').evaluate('e=>e.style.transform')==transform
+        assert page.locator('.scene-motion-path').first.get_attribute('d')==before
         page.locator('#physics-fullscreen').click()
         page.wait_for_function('Boolean(document.fullscreenElement)')
         expect(guides).to_be_visible()
@@ -129,7 +128,7 @@ def main():
     assert not errors, errors
     print('PASS: all 15 scenes use recorded guides or retain their baked motion annotations.')
     print('PASS: trajectory endpoints match the film camera to <0.01 source pixels.')
-    print('PASS: launch/force arrows, playback, pause, reset, seeking, zoom and fullscreen.')
+    print('PASS: launch/force arrows, playback, pause, reset, seeking, fixed framing and fullscreen.')
     print('PASS: lazy loading, responsive alignment, view changes, no JavaScript errors.')
     print('PASS: 12 px action labels at desktop and phone sizes, clear of controls and arrows.')
 
