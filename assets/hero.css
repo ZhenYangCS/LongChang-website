@@ -16,14 +16,14 @@ html { scroll-padding-top:24px; }
 .publication-hero .hero-actions .button:hover { background:#176c4d; transform:none; }
 .publication-hero .hero-actions svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
 .publication-hero .paper-hero-art { width:calc(100% - 48px); max-width:720px; align-self:center; min-height:0; margin:24px auto 0; padding:0; }
-.publication-hero .room-stage { width:100%; max-width:480px; }
-.publication-hero .paper-hero-art .room-caption { margin-top:6px; }
+.publication-hero .room-stage { width:100%; max-width:clamp(320px,44svh,420px); }
+.publication-hero .paper-hero-art .room-caption { display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:6px; text-align:center; }
 .publication-hero .room-caption #room-hint { font:400 13px/1.5 'Inter',var(--sans)!important; color:#426351!important; text-align:center; }
-@media(min-width:769px) and (max-height:800px) { .publication-hero .room-stage { max-width:400px; } }
+@media(min-width:769px) and (max-height:800px) { .publication-hero .hero-copy { padding-block:52px 32px; } }
 @media(max-width:768px) {
  .publication-hero #hero-title { font-size:41.6px; }
  .publication-hero .paper-title { font-size:19.2px; }
  .publication-hero #hero-title .hero-logo { width:35.2px; height:35.2px; vertical-align:-6.4px; margin-right:6.4px; border-radius:6.4px; }
- .publication-hero .room-stage { max-width:420px; }
+ .publication-hero .room-stage { max-width:360px; }
 }
 @media(prefers-reduced-motion:reduce) { .longchang-logo .logo-eye { animation:none; } .longchang-logo .logo-gaze { transition:none; } }

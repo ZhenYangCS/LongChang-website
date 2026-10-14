@@ -27,7 +27,7 @@
   function sync(){
     const state=atlas.getState(),kind=state.gesture||'replay';svg.dataset.gesture=kind;
     const labels={height:'Drag ball to set height',strength:state.id==='05'?'Drag to set speed':'Drag to set impulse',direction:'Drag to aim',phase:'Phase · click the curve'};
-    document.querySelector('#atlas-controls label').textContent=labels[kind]||state.label;
+    document.querySelector('#atlas-controls .model-setting-label').textContent=document.querySelector('#atlas-controls .model-options')?state.label:labels[kind]||state.label;
     document.querySelector('#atlas-parameter').setAttribute('aria-label',state.label);
     resizeTargets();
   }

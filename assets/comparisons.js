@@ -13,16 +13,17 @@
   ];
   const groups = [
     {id:'guidance', title:'Guidance helps.', names:['Free exploration','Task-guided'], labels:['Free','Guided'], setup:'Task guidance · 100-turn limit'},
-    {id:'budget', title:'More time goes unused.', note:'About 42 turns used under either limit.', names:['100 turns','500 turns'], labels:['100 turns','500 turns'], setup:'Turn budget · no context compaction'},
+    {id:'budget', title:'More time goes unused.', metric:'L', note:'Mean turns used', names:['100 turns','500 turns'], labels:['100-turn limit','500-turn limit'], setup:'Turn budget · no context compaction'},
     {id:'apparatus', title:'Tool access helps.', names:['Disabled','Enabled'], labels:['Tools off','Tools on'], setup:'Tool access · 100-turn limit'}
   ];
   const conditionsFor = group => group.names.map(name => data.controlled.find(row => row.name === name));
   const target = document.querySelector('#controlled-comparisons');
   if (target) target.innerHTML = groups.map(group => {
     const conditions = conditionsFor(group);
-    return `<article class="controlled-finding" data-comparison="${group.id}">
+    const metric = group.metric || 'D';
+    return `<article class="controlled-finding" data-comparison="${group.id}" data-primary-metric="${metric}">
       <h4>${group.title}</h4>
-      <div class="controlled-pair">${conditions.map((row, index) => `${index ? '<span class="controlled-arrow" aria-hidden="true">→</span>' : ''}<div><span class="controlled-condition">${group.labels[index]}</span><strong data-condition="${esc(row.name)}" data-metric="D">${row.D.toFixed(1)}<small>%</small></strong></div>`).join('')}</div>
+      <div class="controlled-pair">${conditions.map((row, index) => `${index ? '<span class="controlled-arrow" aria-hidden="true">→</span>' : ''}<div><span class="controlled-condition">${group.labels[index]}</span><strong data-condition="${esc(row.name)}" data-metric="${metric}">${row[metric].toFixed(1)}${metric === 'L' ? '' : '<small>%</small>'}</strong></div>`).join('')}</div>
       ${group.note ? `<p>${group.note}</p>` : ''}
     </article>`;
   }).join('');
@@ -30,7 +31,8 @@
   const tables = document.querySelector('#controlled-tables');
   if (tables) tables.innerHTML = groups.map(group => {
     const conditions = conditionsFor(group);
-    return `<table class="controlled-table"><caption>${group.setup}</caption><thead><tr><th scope="col">Metric</th>${group.labels.map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${fields.map(({key, label}) => `<tr><th scope="row">${label}</th>${conditions.map(row => `<td data-condition="${esc(row.name)}" data-metric="${key}">${row[key].toFixed(1)}${key === 'L' ? '' : '%'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    const orderedFields = group.metric === 'L' ? [fields.find(field => field.key === 'L'), ...fields.filter(field => field.key !== 'L')] : fields;
+    return `<table class="controlled-table"><caption>${group.setup}</caption><thead><tr><th scope="col">Metric</th>${group.labels.map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${orderedFields.map(({key, label}) => `<tr><th scope="row">${label}</th>${conditions.map(row => `<td data-condition="${esc(row.name)}" data-metric="${key}">${row[key].toFixed(1)}${key === 'L' ? '' : '%'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
   }).join('');
 
   const evolution = document.querySelector('#evolution-results');

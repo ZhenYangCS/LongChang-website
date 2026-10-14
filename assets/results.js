@@ -8,10 +8,10 @@
   const explorationPanel = document.querySelector('#result-exploration');
   const outcomesPanel = document.querySelector('#result-outcomes');
   const announcement = document.querySelector('#results-announcement');
-  const narrow = matchMedia('(max-width: 900px)');
+  const narrow = matchMedia('(max-width: 1000px)');
   const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const metrics = [
-    {key:'D', name:'Discovery', hint:'Both checks pass', detail:'A run passes both the complete-law and experimental-support checks.'},
+    {key:'D', name:'Discovery', hint:'C + S must pass', detail:'Both C (correct law) and S (evidence support) must pass in the same run.'},
     {key:'C', name:'Correct law', hint:'Full rule identified', detail:'The report identifies the complete altered law.'},
     {key:'S', name:'Evidence support', hint:'Claims backed by evidence', detail:'The report’s claims and reasoning are supported by its recorded experiments.'}
   ];

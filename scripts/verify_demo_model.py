@@ -28,15 +28,28 @@ def main():
             assert before['paused']
             page.evaluate('window.recordedChart=document.querySelector("#oracle-chart path")')
             control = page.locator('#atlas-parameter')
-            if control.evaluate('e=>e.tagName') == 'SELECT':
-                values = control.locator('option').evaluate_all('els=>els.map(e=>e.value)')
+            if page.locator('#atlas-controls input[type=radio]').count() > 0:
+                values = page.locator('#atlas-controls input[type=radio]').evaluate_all('els=>els.map(e=>e.value)')
                 for value in values:
-                    control.select_option(value)
+                    page.locator(f'#atlas-controls input[type=radio][value="{value}"]').check()
                     assert page.evaluate('LongChangAtlas.getState().value') == value
             else:
                 for bound in ['min', 'max']:
                     control.evaluate('(e,b)=>{e.value=e[b];e.dispatchEvent(new Event("input",{bubbles:true}));}', bound)
                     assert float(control.input_value()) == float(control.get_attribute(bound))
+            if scene == '13':
+                for step in [1, 2, 3]:
+                    page.locator(f'[data-contact-step="{step}"]').click()
+                    assert control.input_value() == 'repeat'
+                    drawing = page.locator('.contact-diagram')
+                    assert drawing.get_attribute('data-contact-count') == str(step)
+                    assert (float(drawing.get_attribute('data-jump-height')) > 0) == (step == 3)
+                for option, count in [('hold', '1'), ('wall', '0')]:
+                    page.locator(f'#atlas-controls input[type=radio][value="{option}"]').check()
+                    page.locator('#atlas-progress').evaluate('e=>{e.value=700;e.dispatchEvent(new Event("input",{bubbles:true}));}')
+                    drawing = page.locator('.contact-diagram')
+                    assert drawing.get_attribute('data-contact-count') == count
+                    assert float(drawing.get_attribute('data-jump-height')) == 0
             page.locator('#atlas-reset').click()
             page.locator('#atlas-play').click()
             page.wait_for_function('LongChangAtlas.getState().time>.1')
@@ -54,7 +67,7 @@ def main():
         page.evaluate('document.querySelector("#worlds").scrollIntoView({block:"start",behavior:"instant"})')
         page.wait_for_function('!document.querySelector("#physics-video").paused')
         time = page.locator('#physics-video').evaluate('v=>v.currentTime')
-        page.locator('#atlas-parameter').select_option('blue-blue')
+        page.locator('#atlas-controls input[type=radio][value=blue-blue]').check()
         page.wait_for_timeout(200)
         assert page.locator('#physics-video').evaluate('v=>!v.paused')
         assert page.locator('#physics-video').evaluate('v=>v.currentTime') > time
@@ -65,7 +78,7 @@ def main():
         page.wait_for_function('!document.fullscreenElement')
         page.locator('#analysis-fullscreen').click()
         page.wait_for_function('document.fullscreenElement?.id==="demo-explanation"')
-        assert page.locator('#atlas-parameter').is_visible()
+        assert page.locator('#atlas-controls').is_visible()
         page.locator('#analysis-fullscreen').click()
         page.wait_for_function('!document.fullscreenElement')
         page.locator('[data-atlas-view=motion]').click()

@@ -37,7 +37,9 @@ def main():
                 actual = float(page.locator('#oracle-cursor').get_attribute('data-time'))
                 assert abs(actual-expected) < .05, (scene, fraction, expected, actual)
             frozen = page.locator('#oracle-cursor').get_attribute('transform')
-            page.locator('#atlas-parameter').evaluate('e=>{e.value=e.tagName==="SELECT"?e.options[e.options.length-1].value:e.max;e.dispatchEvent(new Event(e.tagName==="SELECT"?"change":"input",{bubbles:true}));}')
+            choices=page.locator('#atlas-controls input[type=radio]')
+            if choices.count():choices.last.check()
+            else:page.locator('#atlas-parameter').evaluate('e=>{e.value=e.max;e.dispatchEvent(new Event("input",{bubbles:true}));}')
             page.wait_for_timeout(100)
             assert page.locator('#oracle-cursor').get_attribute('transform') == frozen
         print('PASS: all 15 video playheads match native recorded timestamps after seeking; independent model controls leave them unchanged.', flush=True)

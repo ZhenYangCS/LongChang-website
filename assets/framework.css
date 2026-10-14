@@ -33,8 +33,7 @@
 .fw-artifact::after { content:''; position:absolute; right:6px; top:6px; width:9px; height:9px; border-top:1px solid color-mix(in srgb,var(--fw-color) 40%,#fff); border-right:1px solid color-mix(in srgb,var(--fw-color) 40%,#fff); }
 .fw-node-title { font-family:var(--sans); font-size:clamp(13px,1.08vw,15px); line-height:1.35; font-weight:500; letter-spacing:-.025em; }
 .fw-node-note { color:var(--muted); font-size:10px; line-height:1.4; }
-.fw-construction .fw-node { left:24px; right:18px; }
-.fw-evaluation .fw-node { left:18px; right:24px; }
+.fw-construction .fw-node,.fw-evaluation .fw-node { left:21px; right:21px; }
 .fw-node[data-node="designer"] { top:64px; }
 .fw-node[data-node="scenes"] { top:150px; height:62px; }
 .fw-node[data-node="scenes"] .fw-node-title { max-width:135px; }
@@ -91,8 +90,7 @@
 @media (max-width:1150px) and (min-width:901px) {
   .fw-map { padding-inline:15px; }
   .fw-lanes { gap:12px; }
-  .fw-construction .fw-node { left:18px; right:10px; }
-  .fw-evaluation .fw-node { left:10px; right:18px; }
+  .fw-construction .fw-node,.fw-evaluation .fw-node { left:14px; right:14px; }
   .fw-node { padding-inline:10px; }
   .fw-node-note { font-size:9px; }
   .fw-node[data-node="scenes"] .fw-node-title { max-width:110px; }

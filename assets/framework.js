@@ -135,14 +135,16 @@
     };
     if (!stacked.matches) {
       const entryX = (b.scenes.r+b.world.l)/2;
-      const evidenceX = (b.traces.r+b.judge.l)/2;
+      const explorationRight = $('.fw-exploration').getBoundingClientRect().right-bounds.left;
+      const evaluationLeft = $('.fw-evaluation').getBoundingClientRect().left-bounds.left;
+      const evidenceX = (explorationRight+evaluationLeft)/2;
       const lawX = bounds.width-11, lawY = b.designer.t-26;
       const returnX = 12;
       Object.assign(routes,{
         enter:{points:[[b.scenes.r,b.scenes.y],[entryX,b.scenes.y],[entryX,b.world.y],[b.world.l,b.world.y]]},
         report:{points:[[b.explorer.r,b.explorer.y],[b.report.l,b.report.y]]},
         law:{points:[[b.scenes.r,b.scenes.t+18],[entryX-10,b.scenes.t+18],[entryX-10,lawY],[lawX,lawY],[lawX,b.judge.y],[b.judge.r,b.judge.y]],label:{x:lawX,y:b.judge.t-22,side:'left',lines:['Hidden law','Evaluation only']}},
-        evidence:{points:[[b.traces.r,b.traces.y],[evidenceX,b.traces.y],[evidenceX,b.judge.y+15],[b.judge.l,b.judge.y+15]]},
+        evidence:{points:[[b.traces.r,b.traces.y],[evidenceX,b.traces.y],[evidenceX,b.judge.y],[b.judge.l,b.judge.y]]},
         feedback:{points:[[b.traces.l,b.traces.y],[b.evolution.r,b.evolution.y]],label:{x:(b.traces.l+b.evolution.r)/2,y:b.traces.y,maxWidth:b.traces.l-b.evolution.r-24}},
         evolve:{points:[[b.evolution.l,b.evolution.y],[returnX,b.evolution.y],[returnX,b.designer.y],[b.designer.l,b.designer.y]]}
       });
@@ -154,9 +156,9 @@
         enter:{points:[[b.scenes.r,b.scenes.y],[right-9,b.scenes.y],[right-9,enterY],[enterX,enterY],[enterX,b.world.t]]},
         report:{points:[[b.explorer.r,b.explorer.y],[right-9,b.explorer.y],[right-9,reportY],[b.report.x,reportY],[b.report.x,b.report.t]]},
         law:{points:[[b.scenes.r,b.scenes.t+18],[right,b.scenes.t+18],[right,b.judge.y],[b.judge.r,b.judge.y]],label:{x:right,y:b.judge.t-22,side:'left',lines:['Hidden law','Evaluation only']}},
-        evidence:{points:[[b.traces.l,b.traces.y],[left+8,b.traces.y],[left+8,b.judge.y],[b.judge.l,b.judge.y]]},
-        feedback:{points:[[b.traces.l,b.traces.y+13],[left,b.traces.y+13],[left,b.evolution.y],[b.evolution.l,b.evolution.y]]},
-        evolve:{points:[[b.evolution.l,b.evolution.y-12],[left+8,b.evolution.y-12],[left+8,b.designer.y],[b.designer.l,b.designer.y]]}
+        evidence:{points:[[b.traces.x,b.traces.b],[b.traces.x,b.traces.b+12],[left+16,b.traces.b+12],[left+16,b.judge.y],[b.judge.l,b.judge.y]]},
+        feedback:{points:[[b.traces.l,b.traces.y],[left,b.traces.y],[left,b.evolution.y],[b.evolution.l,b.evolution.y]]},
+        evolve:{points:[[b.evolution.x,b.evolution.t],[b.evolution.x,b.evolution.t-16],[left+8,b.evolution.t-16],[left+8,b.designer.y],[b.designer.l,b.designer.y]]}
       });
     }
     edges.forEach(edge => {

@@ -18,8 +18,8 @@ def main():
   blink=logo.locator('.logo-eye').evaluate_all('els=>els.map(e=>new DOMMatrix(getComputedStyle(e).transform).d)');assert len(blink)==2 and max(blink)<.3 and abs(blink[0]-blink[1])<.001
   logo.locator('.logo-eye').evaluate_all('els=>els.forEach(e=>e.getAnimations().forEach(a=>{a.currentTime=0;a.play();}))')
   budget=page.locator('[data-comparison=budget]');assert budget.get_attribute('data-primary-metric')=='L'
-  assert budget.locator('tbody tr').first.locator('th').inner_text()=='Mean turns'
-  assert budget.locator('tbody tr').first.locator('td').all_text_contents()==['42.2','41.4']
+  assert budget.locator('p').inner_text()=='Mean turns used'
+  assert budget.locator('.controlled-pair [data-metric="L"]').all_text_contents()==['42.2','41.4']
   page.locator('#scene-tab-10').click();page.wait_for_function('document.querySelector("#physics-video").readyState>=2&&!document.querySelector("#physics-video").paused');page.locator('#physics-play').click()
   page.locator('#physics-progress').evaluate('e=>{e.value=650;e.dispatchEvent(new Event("input",{bubbles:true}));}');page.wait_for_function('!document.querySelector("#physics-video").seeking')
   assert page.locator('#physics-video').evaluate('v=>v.currentSrc').startswith(url)

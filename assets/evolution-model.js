@@ -19,8 +19,13 @@
     mutate: {label:'Blue position', initial:'inside', options:[['inside','Inside the square'],['outside','Outside the square']]},
     compose: {label:'Push blue', initial:'later', options:[['none','No second push'],['later','At 8 s']]},
   };
+  const modelRules = {
+    generate: 'Red and blue repel. Any nonzero push pauses repulsion for 10 s; another push restarts the pause.',
+    mutate: 'Red drifts north after 10 s without a nonzero push, only while blue is outside the square. Moving blue by hand keeps the timer.',
+    compose: 'Any nonzero push pauses red’s drift for 10 s. Each red launch also queues a separate velocity copy to green, 12 s later.',
+  };
   let id = document.querySelector('[data-evolution][aria-selected=true]').dataset.evolution;
-  let value = configs[id].initial, time = 0, playing = !reduced.matches, visible = false;
+  let value = configs[id].initial, time = 0, playing = !reduced.matches, visible = false, choices = null;
   function evaluate(scene, option, seconds) {
     const lastPush = scene === 'generate' && option === 'repeat' ? Math.floor(seconds/8)*8 : scene === 'compose' && option === 'later' && seconds >= 8 ? 8 : 0;
     const quietUntil = lastPush + 10, blocked = scene === 'mutate' && option === 'inside';
@@ -76,24 +81,21 @@
   const running = () => playing && visible && !root.hidden && !document.hidden && !document.querySelector('dialog[open]');
   const clock = window.LongChangScenePlayer.modelClock({running,tick(elapsed) { time=Math.min(duration,time+elapsed*4); if(time===duration)playing=false; render(); }});
   function select(scene, description) {
-    if (description) $('rule').textContent = description.full;
+    $('rule').textContent = modelRules[scene];
     root.scrollTop=0;
     id=scene; value=configs[id].initial; time=0; playing=!reduced.matches;
     const config=configs[id];
-    $('settings').querySelector('label').textContent=config.label;
-    $('parameter').innerHTML=config.options.map(([v,label])=>`<option value="${v}">${label}</option>`).join('');
-    $('parameter').value=value;
+    choices = window.LongChangModelOptions.create({host:$('settings'),id:'evo-model-parameter',label:config.label,options:config.options,value,scene:`evo-${id}`,onChange:parameter});
     $('canvas').setAttribute('aria-label', `${description?.name || id}: adjustable force and delay model`);
     window.LongChangMath.render($('formula'), `evo-${id}`);
     render(); clock.sync(); drawRecorded();
   }
   function parameter(next, {restart=true}={}) {
     if (!configs[id].options.some(([v])=>v===next)) return;
-    value=next; $('parameter').value=value;
+    value=next; choices.set(value);
     if(restart){time=0;playing=!reduced.matches;}
     render();clock.sync();
   }
-  $('parameter').addEventListener('change', event=>parameter(event.target.value));
   $('play').addEventListener('click',()=>{if(time>=duration)time=0;playing=!playing;render();clock.sync();});
   $('reset').addEventListener('click',()=>{time=0;playing=false;render();clock.sync();});
   $('progress').addEventListener('input',event=>{time=Math.max(0,Math.min(duration,Number(event.target.value)/10));playing=false;render();clock.sync();});

@@ -42,7 +42,7 @@ def main():
             before=video.evaluate('v=>({src:v.currentSrc,time:v.currentTime,paused:v.paused})')
             assert page.locator('#evo-model-formula math').count()>=1
             for value in options:
-                page.locator('#evo-model-parameter').select_option(value)
+                page.locator(f'#evo-model-settings input[type=radio][value="{value}"]').check()
                 if key=='generate':
                     assert not seek(9.9)['active']
                     assert seek(10)['active']==(value=='once')
@@ -69,12 +69,12 @@ def main():
         page.locator('.evo-demo-data').scroll_into_view_if_needed()
         page.wait_for_function('!!document.querySelector("#evo-demo-chart .evo-recorded-series")')
         path=page.locator('.evo-recorded-series').get_attribute('d')
-        page.locator('#evo-model-parameter').select_option('none')
+        page.locator('#evo-model-settings input[type=radio][value=none]').check()
         seek(13)
         assert page.locator('.evo-recorded-series').get_attribute('d')==path
         page.locator('#evo-model-fullscreen').click()
         page.wait_for_function('document.fullscreenElement?.id==="evo-explanation"')
-        expect(page.locator('#evo-model-parameter')).to_be_visible()
+        expect(page.locator('#evo-model-settings .model-choice-grid')).to_be_visible()
         page.locator('#evo-model-fullscreen').click()
         page.wait_for_function('!document.fullscreenElement')
         # The additional Demo panel hides for Experiment; neither state overwrites the other.

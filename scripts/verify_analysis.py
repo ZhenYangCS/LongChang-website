@@ -20,9 +20,9 @@ def main():
             assert page.locator('#atlas-controls').is_visible() and page.locator('#atlas-canvas').is_visible()
             assert not page.locator('#scene-live-stage').is_visible()
             control=page.locator('#atlas-parameter')
-            if control.evaluate('e=>e.tagName')=='SELECT':
-                values=control.locator('option').evaluate_all('options=>options.map(o=>o.value)')
-                for v in values:control.select_option(v)
+            if page.locator('#atlas-controls input[type=radio]').count()>0:
+                values=page.locator('#atlas-controls input[type=radio]').evaluate_all('options=>options.map(o=>o.value)')
+                for v in values:page.locator(f'#atlas-controls input[type=radio][value="{v}"]').check()
             else:
                 control.evaluate('e=>{e.value=e.max;e.dispatchEvent(new Event("input",{bubbles:true}));}')
             assert page.locator('#scene-detail').get_attribute('data-view')=='physics'
@@ -35,17 +35,17 @@ def main():
             page.locator('#atlas-reset').click();assert page.locator('#atlas-progress').input_value()=='0'
             assert page.locator('.analysis-assumptions').count()==0
             assert not page.locator('#atlas-progress').is_visible() and not page.locator('.scene-foot').is_visible()
-            assert page.locator('.atlas-playback #atlas-parameter').is_visible()
+            assert page.locator('#atlas-controls').is_visible()
         assert page.evaluate('document.fonts.check(\'22px "STIX Two Math"\')')
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>/\\.(wasm|mp4)/.test(r.name))')
         page.locator('#analysis-fullscreen').click();page.wait_for_function('!!document.fullscreenElement')
-        assert page.locator('.atlas-playback #atlas-controls').count()==1 and page.locator('#atlas-parameter').is_visible()
+        assert page.locator('.atlas-playback #atlas-controls').count()==1 and page.locator('#atlas-controls').is_visible()
         page.locator('#analysis-fullscreen').click();page.wait_for_function('!document.fullscreenElement')
         assert page.locator('.atlas-playback #atlas-controls').count()==1
         for i in range(1,16):
             page.evaluate('(id)=>showWorld(id)',f'{i:02}');page.evaluate('document.fonts.ready')
             assert page.locator('#analysis-model-note').is_visible()
-            assert page.locator('#model-heading').text_content()=='Simplified model' and page.locator('#analysis-model-note').text_content()
+            assert page.locator('#model-heading').text_content()==('Count the touches' if i==13 else 'Simplified model') and page.locator('#analysis-model-note').text_content()
             assert page.locator('#full-rule-label').text_content()=='Scene rule'
             text=page.locator('#scene-law-text').text_content()
             assert '^' not in text and '_' not in text,(i,text)
