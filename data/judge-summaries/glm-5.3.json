@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "language": "en",
+  "kind": "English summary",
+  "model": "GLM-5.3",
+  "runs": [
+    {
+      "episode_id": "9545077b724e4c8485a1c2c4fdfdea2e",
+      "scene": "01",
+      "repeat": 1,
+      "summary": "The tile conclusion fits ordinary physics, but unsupported impulse scaling and collision-momentum estimates remain in the report.",
+      "evaluation_sha256": "9310ce753d13e741ff0e8a6aa843e07c14f5ff03cadc7d107d7479be4bb6836c",
+      "reason_sha256": "64da78fa1bc867756c17fc2b8c6f2f4b1769cc40c0cb96746df2ed7604351876"
+    },
+    {
+      "episode_id": "d02690b042a444528002afa28dfd3dce",
+      "scene": "01",
+      "repeat": 2,
+      "summary": "The tile conclusion fits the control, but accepting an oversized command does not prove it was applied without clipping; the claimed XML quotation rule is also false.",
+      "evaluation_sha256": "13474c854a8c84b9757d93f6b4962a0e8fc094b516aa5a3c0c3901657c1cac46",
+      "reason_sha256": "303575df0d8ee53db044a234d553dcea36a027e759dca59a299e033582bff4dd"
+    },
+    {
+      "episode_id": "5bd0a080eaed4551a0da21f149d326c1",
+      "scene": "01",
+      "repeat": 3,
+      "summary": "The report incorrectly claims stronger friction on the gray tile and nearly zero resistance elsewhere, failing the normal-control criterion.",
+      "evaluation_sha256": "2d25fcf3f01ff8fd549383155026ee0a2545e0c75ac5aba144799b77d9d3c3d4",
+      "reason_sha256": "22a1ecb340e397b2a9635565ca032182ebbc64c483391771f8cbe03bb8be7716"
+    },
+    {
+      "episode_id": "56007da76e994f8088be13c67ed7203c",
+      "scene": "02",
+      "repeat": 1,
+      "summary": "The report identifies selective attraction and much of its scope, but lacks the inverse-square law and gives an inconsistent acceleration-field interpretation.",
+      "evaluation_sha256": "80e582b870fb2ce9a1fed3e4b97bbde47f0336564df6d4ba08f2a7c042a3191c",
+      "reason_sha256": "8d5263f1b5b0885189a9280b584547169366533c353bc5ebb5e581bc67ea0aaa"
+    },
+    {
+      "episode_id": "09da800d163147d8b73ee3717ed6e6b7",
+      "scene": "02",
+      "repeat": 2,
+      "summary": "The report captures selective attraction, but its shifted-distance force formula is not equivalent to an inverse-square law in center-to-center distance.",
+      "evaluation_sha256": "288dd7ab5dc51a166d921b71799aacebbcffe4b02a73d0794b050f8ddd3fbd12",
+      "reason_sha256": "f64cf4aa1433888c850506d4e249830bb47df7fd363faebf91d7f46301df47a5"
+    },
+    {
+      "episode_id": "766685fe18a443169705e3fcac8c358c",
+      "scene": "02",
+      "repeat": 3,
+      "summary": "The report adds a nonexistent distance cutoff. Recorded motion at larger separation contradicts the claim of no attraction there.",
+      "evaluation_sha256": "18dfdbcf0219fee56f71fc0eea7b5206f6730d2c90997fce7051e2b5a83d05b7",
+      "reason_sha256": "88995f310e6edbc1e37c10385e4f86dd0ca0908b59666e48e249640646b8d525"
+    },
+    {
+      "episode_id": "40e2b77c23f645dda06b90f19373f5ae",
+      "scene": "03",
+      "repeat": 1,
+      "summary": "The report attributes falling differences to object categories and assumes equal ball accelerations. Several fall-time comparisons are also inaccurate.",
+      "evaluation_sha256": "11e55fa1eb3c7429c6f6bc4749b95902f4c828c43f6bd18225e27676de93770b",
+      "reason_sha256": "235484df7f4302cf296b6e41995a469748200058d410adff5062a4cdececbf75"
+    },
+    {
+      "episode_id": "e114d6904ade4fd59a52883f05aec943",
+      "scene": "03",
+      "repeat": 2,
+      "summary": "The report incorrectly states that gravity is mass-independent and uses a fall duration that omits time advanced during release.",
+      "evaluation_sha256": "06dc519ff734fb76b3dc1705f2e089487077f8bb92a0d74da8fde20383cb2d28",
+      "reason_sha256": "7e2c90b854f6fb92743afdea822bc212d30cb8c6bb7540b23f95bd969f4962b2"
+    },
+    {
+      "episode_id": "66ed8b6f07c84ba99a4b84119f46defe",
+      "scene": "03",
+      "repeat": 3,
+      "summary": "Different impulse responses are observed, but they do not identify how falling acceleration depends on mass or the law's scope.",
+      "evaluation_sha256": "1ca136bb2a543beb7b6f05da2cbb6835bb349e41bdbe0bed435526ac9e7820f4",
+      "reason_sha256": "8bea7fab52ba5b124e456ad17838ff018c798d0534f399d2914d16dd97ccf782"
+    },
+    {
+      "episode_id": "b1348876d2cd457b8b2e1f4d069e5cc6",
+      "scene": "04",
+      "repeat": 1,
+      "summary": "The report retains fixed gravity rather than a periodic law. It also miscounts release time and treats a still-held ball as a free friction test.",
+      "evaluation_sha256": "da477660d1ec9284c9678435bc8409f8260849340d2e66d46a8b54fa06e7843a",
+      "reason_sha256": "40dbf83e7c168c4e4fb2c3f42221167764b17f7313c544e594b3c1ac189e83d8"
+    },
+    {
+      "episode_id": "85aa776726164cd4982a323f27dd4e2f",
+      "scene": "04",
+      "repeat": 2,
+      "summary": "The report attributes varying estimates to drag rather than time-dependent gravity. Claimed gate motion and launch components also conflict with records.",
+      "evaluation_sha256": "6ee74d24ee55705f4402af8ba5c5277426c5166f786ad24517c363d5158ce690",
+      "reason_sha256": "7a61618686a0e8083ab1c7469d5f428672d11f18c2c6974925d99f5523b49f60"
+    },
+    {
+      "episode_id": "add99c1f14644ebe84fceb3253e78225",
+      "scene": "04",
+      "repeat": 3,
+      "summary": "Inconsistent trials are noted, but the report attributes them to initial states or measurement error rather than identifying periodic gravity.",
+      "evaluation_sha256": "68ea8713f770cedda795db33bdbe4415236f836f23e1900dc5e72c0dd7c4d070",
+      "reason_sha256": "c6ef5179e35d4c5f39f147c2512ff0e76d1e3e8e311277eaf422544595551e5d"
+    },
+    {
+      "episode_id": "68b35a34a35145a599217b9e0383a37f",
+      "scene": "05",
+      "repeat": 1,
+      "summary": "The report substitutes object-specific quadratic drag for the shared speed-threshold braking law.",
+      "evaluation_sha256": "b4c1acd07125b6990d262046654dbc6fec525058d9ff032364915045a7b26a7b",
+      "reason_sha256": "9225977130268a473bc738227695bb4ff98b751c48cca56b182786bdcb9c4271"
+    },
+    {
+      "episode_id": "509c35a4423744ccb8152138df367897",
+      "scene": "05",
+      "repeat": 2,
+      "summary": "Strong-push slowing is observed, but the threshold law and its scope are missing. Several collision and mass inferences exceed the evidence.",
+      "evaluation_sha256": "58b390790c6365d6fa2172a22c2843eac61709842ca2451c59ea83cdd511d73f",
+      "reason_sha256": "b8a0c75e449511b1ae23f239a342d28ba76f67fe7c6e40fd3d5ea505a7bee785"
+    },
+    {
+      "episode_id": "3f80c812d2424f49ac9982e74e6bc91a",
+      "scene": "05",
+      "repeat": 3,
+      "summary": "A drag fit over all speeds does not identify ordinary motion below a threshold and linear extra braking above it.",
+      "evaluation_sha256": "b98f3de65a9951ebf92582fcc6398fb006186f1408a9544512f0185c1a34354f",
+      "reason_sha256": "1a6d4e7fa3d10aca6b72cf87f6bee2b4cb872c07156901a47f4c60efe3d4618e"
+    },
+    {
+      "episode_id": "f14ecbd2f0ce48d1a602b32e5db2edc9",
+      "scene": "06",
+      "repeat": 1,
+      "summary": "The sideways force law is identified, but incorrect heights, timing and collision interpretations prevent full evidence support.",
+      "evaluation_sha256": "f0723ec8b3e237478d6100bd49dae3ee48c7993b09efef4d63a360a258732361",
+      "reason_sha256": "b5fdefbcdf243bd835c5f6087ba7ec8174c0003dac8fc9677575c19fc6eae563"
+    },
+    {
+      "episode_id": "c68a7a5322634330870fe9bb954da0a2",
+      "scene": "06",
+      "repeat": 2,
+      "summary": "The force law is correct, but misaligned turn citations and rejected commands make the reported experiments and numerical results unreliable.",
+      "evaluation_sha256": "969c5c69f9b218941e3952e399d268de2d844fca6a371ed202d1a4696a33be07",
+      "reason_sha256": "27bb1ef36dcc6bb72d3b7e0f2122ee884fe700d480137b24f26aba60070a354d"
+    },
+    {
+      "episode_id": "ed8ecb2a0b1c4db1a68c98ad683a8b62",
+      "scene": "06",
+      "repeat": 3,
+      "summary": "Curved motion and object controls are observed, but the report does not identify a force proportional to speed.",
+      "evaluation_sha256": "c656d32827aa559650251175fc18c45bdd7edf71ccd59fa16443a003bbf7879b",
+      "reason_sha256": "8bc2bd874ebca22ed12e31cb3b05d278754a3bf234e51dbc4db39db2048018ee"
+    },
+    {
+      "episode_id": "95167767116d4726ab173e3a11eb1863",
+      "scene": "07",
+      "repeat": 1,
+      "summary": "The report lacks a controlled tile-rebound comparison. Landings outside both tiles do not establish restitution for every surface.",
+      "evaluation_sha256": "461c5bf2e4ed42333ac7c67e21634aa9a3add0e907e37149a4210b2e899ef299",
+      "reason_sha256": "7be551ae96eeb0ba807e53bce79414c19bc45b9f57c19ec223d5a5f57e097acb"
+    },
+    {
+      "episode_id": "80c7561b686b4dbfa4ae30c146aaabe8",
+      "scene": "07",
+      "repeat": 2,
+      "summary": "Horizontal travel and friction ordering do not identify the contrasting vertical restitution on red and blue tiles.",
+      "evaluation_sha256": "b504559a434319530d7183315e1f9509ae95eaffa1b6f1b4d39f26988f24387e",
+      "reason_sha256": "148b83f305c775a58d426bea13750da2cb334045f2ecbd8813dba31cb6a5bc11"
+    },
+    {
+      "episode_id": "b66afb233f824b158e285bb1f45a0f76",
+      "scene": "07",
+      "repeat": 3,
+      "summary": "The report attributes rebound to oblique impacts or spin instead of identifying the tile-dependent restitution law.",
+      "evaluation_sha256": "b6db21586e7481967da62d4701d2dbe3c82bba6892fe7f2c8e394334fb9024d1",
+      "reason_sha256": "885206f93b0f738cf46a7ff716db5d8e4d7627cf282a702f8862fdfbad670471"
+    },
+    {
+      "episode_id": "f2156a84d8cd437f9218fa2274c74fa6",
+      "scene": "08",
+      "repeat": 1,
+      "summary": "Push-speed saturation is observed, but the report allows throws to exceed it and misses a common nonlinear momentum-speed law.",
+      "evaluation_sha256": "10e39d48796bc9a6387b468b22a8e4c012a40a78ca5026e2abea49c44b85d215",
+      "reason_sha256": "c1ca2fb30b4f78a78cd5fd25737648c86d9b67b20c8425159023bbd15bb4c186"
+    },
+    {
+      "episode_id": "fa3191cd6ddd41d0bcdeea184e15dc1f",
+      "scene": "08",
+      "repeat": 2,
+      "summary": "The report treats throws as approximately linear and able to exceed the push limit. It also overinterprets trajectory timing and speed sums.",
+      "evaluation_sha256": "deb33977556763ebcd24ad093ee262d8d52eafa9697713539d115f01890de4f0",
+      "reason_sha256": "56e7be68765c0b5b5aeddae0e23dcf76f12c588fbff9f9d4cf3d39da3885dcae"
+    },
+    {
+      "episode_id": "e9332792012d4423983d2da002b64950",
+      "scene": "08",
+      "repeat": 3,
+      "summary": "Saturation is observed, but separate horizontal and vertical drag limits do not identify growing inertia and one law for all free bodies.",
+      "evaluation_sha256": "4409cba0cc58cb2ce68054e1e4c061b6398442dfe74fc4aa861d4f4f3bc06264",
+      "reason_sha256": "af9aa2b52bd27f0bcdfa30e3c04aa3785bca6caa028fc8139bf018682383dcb8"
+    },
+    {
+      "episode_id": "35cedbb709cf492c971096a632859e0d",
+      "scene": "09",
+      "repeat": 1,
+      "summary": "Slowing is attributed to friction, while recorded speeding after exit is left unexplained; the boundary scaling law is missing.",
+      "evaluation_sha256": "a3e5860edcd2d0fbc3cac93c03136da358cc221792d5fb96cef7811fe7d8df43",
+      "reason_sha256": "53e5df3310ab48fcb182abe5186052d16ffc923c4f64d2de37b770ba5fcf96e1"
+    },
+    {
+      "episode_id": "cd72c621ce7540bf969bc96e79f2efd9",
+      "scene": "09",
+      "repeat": 2,
+      "summary": "Entry slowing and exit speeding are noticed, but a step-and-spin explanation does not identify simultaneous boundary scaling of linear and angular velocity.",
+      "evaluation_sha256": "356486b8ca4e856a7bff2dc78bc649f25cdf6da47183d5f698f44905f622e214",
+      "reason_sha256": "62279a8f0057295db5ab2d0966a6cc6ff04c71a9fd7786b734f2d569bf96c383"
+    },
+    {
+      "episode_id": "38298e0dd3e8485381da286c3efbf4b5",
+      "scene": "09",
+      "repeat": 3,
+      "summary": "A persistent-friction explanation misses speed scaling at boundaries and cannot explain recorded acceleration after leaving the region.",
+      "evaluation_sha256": "85fcc7994b6baba8862d107a5d56cfa49a788761b9a720101a997b3c9e3f5b22",
+      "reason_sha256": "59946c13a0820b7cb7f08d8bd068172a638c09c36e220a7f84bdfa1358ad451f"
+    },
+    {
+      "episode_id": "6a92a3429ce54246ba881f0e3f13a154",
+      "scene": "10",
+      "repeat": 1,
+      "summary": "Motion on the yellow tile is attributed to low friction and residual drift instead of active energy input.",
+      "evaluation_sha256": "1a02a4216535a29145d6c8fda2f6fb729fd4cc21e72a3c3b43ed473de41549cf",
+      "reason_sha256": "096c2fe8d2b1f568fb202523c9956cf66e6d2b4ce79a88ec55a10a2f85a2bbb7"
+    },
+    {
+      "episode_id": "aa412e9e2c274e3abd29370d426b5224",
+      "scene": "10",
+      "repeat": 2,
+      "summary": "The report detects motion within the region but substitutes a constant eastward surface force for velocity amplification and misses its action at height.",
+      "evaluation_sha256": "a053624f96ec05d8084b4fa8a914a21101f92717c710d8fac18d6e710eab7b2d",
+      "reason_sha256": "44a67f2415098ad74377584b2344797c184a33487cc2ea8ca21d6e01eca1eb52"
+    },
+    {
+      "episode_id": "4dfe03c6e6704aeaaaa7dc534d4b74c6",
+      "scene": "10",
+      "repeat": 3,
+      "summary": "The report explains the region using low friction and hidden constraints, missing active energy input and velocity amplification.",
+      "evaluation_sha256": "a3c117a62ac849e8acbce53068bcf26749647a218b35ea4a714eff1499fb8b48",
+      "reason_sha256": "38b60429a9b2d1825969dc547b7d2d18e372db95aa78cd73e85dc7d0a2db0ab5"
+    },
+    {
+      "episode_id": "ad72aff829304dedb17ed0c239649349",
+      "scene": "11",
+      "repeat": 1,
+      "summary": "Collision comparisons are made, but the report gives ordinary collision regimes instead of identifying added velocity when ball contact ends.",
+      "evaluation_sha256": "e7e12bc57d1d33e9e1d2f31588ece9583f25084b17f28ae3a5bffa2994e6e2d3",
+      "reason_sha256": "3373422507f158384b3987d7953b1ee0656b2c7fafba6f009fdf15cd351ca0cc"
+    },
+    {
+      "episode_id": "5b575854eec340a689b0975dfe79d528",
+      "scene": "11",
+      "repeat": 2,
+      "summary": "The report interprets collisions as strongly inelastic transfer, missing the separation trigger and extra motion beyond ordinary collision outcomes.",
+      "evaluation_sha256": "99a461ce268d6173971fbec0721f8f013e222f3cb46d767469bb14eb8cf5e060",
+      "reason_sha256": "88e29a60fedf7fa3e37965be4469843270cfe4ae6a2cd880fa1a9af349df19f9"
+    },
+    {
+      "episode_id": "2c5f9bc3ab354520b5145599fff5fbce",
+      "scene": "11",
+      "repeat": 3,
+      "summary": "The report misses the common velocity gain on separation and interprets ball collisions as ordinary inelastic momentum transfer.",
+      "evaluation_sha256": "f040c4839191d42ceb14b09046c9df1767b8aace760afdd9029fbbbd5d66bfa4",
+      "reason_sha256": "a81825fb39db8d02b275fb9f033c98e4418096f3727d9b3b484214bce1981c58"
+    },
+    {
+      "episode_id": "ee8f8a8500d6488f975ea637417cf52a",
+      "scene": "12",
+      "repeat": 1,
+      "summary": "Color swapping is identified, but one swap per contact onset and the complete scope of eligible free spheres are missing.",
+      "evaluation_sha256": "8601e12327c5cd96110e46945e7de5b94d10e0618560579fd6d82bb62f20b4ce",
+      "reason_sha256": "e6893a2a013c933e13c9e4bfc86d5554faa01e56a78172b23da973f4e789c187"
+    },
+    {
+      "episode_id": "511ca9381d844ffa840f45ffafa0e25e",
+      "scene": "12",
+      "repeat": 2,
+      "summary": "The report limits swapping to original balls and requires an impact impulse, missing the contact-onset rule and its broader scope.",
+      "evaluation_sha256": "6a35ef4ec199c8a9b3a318deebe2f760f2ca69cc033e6f4400a97acf623d34ce",
+      "reason_sha256": "b45f390d38a71efa8dc5959bf5a95ee5cce1d8f7c0370e0740ba163847f362e1"
+    },
+    {
+      "episode_id": "73242aaee63342dc90cf258f9c62d132",
+      "scene": "12",
+      "repeat": 3,
+      "summary": "Constructed-ball controls are useful, but the rule incorrectly requires approach motion and is generalized beyond single-sphere free bodies.",
+      "evaluation_sha256": "a730156f4844e790e2e3d3d0a994ed2df8024b1bb764ab1638bf2d04f831582b",
+      "reason_sha256": "a733e9680ff1492345350a27673ab32ce44438b65a76a587e1b88e1650cb853b"
+    },
+    {
+      "episode_id": "eb42074afc6b4efcb178777125f8334d",
+      "scene": "13",
+      "repeat": 1,
+      "summary": "Jumps are attributed to impact speed and redirected momentum rather than every third distinct ball contact.",
+      "evaluation_sha256": "632763cfb4220f20dd178df0479c0cbadba5b90aedad24b9af0251210b223be3",
+      "reason_sha256": "66aa580a339b8bcf34f52d993235e260aa9c0dc85ef172873875d420022bea24"
+    },
+    {
+      "episode_id": "74948784a8964f70b6a85f5e778ae5df",
+      "scene": "13",
+      "repeat": 2,
+      "summary": "A comparison of collision alignment does not identify the running count or three-contact cycle.",
+      "evaluation_sha256": "f318fed288efcb42298afebbfa78992db8eeb301ffbd8699d47445d3bb1a7139",
+      "reason_sha256": "26e6a8cb00aa5ead2685a52df78fb03787f7adba827fce2eb3ca47cd0854d05b"
+    },
+    {
+      "episode_id": "c1c6113f58fa4dcca03c0e1b51a474be",
+      "scene": "13",
+      "repeat": 3,
+      "summary": "The tested collisions do not establish a counting cycle, and the report never proposes the every-third-contact trigger.",
+      "evaluation_sha256": "819ed029ca00c821a1b34b253f84ca9f3d1b09ead6e45b2572fe12cd3d42985c",
+      "reason_sha256": "79adb96f0943dbb9d589c83b3c3dc5810d2387b05ae836c59f58925d0814c717"
+    },
+    {
+      "episode_id": "9b72ece82ca5408f873cfd9c7907c750",
+      "scene": "14",
+      "repeat": 1,
+      "summary": "Green's unexplained motion is attributed to support contact instead of delayed copying of an earlier red launch.",
+      "evaluation_sha256": "6dc7ca2bf71345c216404563917244febb2413509b9f37b7a08d037c61c1fe71",
+      "reason_sha256": "d09b3d9991db3c66eaece6bb41dccd13351c8dee21611d25bba149403ec6f5e8"
+    },
+    {
+      "episode_id": "8494702b63b14fcaa616c8611b8ad75c",
+      "scene": "14",
+      "repeat": 2,
+      "summary": "Green's spontaneous starts are recorded, but their red-ball source, twelve-count delay and velocity-copy relation are not identified.",
+      "evaluation_sha256": "11283c8934f40b8c4a3900bd3b33e276ecdabdeb98ae20272405ca2cdb9c9a22",
+      "reason_sha256": "d0e856bdf2b86864496c4f3639a581929931076aa6cf11d9c1ebb7193a355588"
+    },
+    {
+      "episode_id": "71a232111b3646c3910ca43eaed5820e",
+      "scene": "14",
+      "repeat": 3,
+      "summary": "The report leaves green's motion unexplained and misdescribes recorded heights and turn numbers, missing delayed velocity copying.",
+      "evaluation_sha256": "c1d1416c7b41840541cf42a7e2eaf218e84f1a6304182c6eaf4862f0c87a72e1",
+      "reason_sha256": "8ff154b028540cea3f2af1aee47f8853b12cbcf8153d5b8334309d976f590329"
+    },
+    {
+      "episode_id": "26eadddf288a49e5acb960660e5fcbe1",
+      "scene": "15",
+      "repeat": 1,
+      "summary": "Spontaneous northward drift is detected but not linked to launch-triggered suppression. Several timing and instrument claims are also unsupported.",
+      "evaluation_sha256": "656632ec31a89de87dbd228c303606746d2b67cc53bcdfbee016c9829e82abc1",
+      "reason_sha256": "546fdf6da6330b7bab64f2300c7d33cff045a4c52b55034be15b1d33456c7e27"
+    },
+    {
+      "episode_id": "3083f819167c4eadbf34e48e0ef47147",
+      "scene": "15",
+      "repeat": 2,
+      "summary": "The report attributes spontaneous restarts to residual spin without measurements that distinguish spin from a continuing drive, missing suppression by any launch.",
+      "evaluation_sha256": "d778a767f9689f86e6522ff4c2914dca9eb45ac2940d28d2fdbef983cf8b60b7",
+      "reason_sha256": "a8b78d3dc8fb0d355e81fbb0342b4e874d63948ebba0bda0332fe8674d47d818"
+    },
+    {
+      "episode_id": "3332acd1a0dc4c6ca9700ca3c7aa2995",
+      "scene": "15",
+      "repeat": 3,
+      "summary": "The report interprets launches as creating delayed gusts instead of temporarily suppressing an existing northward drive.",
+      "evaluation_sha256": "9ae2ec0e3645c68f34da071c4f02190ca5dd24aef51a64da8340beee5e6dfa65",
+      "reason_sha256": "fb9aa31c760154d1ba9489b97ad4685f3d433966bae45d69f6dcab511535ee95"
+    }
+  ]
+}

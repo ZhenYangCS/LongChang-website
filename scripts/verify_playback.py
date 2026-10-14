@@ -20,7 +20,7 @@ def main():
   page.locator('#physics-speed').select_option('1')
   for scene,framing in [('07','detail'),('10','detail'),('13','detail'),('13','room')]:
    page.evaluate('(id)=>showWorld(id)',scene)
-   if page.locator('.physics-video-frame').get_attribute('data-framing')!=framing:page.locator('#physics-view').click()
+   if page.locator('#atlas-physics-view .physics-video-frame').get_attribute('data-framing')!=framing:page.locator('#physics-view').click()
    page.locator('#physics-reset').click();page.locator('#physics-play').click();page.wait_for_function('!document.querySelector("#physics-video").paused');page.wait_for_timeout(350)
    row=page.evaluate(MEASURE,4);row.update(scene=scene,framing=framing);report.append(row);print(json.dumps(row),flush=True)
    page.locator('#physics-play').click()

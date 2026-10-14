@@ -31,13 +31,17 @@
   }
   function live({host, prefix = 'scene-live', getScene, loadSimulation, fullscreen = host.parentElement, modeAttribute = 'data-scene-mode', autoPlay = false, onWorld = () => {}, onFrame = () => {}}) {
     const stage = document.createElement('div'); stage.id = `${prefix}-stage`; stage.className = 'scene-live-stage';
-    const poster = document.createElement('img'); poster.className = 'scene-live-poster'; poster.alt = 'Scene preview'; stage.append(poster); host.prepend(stage);
+    const poster = document.createElement('img'); poster.className = 'scene-live-poster'; poster.alt = 'Scene preview'; poster.draggable = false; stage.append(poster); host.prepend(stage);
     const bar = document.createElement('div'); bar.className = 'scene-live-playback'; bar.dataset.component = 'scene-live';
-    bar.innerHTML = `<div id="${prefix}-controls" class="scene-live-controls"><div class="room-tools" role="group" aria-label="Interact with the scene"><button ${modeAttribute}="push" aria-pressed="true" title="Launch an object">Push</button><button ${modeAttribute}="drag" aria-pressed="false" title="Lift and move an object">Drag</button><button ${modeAttribute}="view" aria-pressed="false" title="Change the viewing angle">Rotate</button><button id="${prefix}-reset" aria-label="Reset the scene">↺</button></div></div><button id="${prefix}-play" class="round-control" aria-label="Run live physics">▶</button><span id="${prefix}-hint" class="scene-live-hint" role="status"></span><span id="${prefix}-clock" class="scene-live-clock">0.0 s</span><select id="${prefix}-speed" class="scene-live-speed" aria-label="Live physics speed"><option value="0.5">0.5×</option><option value="1">1×</option><option value="2">2×</option><option value="4" selected>4×</option></select><button id="${prefix}-fullscreen" class="round-control" aria-label="Expand live physics">${icon}</button>`;
+    bar.innerHTML = `<div id="${prefix}-controls" class="scene-live-controls"><div class="room-tools" role="group" aria-label="Interact with the scene"><button ${modeAttribute}="push" aria-pressed="false" title="Launch an object">Push</button><button ${modeAttribute}="drag" aria-pressed="true" title="Lift and move an object">Drag</button><button ${modeAttribute}="view" aria-pressed="false" title="Change the viewing angle">Rotate</button><button id="${prefix}-reset" aria-label="Reset the scene">↺</button></div></div><button id="${prefix}-play" class="round-control" aria-label="Run live physics">▶</button><span id="${prefix}-hint" class="scene-live-hint" role="status"></span><span id="${prefix}-clock" class="scene-live-clock">0.0 s</span><select id="${prefix}-speed" class="scene-live-speed" aria-label="Live physics speed"><option value="0.5">0.5×</option><option value="1">1×</option><option value="2">2×</option><option value="4" selected>4×</option></select><button id="${prefix}-fullscreen" class="round-control" aria-label="Expand live physics">${icon}</button>`;
     host.after(bar);
     const $ = key => bar.querySelector(`#${prefix}-${key}`);
-    let world = null, worldId = null, mode = 'push', version = 0, loading = null, active = false, wanted = autoPlay, inViewport = false;
-    const allowed = () => active && inViewport && !document.hidden && !document.querySelector('dialog[open]');
+    let world = null, worldId = null, mode = 'drag', version = 0, loading = null, active = false, wanted = autoPlay, pending = null, published = false;
+    for (const button of bar.querySelectorAll(`[${modeAttribute}]`)) button.setAttribute('aria-pressed', String(button.getAttribute(modeAttribute) === mode));
+    const allowed = () => {
+      const rect = host.getBoundingClientRect();
+      return active && rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight && !document.hidden && !document.querySelector('dialog[open]');
+    };
     const status = text => { $('hint').textContent = text; stage.dataset.loadLabel = text; };
     function labels(time = world?.getState().time || 0) {
       $('clock').textContent = `${time.toFixed(1)} s`;
@@ -46,12 +50,34 @@
       $('play').setAttribute('aria-pressed', String(Boolean(world?.isRunning())));
     }
     function sync() {
+      if (!allowed()) clearPending();
       if (world) { if (wanted && allowed()) world.play(); else world.pause(); }
       labels();
     }
+    const sample = event => {
+      const rect = stage.getBoundingClientRect();
+      return {pointerId:event.pointerId, pointerType:event.pointerType, button:event.button, shiftKey:event.shiftKey, x:(event.clientX-rect.left)/rect.width, y:(event.clientY-rect.top)/rect.height};
+    };
+    const restore = point => {
+      const rect = stage.getBoundingClientRect();
+      return {...point, clientX:rect.left+point.x*rect.width, clientY:rect.top+point.y*rect.height};
+    };
+    function clearPending(event) {
+      if (!pending || (event?.pointerId !== undefined && event.pointerId !== pending.start.pointerId)) return;
+      const pointer = pending.start.pointerId; pending = null;
+      if (stage.hasPointerCapture(pointer)) stage.releasePointerCapture(pointer);
+    }
+    function handoff() {
+      if (!pending || !world || !allowed()) return;
+      const gesture = pending; pending = null;
+      // Transfer only a pointer that is still held. A finished click is never replayed.
+      try { world.beginInteraction(restore(gesture.start)); world.moveInteraction(restore(gesture.latest)); }
+      finally { if (stage.hasPointerCapture(gesture.start.pointerId)) stage.releasePointerCapture(gesture.start.pointerId); }
+    }
+    function publish() { if (active && world && !published) { published = true; onWorld(world); } }
     function destroy() {
-      version++; loading = null; world?.destroy(); world = null; worldId = null; wanted = autoPlay;
-      onWorld(null); stage.setAttribute('aria-busy', 'false'); labels(0);
+      clearPending(); version++; loading = null; world?.destroy(); world = null; worldId = null; wanted = autoPlay;
+      if (published) onWorld(null); published = false; stage.setAttribute('aria-busy', 'false'); labels(0);
     }
     async function open() {
       const item = getScene();
@@ -67,14 +93,17 @@
           const config = await response.json(); if (token !== version) return null;
           simulation = await loadSimulation(config, text => { if (token === version) status(text); });
           if (token !== version) { simulation.destroy(); return null; }
-          const next = await createRoom(stage, text => { if (token === version) status(text); }, {simulation, speed:Number($('speed').value), onFrame:time => { if (token === version) { labels(time); onFrame(time, simulation); } }});
+          const next = await createRoom(stage, text => { if (token === version) status(text); }, {simulation, speed:Number($('speed').value), onInteraction:() => { if (token === version && active) wanted = true; }, onFrame:time => { if (token === version) { labels(time); onFrame(time, simulation); } }});
           if (token !== version) { next.destroy(); return null; }
-          world = next; worldId = item.id; onWorld(world); poster.hidden = true;
+          world = next; worldId = item.id; publish(); poster.hidden = true;
           stage.querySelector('.room-canvas').setAttribute('aria-describedby', `${prefix}-hint`);
-          world.setMode(mode); sync(); return world;
+          world.setMode(mode); sync();
+          // Synchronize lifecycle before grabbing; pausing afterwards would drop the hand.
+          try { handoff(); } catch (_) { clearPending(); status('Drag an object up to lift.'); }
+          return world;
         } catch (error) {
           simulation?.destroy();
-          if (token === version) status('Could not load. Tap Push to retry.');
+          if (token === version) { clearPending(); status('Could not load. Tap Drag to retry.'); }
           return null;
         } finally {
           if (token === version) { loading = null; stage.setAttribute('aria-busy', 'false'); }
@@ -83,6 +112,7 @@
       return loading;
     }
     for (const button of bar.querySelectorAll(`[${modeAttribute}]`)) button.addEventListener('click', async () => {
+      clearPending();
       mode = button.getAttribute(modeAttribute);
       for (const b of bar.querySelectorAll(`[${modeAttribute}]`)) b.setAttribute('aria-pressed', String(b === button));
       if (world) world.setMode(mode);
@@ -93,20 +123,33 @@
       else { wanted = true; await open(); }
       sync();
     });
-    $('reset').addEventListener('click', () => { wanted = false; world?.reset(); labels(0); });
+    $('reset').addEventListener('click', () => { clearPending(); wanted = false; world?.reset(); labels(0); });
     $('speed').addEventListener('change', () => world?.setSpeed(Number($('speed').value)));
     $('fullscreen').addEventListener('click', async () => {
       try { if (document.fullscreenElement) await document.exitFullscreen(); else await fullscreen.requestFullscreen(); }
       catch (_) { status(matchMedia('(pointer:coarse)').matches?'Pinch to zoom.':'Hold Ctrl/⌘ and scroll to zoom.'); }
     });
-    stage.addEventListener('pointerdown', () => { if (mode !== 'view') wanted = true; }, true);
-    stage.addEventListener('keydown', event => { if (event.key.startsWith('Arrow')) wanted = true; }, true);
+    stage.addEventListener('pointerdown', event => {
+      if (!event.isPrimary) { clearPending(); return; }
+      if (world || !active || event.button !== 0 || mode === 'view') return;
+      event.preventDefault(); pending = {start:sample(event), latest:sample(event)};
+      stage.setPointerCapture(event.pointerId); open();
+    });
+    stage.addEventListener('pointermove', event => { if (pending?.start.pointerId === event.pointerId) pending.latest = sample(event); }, {passive:true});
+    for (const type of ['pointerup','pointercancel','lostpointercapture']) stage.addEventListener(type, clearPending);
+    window.addEventListener('blur', clearPending);
     stage.addEventListener('pointerup', () => queueMicrotask(() => labels()));
-    new IntersectionObserver(entries => { inViewport = entries[0].isIntersecting; sync(); }).observe(host);
+    new IntersectionObserver(sync).observe(host);
+    // A show-and-scroll in the same frame can skip an intersection transition.
+    // Recheck actual geometry after scrolling, including nested scroll areas.
+    let scrollFrame = 0;
+    document.addEventListener('scroll', () => {
+      if (!scrollFrame) scrollFrame = requestAnimationFrame(() => { scrollFrame = 0; sync(); });
+    }, {capture:true, passive:true});
     document.addEventListener('visibilitychange', sync);
     for (const dialog of document.querySelectorAll('dialog')) new MutationObserver(sync).observe(dialog, {attributes:true, attributeFilter:['open']});
-    return {stage, bar, open, current:() => world, sync,
-      setActive(value) { active = value; bar.hidden = !active; if (active) open(); sync(); },
+    return {stage, bar, open, prepare:open, current:() => world, sync,
+      setActive(value) { active = value; bar.hidden = !active; if (active) { publish(); open(); } else clearPending(); sync(); },
       select() { if (getScene().id !== worldId) { destroy(); if (active) open(); } },
       destroy,
     };

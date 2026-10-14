@@ -15,7 +15,7 @@ def main():
         def start(dx,dy):
             x,y=center(page);page.mouse.move(x,y);page.mouse.down();page.mouse.move(x+dx,y+dy,steps=12)
             return x+dx,y+dy
-        choose('07');x,y=start(0,-35)
+        choose('07');lift=page.locator('#atlas-canvas').evaluate('s=>Math.abs(s.getScreenCTM().d)*62*.5');x,y=start(0,-lift)
         state=page.evaluate('LongChangAtlas.getState()');assert state['value']>2 and not state['playing']
         assert abs(center(page)[1]-y)<4,'The held ball should follow the pointer vertically'
         expected=f"Red {state['value']*.81:.2f} · Blue {state['value']*.0225:.3f}"

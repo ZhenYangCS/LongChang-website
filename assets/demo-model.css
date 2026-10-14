@@ -41,7 +41,6 @@
 #demo-rule #oracle-chart { max-height:190px; }
 #demo-rule #oracle-chart-legend { font-size:11px; }
 @media(min-width:801px) {
-  #worlds.container { width:calc(100% - 48px); max-width:1480px; }
   #worlds .scene-workspace[data-view] { grid-template-columns:clamp(210px,17vw,250px) minmax(0,1fr); grid-template-rows:minmax(0,1fr); height:clamp(510px,calc(100svh - 200px),730px); gap:8px; }
   #worlds .scene-workspace[data-view=physics] { grid-template-columns:clamp(210px,17vw,250px) minmax(0,1fr) clamp(300px,26vw,360px); }
   #worlds #scene-detail { position:relative; }

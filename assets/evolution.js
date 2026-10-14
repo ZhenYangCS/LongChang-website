@@ -37,12 +37,15 @@
   };
   const live = window.LongChangScenePlayer.live({
     host: $('#evo-experiment-view'), prefix: 'evo', modeAttribute: 'data-evo-mode', fullscreen: $('#evo-visual'),
-    getScene: () => ({id:key, poster:`assets/images/evolution-${key}.webp`, url:`data/evolution/${key}.json`}),
+    getScene: () => ({id:key, poster:`assets/images/interactive-room-${key}.webp`, url:`data/evolution/${key}.json`}),
     async loadSimulation(config, status) {
       const {createEvolutionSimulation} = await import('./evolution-physics.js');
       return createEvolutionSimulation(config, status);
     },
   });
+  const interactiveTab = root.querySelector('[data-evo-view=experiment]');
+  interactiveTab.addEventListener('pointerenter', live.prepare, {passive:true});
+  interactiveTab.addEventListener('focus', live.prepare);
   const demo = window.LongChangScenePlayer.playback({
     host: $('#evo-demo-view'), prefix: 'evo-demo', video,
     handlers: {

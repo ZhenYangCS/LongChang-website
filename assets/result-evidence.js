@@ -2,7 +2,8 @@
   'use strict';
   const $ = selector => document.querySelector(selector);
   const dialog = $('#result-evidence-dialog'), turnDialog = $('#evidence-turn-dialog');
-  const reports = new Map(), records = new Map();
+  const reports = new Map(), records = new Map(), english = new Map();
+  let summaries = new Map();
   const metrics = [{key:'D', name:'Discovery'}, {key:'C', name:'Correct law'}, {key:'S', name:'Evidence support'}];
   let group = null, selected = 0, version = 0, turnVersion = 0, origin = null, turnOrigin = null, currentRecord = null, request = null;
   const node = (tag, className, text) => {
@@ -91,6 +92,9 @@
       (claimIndex < 3 ? claims : more).append(article);
     });
     if (run.report.conclusions.length > 3) claims.append(more);
+    const summary = summaries.get(run.id);
+    const matchedSummary = summary?.evaluation_sha256 === run.evaluation_sha256 && summary.scene === group.scene && summary.repeat === run.repeat;
+    $('#evidence-summary').textContent = matchedSummary ? summary.summary : 'English summary unavailable. The original judge reason is available below.';
     $('#evidence-reason').replaceChildren(textBlock('span', '', run.reason));
     $('#evidence-truth').textContent = format(run.truth);
     $('#evidence-rule-preview').textContent = preview(format(run.truth));
@@ -114,6 +118,17 @@
     }
     return reports.get(path);
   }
+  async function loadSummaries(model) {
+    const path = `data/judge-summaries/${encodeURIComponent(model.toLowerCase())}.json`;
+    if (!english.has(path)) {
+      const loading = fetch(path, {signal:AbortSignal.timeout(20000)}).then(response => {
+        if (!response.ok) throw new Error('English summaries unavailable');
+        return response.json();
+      }).catch(error => { english.delete(path); throw error; });
+      english.set(path, loading);
+    }
+    return english.get(path);
+  }
   window.showResultEvidence = async (model, scene) => {
     const entry = window.LONGCHANG.models.find(item => item.name === model);
     const world = window.LONGCHANG.scenes.find(item => item.id === scene);
@@ -122,6 +137,7 @@
     const token = ++version;
     request = {model, scene};
     group = null;
+    summaries = new Map();
     dialog.dataset.scene = scene;
     $('#evidence-model').textContent = model;
     $('#evidence-title').textContent = `${scene} · ${world.name}`;
@@ -132,9 +148,10 @@
     dialog.scrollTop = 0;
     document.dispatchEvent(new CustomEvent('longchang:evidence-open'));
     try {
-      const result = await loadReports(model, scene);
+      const [result, notes] = await Promise.all([loadReports(model, scene), loadSummaries(model).catch(() => null)]);
       if (token !== version || !dialog.open) return;
       group = result;
+      summaries = new Map((notes?.runs || []).map(summary => [summary.episode_id, summary]));
       result.runs.forEach((run, index) => {
         const button = node('button', 'evidence-run');
         button.id = `evidence-run-${run.repeat}`;

@@ -19,9 +19,9 @@ def main():
         for width,height in [(1366,768),(1280,720),(390,844)]:
             page.set_viewport_size({'width':width,'height':height})
             page.locator('[data-atlas-view=physics]').click();
-            if page.locator('.physics-video-frame').get_attribute('data-framing')=='detail':page.locator('#scene-zoom-reset').click()
-            page.locator('.physics-video-frame').scroll_into_view_if_needed();page.wait_for_timeout(100)
-            movie=page.locator('.physics-media').bounding_box();stage=page.locator('.physics-video-frame').bounding_box()
+            if page.locator('#worlds .physics-video-frame').get_attribute('data-framing')=='detail':page.locator('#scene-zoom-reset').click()
+            page.locator('#worlds .physics-video-frame').scroll_into_view_if_needed();page.wait_for_timeout(100)
+            movie=page.locator('#worlds .physics-media').bounding_box();stage=page.locator('#worlds .physics-video-frame').bounding_box()
             page.locator('[data-atlas-view=motion]').click();page.wait_for_function('!!window.SceneRoom');page.locator('#scene-live-reset').click();page.wait_for_timeout(100)
             live=page.locator('#scene-live-stage').bounding_box();actual=page.evaluate('(points)=>points.map(p=>SceneRoom.project(p))',points)
             assert abs(stage['height']-live['height'])<1
@@ -33,9 +33,9 @@ def main():
                 x=movie['x']-stage['x']+u*movie['width'];y=movie['y']-stage['y']+v*movie['height']
                 error=max(abs(screen['x']-live['x']-x),abs(screen['y']-live['y']-y));max_error=max(max_error,error)
             assert max_error<1,(width,height,max_error)
-        page.set_viewport_size({'width':1366,'height':768});page.locator('[data-atlas-view=physics]').click();page.locator('#physics-fullscreen').click();page.wait_for_function('!!document.fullscreenElement');movie_height=page.locator('.physics-video-frame').bounding_box()['height'];page.locator('#physics-fullscreen').click()
+        page.set_viewport_size({'width':1366,'height':768});page.locator('[data-atlas-view=physics]').click();page.locator('#physics-fullscreen').click();page.wait_for_function('!!document.fullscreenElement');movie_height=page.locator('#worlds .physics-video-frame').bounding_box()['height'];page.locator('#physics-fullscreen').click()
         page.locator('[data-atlas-view=motion]').click();page.locator('#scene-live-fullscreen').click();page.wait_for_function('!!document.fullscreenElement');assert abs(page.locator('#scene-live-stage').bounding_box()['height']-movie_height)<1
         browser.close()
-    print(f'PASS: Watch and Try it share all 15 room dimensions and cameras when viewing the whole room; projection differs by at most {max_error:.4f} px across desktop/mobile sizes; fullscreen heights match; defaults are 4×.')
+    print(f'PASS: Demo and Interactive share all 15 room dimensions and cameras when viewing the whole room; projection differs by at most {max_error:.4f} px across desktop/mobile sizes; fullscreen heights match; defaults are 4×.')
 
 if __name__=='__main__':main()

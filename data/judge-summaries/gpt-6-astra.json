@@ -1,0 +1,368 @@
+{
+  "schema_version": 1,
+  "language": "en",
+  "kind": "English summary",
+  "model": "GPT-6-Astra",
+  "runs": [
+    {
+      "episode_id": "cc29b834415244f9a452bdea7730bbbc",
+      "scene": "01",
+      "repeat": 1,
+      "summary": "The report retains no anomalous law or special gray-tile effect, satisfying the normal-control criterion.",
+      "evaluation_sha256": "689a7e558cbe8e8d6a370ecec3e115f627571aafd908001bfd3d019ea0974ccc",
+      "reason_sha256": "9ef261a0df4909719ee3ef821a89117b6f527b205dffa2b614d273f8d3d38e77"
+    },
+    {
+      "episode_id": "1d5ce8ecee744040820094bdf2cca33b",
+      "scene": "01",
+      "repeat": 2,
+      "summary": "Matched pushes support the limited conclusion that no significant gray-tile effect was resolved, and the report makes no anomalous claim.",
+      "evaluation_sha256": "4f6afb85cd7fab20f9bb87dcdd691eec27c7d3e7957fbd018d0d0d8019044ee4",
+      "reason_sha256": "b9c5ef6df7f8fd8c61d1a552b551d2bdb58ae94245cc24a6aac95a3cfbef17bf"
+    },
+    {
+      "episode_id": "3b0462ce89c54b10be0e55ef43fc1ea4",
+      "scene": "01",
+      "repeat": 3,
+      "summary": "Push, throw and boundary-crossing controls support no resolved tile-specific effect, with no anomalous law retained.",
+      "evaluation_sha256": "95e250be340eabf06a74213aaad6d28472485a8c1335aaf4c03acafa8a5c266d",
+      "reason_sha256": "12126ad116b6da2843cffbf65496686f0118ff721746979eef23be03eedaae51"
+    },
+    {
+      "episode_id": "dff4337130c04d40ac18b86a82cdc3c7",
+      "scene": "02",
+      "repeat": 1,
+      "summary": "The observed attraction is supported, but the report does not identify its color-based scope or inverse-square distance dependence.",
+      "evaluation_sha256": "bfade33762cf17d05dd31748dfd44539a1872c4fb9cfa77e23207e0b16e5df3d",
+      "reason_sha256": "c6df0b353ccd063aaed3872f24c881fd60bba15455f709288edd2de8d8ea238b"
+    },
+    {
+      "episode_id": "8a83a649492c48f2899cb93532ce7245",
+      "scene": "02",
+      "repeat": 2,
+      "summary": "The qualitative red-ball attraction findings are supported, but the quantitative distance law and complete object scope remain unidentified.",
+      "evaluation_sha256": "ef9765a448c0e39e262208205e20b919a969d245f44e9c92a7233e7ef60e797b",
+      "reason_sha256": "2cc7902a6e29eb5211845df8be4114a63ede1cd4e1407de9200aabfdf11d4bb2"
+    },
+    {
+      "episode_id": "14a6a2d3bba94aad9982ad9cf6154f54",
+      "scene": "02",
+      "repeat": 3,
+      "summary": "The report carefully limits its claims to two tested balls, leaving color dependence, the inverse-square law and the broader scope unresolved.",
+      "evaluation_sha256": "4caa7d411500b05244b7d67fa9ac1074451ed8647d6e8bd374fcf592d20cf4e3",
+      "reason_sha256": "cb6702758c314e9185cb1ba05e88d4286454ace01c7c8117d9321167e3cd646d"
+    },
+    {
+      "episode_id": "ff12475645ce40c39102a3914ceabc9b",
+      "scene": "03",
+      "repeat": 1,
+      "summary": "The measurements and conditional mass estimates are supported, but the inverse-square-root acceleration law and full scope of free objects are missing.",
+      "evaluation_sha256": "9b1595af40d1b26928284f283bc858f3adba4c61757760910e59b6b0745c8d0a",
+      "reason_sha256": "79274a225569bbb300279ed7054995c8910b8ae32ad2d3d91ccb66e6a24c126a"
+    },
+    {
+      "episode_id": "6ab6f793564147deb6c52ef26b79282d",
+      "scene": "03",
+      "repeat": 2,
+      "summary": "The report preserves uncertainty but gives only conditional response ratios, without distinguishing mass dependence from other object properties.",
+      "evaluation_sha256": "1f43af6d0e08bc7b7d3c5809313fb1666b35540341b2dded65937c1056136ac4",
+      "reason_sha256": "a50fdb4cddcd544ce01c0f5b394c43082fb6a8af3e743a717ad3b1a1c439eb33"
+    },
+    {
+      "episode_id": "07bdcf54971942658f5431cb9092eec0",
+      "scene": "03",
+      "repeat": 3,
+      "summary": "The observations are supported, but falling differences are not explicitly attributed to mass through the required inverse-square-root law.",
+      "evaluation_sha256": "522e48763260acba7e15ecc299f02bedcc82f539d4735950bf129a7dbb6ab08e",
+      "reason_sha256": "89058459dd4d6a1590e2affca9425371bb8de5f9c947a92c0df7e9b3e7b78ca8"
+    },
+    {
+      "episode_id": "bb74245b39594d219cdb2abd8072b243",
+      "scene": "04",
+      "repeat": 1,
+      "summary": "The recorded variation in falling time is supported, but the report does not identify periodic gravity, its period or its amplitude.",
+      "evaluation_sha256": "dfd54ee1699567d129cb4b55cee62d10b9d9e52b2dfa983509d3c8e50acd1d90",
+      "reason_sha256": "7069fe86e09de93281268a4b23eb7b04cd06ca88e36dc57742d9756a55f4c088"
+    },
+    {
+      "episode_id": "2a375c21ebc84246b36ccf60243f1adf",
+      "scene": "04",
+      "repeat": 2,
+      "summary": "The experiments and calculations are supported, but periodic time dependence is not distinguished from alternative explanations such as position dependence.",
+      "evaluation_sha256": "7ca0051d80d2eb2c40af80ec1bb792b7b7b73d4c22c67acb30350263beb02b17",
+      "reason_sha256": "fb22aaf2efc00052b2ce5ccd4c7102fe8f5601d12d1062676e1909ee33092707"
+    },
+    {
+      "episode_id": "5af7d3236cec449cab5555e2e40cf801",
+      "scene": "04",
+      "repeat": 3,
+      "summary": "The report accurately preserves observations and uncertainties but does not connect gravity variation to experimental timing or identify a periodic law.",
+      "evaluation_sha256": "51107ccc33aa3d367dbda6a54a1f988662c1b87957c06ac2422ade37f19e8e39",
+      "reason_sha256": "b4e976d2da612191ee4c82dfb64e5d035b96f39bbb81ed8b5c423e8e39ec8ec3"
+    },
+    {
+      "episode_id": "eae038638d864e97875d94a58db45621",
+      "scene": "05",
+      "repeat": 1,
+      "summary": "The local findings are supported, but no speed threshold or shared extra-braking law is identified.",
+      "evaluation_sha256": "8f16906af68d3d87d6d1603b532538298e71894cb1b3ab49cab66bdb18f75e50",
+      "reason_sha256": "5990590622426baac7b8da3fbc644394061a8eb1f773f9b7bb8aa34df15dfd3f"
+    },
+    {
+      "episode_id": "2a754dd2eee24650aa0cb1ee34e4dcd7",
+      "scene": "05",
+      "repeat": 2,
+      "summary": "The experiment descriptions and limitations are supported, but the report does not identify braking above a speed threshold across the original objects.",
+      "evaluation_sha256": "e5aa566bac4f91d5d25d2430f42cc8051a762bb415c8049c029d936b22be2650",
+      "reason_sha256": "6a03a8183b98d45dfe8df57a66c0041d78a1dd496ba893d89db011aae0cc71a3"
+    },
+    {
+      "episode_id": "2b1afff70f734eb6afb2e03eec445cb0",
+      "scene": "05",
+      "repeat": 3,
+      "summary": "The records support the reported observations, but the threshold, excess-speed dependence and common object scope of braking are missing.",
+      "evaluation_sha256": "f676b54eb99f825b45a280fd332c0ad9fae507362c948c2d6f8bba9e6a19f53e",
+      "reason_sha256": "4411ec8e30fbc2a0232958b275c67402f9e74963c9e6e0a9876c93f6288ed4f4"
+    },
+    {
+      "episode_id": "14041f25e9fb40ac853d12873058413a",
+      "scene": "06",
+      "repeat": 1,
+      "summary": "Directional and airborne tests support a rightward force proportional and perpendicular to horizontal velocity, including the reported acceleration model.",
+      "evaluation_sha256": "3a1fb8c1163ac9f521a3335fc12172d659273cdbe16f8bd164b0ee71f3306b73",
+      "reason_sha256": "47c7ad86c2f0afcc5e9d00823b6b8a58f4886cf8b81c9d7b9326afc626752d9f"
+    },
+    {
+      "episode_id": "814f2c9622e8473cb5dfe03f39322b11",
+      "scene": "06",
+      "repeat": 2,
+      "summary": "The airborne model and predictions are supported, but the report does not extend the same sideways-force law to ground motion, leaving its scope incomplete.",
+      "evaluation_sha256": "0aa8f7bca903755a8d0e1703748f2b19a5fc0743d0e50465e89c742f623e183a",
+      "reason_sha256": "367210903de68816ffe660687300ad2e42282ef0d446ab2914575c98477f4e75"
+    },
+    {
+      "episode_id": "21a8e855c50b4b19921bd32b0257dd03",
+      "scene": "06",
+      "repeat": 3,
+      "summary": "Multiple launch directions, airborne curves and vertical-throw controls support the reported perpendicular, speed-proportional rightward force.",
+      "evaluation_sha256": "24d9851d91af6a96bd64aa8419130eadc9f3a21e4b9894de4c7c33d9a2131ec1",
+      "reason_sha256": "0dbdd451ecd6a498e12bbd33bfe960275cccd5524062f2fa222781849d9520c6"
+    },
+    {
+      "episode_id": "d13720dcba3a4fafa49d3bf8b8e3d8bc",
+      "scene": "07",
+      "repeat": 1,
+      "summary": "The same-ball comparisons support stronger rebound on red, but the report does not identify fixed vertical restitution ratios for both surfaces.",
+      "evaluation_sha256": "f7c2ef2309583daa866b1cfce69e3e0b22747eae133a732e4c202b2f84f1faf0",
+      "reason_sha256": "ba34bd99580810a4784536766a02b1a19da1859cdf59034a51094b6edc933594"
+    },
+    {
+      "episode_id": "482900bea3544a2494f9e85b118b9eca",
+      "scene": "07",
+      "repeat": 2,
+      "summary": "The red-surface estimate is supported, but the blue coefficient or relative restitution ratio and the complete fixed-ratio law are missing.",
+      "evaluation_sha256": "ed0fdf441c7a5a8eb366c3e127a1e32a1842e027f3c400d39ab25190bd1ededf",
+      "reason_sha256": "6ba3cbd71d11ab214cdde51d31215dfaa2a725a2acc6fa5d6a87ed60a83afdf2"
+    },
+    {
+      "episode_id": "84afdeec43364892abfe4c816bf8b8b6",
+      "scene": "07",
+      "repeat": 3,
+      "summary": "Matched same-ball launches support the surface-dependent rebound law and restitution estimates near 0.9 on red and 0.15 on blue.",
+      "evaluation_sha256": "906f72efaaa669263e685cd2f453bb46ac440ba613bc2d7b133e0c0b0309d73f",
+      "reason_sha256": "fe0008a6d4b8fccc109fded35e785eaae54f8684c4f5bb787816f3d55f9a5767"
+    },
+    {
+      "episode_id": "c957542963a34aa8950d28058ba72522",
+      "scene": "08",
+      "repeat": 1,
+      "summary": "The observations and stated limitations are supported, but no speed limit, growing inertia or nonlinear momentum-speed law is identified.",
+      "evaluation_sha256": "4b74e16dc8a829494ee2f6d99c4499c6ba20af2a3cec313259b5f3fed64127c8",
+      "reason_sha256": "633f7cd3088a91edc3f778e21aefadec866f2d292a82948c3f6d80324403bb43"
+    },
+    {
+      "episode_id": "57d34415911b4fbebf406bc3fac04c16",
+      "scene": "08",
+      "repeat": 2,
+      "summary": "The measurements are supported, but matching the two balls' tested responses does not establish the nonlinear momentum law or its full scope.",
+      "evaluation_sha256": "ab17a155d51814cc5778d03a99763af53781b9043fb9e8631a2ce0002a12735e",
+      "reason_sha256": "1fd70416cc5b2a6a153e2b63f36e785cbc021c219b28c03b74e78ae157e8d262"
+    },
+    {
+      "episode_id": "128f25b289fd4fa2b992edaee1a79308",
+      "scene": "08",
+      "repeat": 3,
+      "summary": "The controlled observations are supported, but the report does not identify diminishing equal-impulse speed gains, growing inertia or a common speed limit.",
+      "evaluation_sha256": "b72233beb1b688260a39aca14d08319f3103eb8c82ab22af4e36c6c49963414d",
+      "reason_sha256": "5e8b739dffa4e85c3c42d1bda79d542c22be89fc2b2c2276b78ba0d2beb3ecfd"
+    },
+    {
+      "episode_id": "63584bf324e847f7b8e5ed743ed12dad",
+      "scene": "09",
+      "repeat": 1,
+      "summary": "The boundary observations are supported, but the proposed rule covers tested horizontal components rather than all linear and angular velocity at any height.",
+      "evaluation_sha256": "c77eb803bcdbe84d890ae759bf044d777fbaa20d3317bbece94faaa1eda7e8fc",
+      "reason_sha256": "caf2480c7feb1ea3791ad67966df57154813c5f49a1ce079690e69fd260e9104"
+    },
+    {
+      "episode_id": "dfe2dfc23d8845d3bd7b3de90266e6d9",
+      "scene": "09",
+      "repeat": 2,
+      "summary": "The supported findings establish only tested horizontal ratios, leaving the full velocity scaling and height-independent scope incomplete.",
+      "evaluation_sha256": "0dafea221cf09e2c14e820fd95911d24fd1848857e62435236ee907dfc872c4d",
+      "reason_sha256": "810e5dbf0c55c27ef76a3679d21e23238f3e4e3522c140b641d9cf9acf47ab68"
+    },
+    {
+      "episode_id": "56057f3b03964bcc98f6d94cab376ea1",
+      "scene": "09",
+      "repeat": 3,
+      "summary": "Boundary-triggered horizontal scaling is well supported, but the report does not state one complete rule for both balls and all velocity components at any height.",
+      "evaluation_sha256": "0cebec8d8e2452c92cb64e32c5c66d545819cdcde6fec959dce4948aba41db80",
+      "reason_sha256": "71d8d65d03260761c30c089fa0cef436bbc63152563d55e592d5947e5d50162d"
+    },
+    {
+      "episode_id": "c8b83dd68bb244b282040e29088af850",
+      "scene": "10",
+      "repeat": 1,
+      "summary": "The limited findings are supported, but the report does not identify the low-speed launch, velocity amplification or active energy creation throughout the region.",
+      "evaluation_sha256": "39292c51574bfac11282209b741a3b92db68f1f3388e6a66535334a23e0117e8",
+      "reason_sha256": "23453a936d416143c6053abf73fada9eaed8fbd05c9b13163dcd7f886ea4e45d"
+    },
+    {
+      "episode_id": "054f1fa75fd14a2dbfd12d5bf6fed0aa",
+      "scene": "10",
+      "repeat": 2,
+      "summary": "The records support a possible eastward drive, but the report misses velocity amplification, action at height and active energy creation.",
+      "evaluation_sha256": "d0cbca321c32cc384a57d3c493ff107ba5e6f56fe5b6c36ae5ae95d52ab5c61f",
+      "reason_sha256": "a430bce7875be9a6201c96886ba355c7e7000ffb7fb626deae6cd98490ed4ae4"
+    },
+    {
+      "episode_id": "cd9ceee6d99e4f3fa01b77f1ded4ff65",
+      "scene": "10",
+      "repeat": 3,
+      "summary": "The observations are supported, but the report does not identify the full active-driving law within the yellow tile's horizontal footprint.",
+      "evaluation_sha256": "a2f7ff044fa4babe8bc344dc3620360b8b0627faa56c8d08d70ceecd5d31a50a",
+      "reason_sha256": "1e22193ead3d12aaf5a4d89d96127593f37baabbbe383185a264624de4541e9a"
+    },
+    {
+      "episode_id": "04e6d5ff70c9429cb840e4fd883f681e",
+      "scene": "11",
+      "repeat": 1,
+      "summary": "The local collision observations and prior prediction are supported, but the extra velocity imparted to both participants at separation is not identified.",
+      "evaluation_sha256": "0af2e5c6be1bbfb54621560040cdc4e9d56ec92f535863134656008a0a70b702",
+      "reason_sha256": "7e069290ef3ef6535d3a5c02a332f203fab10482228fa81eb0b5eb4d6d0fca8d"
+    },
+    {
+      "episode_id": "c9a30c5aa6c647c48ee7850f994e3adf",
+      "scene": "11",
+      "repeat": 2,
+      "summary": "The recorded outcomes and uncertainties are supported, but no quantitative comparison identifies extra motion or the separation trigger.",
+      "evaluation_sha256": "43375e133b357ab745eaa81c31063837a5dfe25bf2582abc887da8094c4a8e6f",
+      "reason_sha256": "eeca71f77ac7457280ee492aee38643ae2215c7759afad8523e54af5e444c2ca"
+    },
+    {
+      "episode_id": "ed5caecd5d514388aa300ac53269ec0d",
+      "scene": "11",
+      "repeat": 3,
+      "summary": "The limited motion-transfer findings are supported, but the report misses added velocity at separation and its restriction to participating balls.",
+      "evaluation_sha256": "d559ccbf2fa91f3a7a2ea323b1ca51f7ccbcd99a644dc845a67d335cc9b711f6",
+      "reason_sha256": "c89852a9f5fc995faed10023bfc56f19a740135e4efa3cfb141e1e9c4ec4e391"
+    },
+    {
+      "episode_id": "a46fe52e310d480eb4dbf98e9e8ba7b1",
+      "scene": "12",
+      "repeat": 1,
+      "summary": "The reported color findings are supported, but one swap per new contact and the complete eligible-object scope are not identified.",
+      "evaluation_sha256": "b7d62135d7c514bc7432d1b54c8f05773e38b8da24a057e691c7b85c0d022ff5",
+      "reason_sha256": "1eaa912ce8e5abecf64355215fd93dd628c24d64b3b52851d2495ae8e1455f2f"
+    },
+    {
+      "episode_id": "da2c4d6c574e4334bec995b2528efd58",
+      "scene": "12",
+      "repeat": 2,
+      "summary": "Repeated color swaps with stable object IDs are supported, but the report leaves the precise contact-onset trigger unresolved.",
+      "evaluation_sha256": "d59dbae098b1933712bfb68aa54151249db087d325063d9c91b3728b7898b8ef",
+      "reason_sha256": "2380e9d4c113248bda40928408f33cb65a73434c40056c92063f8a1e09d701f3"
+    },
+    {
+      "episode_id": "80d2e659fdc5472ca843f8a9b0358c2a",
+      "scene": "12",
+      "repeat": 3,
+      "summary": "The pairwise swap and same-color controls are supported, but sustained-contact behavior and the full object scope remain unspecified.",
+      "evaluation_sha256": "64ff342e3e2f87e1bbd8307ef8add7bd375fe6c24d12f58180158bde975a6db8",
+      "reason_sha256": "7a622d2eb3bb9a58637e4e37d7523a044c9445e5937a535e2bb9d1f75895e2fc"
+    },
+    {
+      "episode_id": "b589adeedd9e46cab7d2972a29207e2c",
+      "scene": "13",
+      "repeat": 1,
+      "summary": "The observations are supported, but a single ball collision does not identify intermittent jumps or an every-third-contact counting rule.",
+      "evaluation_sha256": "70bdf5f0f01401276dd732e42b9e2fec2263cccf07a87fa9b8cce164c3ab8062",
+      "reason_sha256": "7bf998ae61058772699c7c3376032351bd813150f0de91423a41f5eddd25f8b1"
+    },
+    {
+      "episode_id": "14c01212e52a493ab438c7b19b01ceb4",
+      "scene": "13",
+      "repeat": 2,
+      "summary": "The trajectories are supported, but one head-on collision cannot establish the three-contact cycle or distinguish separate from sustained contact.",
+      "evaluation_sha256": "3ec2eb4d2169c0b06b5a9b946957e08492cb1b9eb84ceb68e9e59482ea674255",
+      "reason_sha256": "0d8d8ddf1f28a61bb42f9f76b53adcf4f43a012daac91b73798226a00cf21e2b"
+    },
+    {
+      "episode_id": "ac16ac7b61d14dcc89047a4a686c8edf",
+      "scene": "13",
+      "repeat": 3,
+      "summary": "The limited findings are supported, but one tested ball collision does not reveal the cumulative contact count or periodic upward kick.",
+      "evaluation_sha256": "50502cec79c7c874d74d1c594ba91b177d6dd78ff868d72586da08f27e8683cc",
+      "reason_sha256": "3ecee388897cf28a816214d926b918bc87f4840e961e85a64bbaac90bd154c87"
+    },
+    {
+      "episode_id": "5fdcbad178c74b58a73a01e24f99e2e1",
+      "scene": "14",
+      "repeat": 1,
+      "summary": "The report faithfully records unexplained motion but does not connect green's response to a previous red launch or identify delayed velocity copying.",
+      "evaluation_sha256": "4335aa4b1fa4249ce9eacd621f57fb8bb84383eda46a61b5ea85021c374f482b",
+      "reason_sha256": "0f656d484ef93b791013afb39ebb2fccb77aec7eb854f16b68df861b314aec52"
+    },
+    {
+      "episode_id": "5e6f99e65e4a4553b1da3c456f6b2fde",
+      "scene": "14",
+      "repeat": 2,
+      "summary": "The experiments support a twelve-count red-to-green copy of total post-command velocity, including replacement of existing motion rather than path replay.",
+      "evaluation_sha256": "d26ed0359f4e5a75ecc3d1b9a92910dcb5c3413cd92becfc6f507499fc6bd2e3",
+      "reason_sha256": "c49f6c3e1b2228a6d4e647c6d7e7407b319b2cea9b0c042d6bdffab8df559335"
+    },
+    {
+      "episode_id": "68475eccb73e41e2bc468ca98e1a50b4",
+      "scene": "14",
+      "repeat": 3,
+      "summary": "The delayed-copy law is identified, but the report claims 31 displayed samples where the original record contains 29, so full evidence support fails.",
+      "evaluation_sha256": "52f7212e7387783cd101cb89b18860c38d5f2366f67126eb30581b33f1f9c09f",
+      "reason_sha256": "2ddc1d8c7e1ad855550827d2ddca9936101096fe116929640baa073cb309d8ea"
+    },
+    {
+      "episode_id": "f9fcc26b6784483bafa071744d030092",
+      "scene": "15",
+      "repeat": 1,
+      "summary": "Continuous waiting and remote blue-ball launches support spontaneous northward driving with suppression and recovery about ten counts after any nonzero launch.",
+      "evaluation_sha256": "f6b831dd55ae9666c7325f221adb8d7bbd8b5bda77715385ada97f4dbfbfe8fb",
+      "reason_sha256": "7a90f5c4fd1c0e621d43aab5f0249149a13d2148f0f505ad9504cd4398220681"
+    },
+    {
+      "episode_id": "e4b54cf941bb4fd5bfa231aae0af3c28",
+      "scene": "15",
+      "repeat": 2,
+      "summary": "Waiting and cross-ball interventions support the northward drive, temporary suppression by launches and resetting of the recovery delay.",
+      "evaluation_sha256": "a504af0da8da8498f9b7e3b2ad2887bbf1c081c50c2e4c8f6fbbfc582901c52c",
+      "reason_sha256": "4bf67db9579d69cecd02da04ae3dbeadc55b3ea907a5d5e7d98958644014c2e9"
+    },
+    {
+      "episode_id": "104a30c435654dd6886acd151c8648a1",
+      "scene": "15",
+      "repeat": 3,
+      "summary": "Controlled waiting and launches of either ball support the shared suppression trigger and recovery of red's northward drive after about ten counts.",
+      "evaluation_sha256": "30dbd88cdeea0b14a7dac83f734d3f03e9aa8804a6542f27cd67f2024f8337f5",
+      "reason_sha256": "6c0eb8d669396579a80b4c86af3862e8d398ac3f5a04f6f7c91602cc7bed5689"
+    }
+  ]
+}

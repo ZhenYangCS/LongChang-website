@@ -36,16 +36,18 @@ def main():
     else:
         for sphere in balls.values():sphere.hide_render=True
         path=folder/'background.png'
-        if not path.exists():
+        key=hashlib.sha256(json.dumps([job['camera'],job['display_bounds'],job['fixtures'],job['width'],job['height'],job.get('enclosed',False),'focus-v2'],sort_keys=True).encode()).hexdigest()
+        stamp=folder/'background-key.txt'
+        if not path.exists() or not stamp.exists() or stamp.read_text()!=key:
             # Identical rooms share one Cycles render across scenes.
             cache=folder.parents[0]/'background-cache';cache.mkdir(exist_ok=True)
             if folder.name=='room':cache=folder.parents[1]/'background-cache';cache.mkdir(exist_ok=True)
-            key=hashlib.sha256(json.dumps([job['camera'],job['display_bounds'],job['fixtures'],job['width'],job['height'],job.get('enclosed',False),'focus-v2'],sort_keys=True).encode()).hexdigest()
             shared=cache/f'{key}.png'
             with (cache/f'{key}.lock').open('w') as lock:
                 fcntl.flock(lock,fcntl.LOCK_EX)
                 if not shared.exists():scene.render.filepath=str(shared);bpy.ops.render.render(write_still=True)
                 shutil.copyfile(shared,path)
+                stamp.write_text(key)
     print('ASSET READY',folder,flush=True)
 
 

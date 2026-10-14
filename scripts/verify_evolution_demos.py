@@ -236,6 +236,8 @@ def main():
         phone.locator('[data-evo-view=experiment]').tap()
         phone.wait_for_function('!!LongChangEvolution.current()')
         assert not phone.evaluate('LongChangEvolution.current().isRunning()')
+        assert phone.evaluate('LongChangEvolution.current().getState().mode') == 'drag'
+        phone.locator('[data-evo-mode=push]').tap()
         phone.locator('#evo-stage').scroll_into_view_if_needed()
         point = phone.evaluate('LongChangEvolution.current().project("red_ball")')
         cdp = phone.context.new_cdp_session(phone)
@@ -248,7 +250,7 @@ def main():
         phone.route('**/data/evolution/mutate.json', lambda route:route.abort())
         phone.locator('#evo-tab-mutate').tap()
         phone.locator('#evo-stage').scroll_into_view_if_needed()
-        expect(phone.locator('#evo-hint')).to_have_text('Could not load. Tap Push to retry.')
+        expect(phone.locator('#evo-hint')).to_have_text('Could not load. Tap Drag to retry.')
         phone.unroute('**/data/evolution/mutate.json')
         phone.locator('[data-evo-mode=push]').tap()
         phone.wait_for_function('LongChangEvolution.current()?.getState().scene==="mutate"')

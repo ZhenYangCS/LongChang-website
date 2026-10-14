@@ -23,7 +23,9 @@ ROOM_BOUNDS=[-6.,6.,-6.,6.,12.]
 
 
 def room_camera():
-    direction=np.array([7.,-10.,8.]);direction/=np.linalg.norm(direction)
+    # An elevated front view keeps all vertical glass edges at the room sides,
+    # instead of projecting the nearest corner through the experiment.
+    direction=np.array([0.,-12.,9.]);direction/=np.linalg.norm(direction)
     forward=-direction;right=np.cross(forward,[0,0,1]);right/=np.linalg.norm(right);up=np.cross(right,forward)
     corners=np.array([[x,y,z] for x in ROOM_BOUNDS[:2] for y in ROOM_BOUNDS[2:4] for z in [-.18,ROOM_BOUNDS[4]]])
     u,v=corners@right,corners@up

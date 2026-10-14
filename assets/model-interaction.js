@@ -7,7 +7,12 @@
   const local=event=>new DOMPoint(event.clientX,event.clientY).matrixTransform(svg.getScreenCTM().inverse());
   function resizeTargets(){
     const matrix=svg.getScreenCTM(),scale=matrix&&Math.hypot(matrix.a,matrix.b);
-    if(scale>0)svg.style.setProperty('--model-hit-radius',`${Math.max(23,(matchMedia('(pointer:coarse)').matches?26:20)/scale)}px`);
+    if(scale>0){
+      svg.style.setProperty('--model-hit-radius',`${Math.max(23,(matchMedia('(pointer:coarse)').matches?26:20)/scale)}px`);
+      svg.style.setProperty('--model-ball-radius',`${Math.max(14,7/scale)}px`);
+      svg.style.setProperty('--model-ball-label',`${Math.max(14,10/scale)}px`);
+      svg.style.setProperty('--model-text-size',`${Math.max(14,9/scale)}px`);
+    }
   }
   new ResizeObserver(resizeTargets).observe(svg);
   function pickBall(event){

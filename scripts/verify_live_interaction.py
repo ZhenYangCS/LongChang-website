@@ -9,6 +9,9 @@ def main():
         page=browser.new_page(viewport={'width':1366,'height':768});page.on('pageerror',lambda e:errors.append(str(e)));page.goto(args.url+'/#worlds');page.wait_for_load_state('networkidle')
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>r.name.includes(".wasm"))')
         page.locator('[data-atlas-view=motion]').click();page.wait_for_function('window.SceneRoom?.getState().scene==="07"')
+        assert page.evaluate('SceneRoom.getState().mode')=='drag'
+        assert page.evaluate('!SceneRoom.isRunning()')
+        page.locator('[data-scene-mode=push]').click()
         room=page.evaluate('SceneRoom.getRenderInfo().room')
         assert room['bounds']==[-6,6,-6,6,12] and abs(room['roofBottom']-12)<1e-6
         page.locator('#scene-live-reset').click();page.locator('#scene-live-stage').scroll_into_view_if_needed()
@@ -59,6 +62,7 @@ def main():
         print('PASS: real push, lift/drop, rotate, pause/resume, fullscreen controls, fresh scene state and one shared WASM download.',flush=True)
         phone=browser.new_page(viewport={'width':390,'height':844},is_mobile=True,has_touch=True);phone.on('pageerror',lambda e:errors.append(str(e)));phone.goto(args.url+'/#worlds')
         phone.locator('[data-atlas-view=motion]').tap();phone.wait_for_function('!!window.SceneRoom');phone.locator('#scene-live-reset').tap();phone.locator('#scene-live-stage').scroll_into_view_if_needed()
+        phone.locator('[data-scene-mode=push]').tap()
         pos=phone.evaluate('SceneRoom.project("gray_ball_1")');cdp=phone.context.new_cdp_session(phone)
         cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[pos]})
         cdp.send('Input.dispatchTouchEvent',{'type':'touchMove','touchPoints':[{'x':pos['x']+32,'y':pos['y']-10}]})

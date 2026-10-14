@@ -41,15 +41,14 @@ def main():
         assert page.locator('[data-behavior="CS"]').inner_text()=='11 / 45'
         assert page.locator('#model-chart [data-result-metric]').count()==12
         assert page.locator('#model-chart [data-result-metric="D"]').count()==12
-        assert page.locator('.result-score.result-C dd > span').inner_text()=='8 / 42 runs'
-        assert page.locator('.result-score.result-S dd > span').inner_text()=='41 / 42 runs'
-        page.locator('#results-sort').select_option('score')
+        assert '8 of 42 runs passed.' in page.locator('.result-score.result-C').get_attribute('title')
+        assert '41 of 42 runs passed.' in page.locator('.result-score.result-S').get_attribute('title')
         assert page.locator('.result-lane:visible').count()==12
         assert page.locator('.result-model-name').nth(1).inner_text()=='Claude-Opus-5'
         page.locator('[data-model="Claude-Opus-5"]').click()
         assert page.locator('#result-model-title').inner_text()=='Claude-Opus-5'
-        assert page.locator('.result-score.result-C dd > span').inner_text()=='7 / 42 runs'
-        assert page.locator('.result-score.result-S dd > span').inner_text()=='0 / 42 runs'
+        assert '7 of 42 runs passed.' in page.locator('.result-score.result-C').get_attribute('title')
+        assert '0 of 42 runs passed.' in page.locator('.result-score.result-S').get_attribute('title')
         page.locator('[data-model="Claude-Opus-5"]').press('Home')
         assert page.locator('#result-model-title').inner_text()=='GPT-6-Astra'
         page.locator('[data-result-scene="07"]').click()
@@ -59,12 +58,10 @@ def main():
         assert page.locator('#discovery-title').inner_text()=='Tile rebounds'
         page.locator('#exploration-close').click()
         page.locator('#evidence-close').click()
-        page.locator('#results-sort').select_option('paper')
         page.locator('[data-model="GLM-5.3"]').click()
         assert page.locator('.result-control strong').inner_text()=='3 / 3'
         page.locator('[data-model="GPT-6-Astra"]').click()
-        assert 'Support: 3/3' in page.locator('.result-scene').first.get_attribute('title')
-        assert page.locator('.result-data-link').get_attribute('href')=='downloads/model-results.csv'
+        assert 'Evidence support: 3/3' in page.locator('.result-scene').first.get_attribute('title')
         for number in range(1,16):
             page.locator(f'#scene-tab-{number:02}').click()
             page.wait_for_function('id=>document.querySelector("#scene-name").textContent===window.LONGCHANG.scenes.find(s=>s.id===id).name',arg=f"{number:02}")

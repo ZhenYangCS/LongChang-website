@@ -5,6 +5,15 @@
   const $ = suffix => root.querySelector(`#evo-model-${suffix}`);
   const {base, point, line, text, polygon, ball} = window.LongChangMotion.draw;
   const uid = 'evolution-model', duration = 20, reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  new ResizeObserver(()=>{
+    const svg=$('canvas'),matrix=svg.getScreenCTM(),scale=matrix&&Math.hypot(matrix.a,matrix.b);
+    if(scale>0){
+      svg.style.setProperty('--model-hit-radius',`${Math.max(26,26/scale)}px`);
+      svg.style.setProperty('--model-ball-radius',`${Math.max(14,7/scale)}px`);
+      svg.style.setProperty('--model-ball-label',`${Math.max(14,10/scale)}px`);
+      svg.style.setProperty('--model-text-size',`${Math.max(20,9/scale)}px`);
+    }
+  }).observe($('canvas'));
   const configs = {
     generate: {label:'Push schedule', initial:'once', options:[['once','Once at 0 s'],['repeat','Every 8 s']]},
     mutate: {label:'Blue position', initial:'inside', options:[['inside','Inside the square'],['outside','Outside the square']]},
@@ -31,7 +40,7 @@
     }
     svg += `<path d="${path}" stroke="#52856e" stroke-width="3" fill="none"/>`;
     const cursor = 84+time/20*495;
-    svg += line([cursor,48],[cursor,99],'#9a795a','stroke-width="1.5"') + text(84,114,'0', 'font-size="12"') + text(579,114,'20 s','font-size="12" text-anchor="end"');
+    svg += `<g class="evo-time-marker evo-model-cursor" transform="translate(${cursor},0)" data-time="${time.toFixed(3)}"><title>Model time: ${time.toFixed(1)} s</title><path class="evo-time-line" d="M0 43V103"/><path class="evo-time-head" d="M-6 39H6L0 47Z"/><circle class="evo-time-point" cx="0" cy="${state.active ? 58 : 92}" r="6"/></g>` + text(84,114,'0', 'font-size="12"') + text(579,114,'20 s','font-size="12" text-anchor="end"');
     if (id === 'generate') {
       const r=[2,3.7], b=[4.2,2.5];
       svg += arrow(point(...r,.35),point(.9,4.3,.35),state.active) + arrow(point(...b,.35),point(5.3,1.9,.35),state.active);
@@ -96,33 +105,66 @@
   reduced.addEventListener('change',()=>{if(reduced.matches){playing=false;render();clock.sync();}});
   // This plot reads the stored native demonstration, never the adjustable model.
   const chart=root.querySelector('#evo-demo-chart'), chartStatus=root.querySelector('#evo-chart-status');
-  let signals=null, loadingData=false, chartScene=null;
-  function drawRecorded() {
+  const dataPanel=chart.closest('.evo-demo-data'),retry=dataPanel.querySelector('#evo-chart-retry');
+  dataPanel.classList.add('video-data');
+  const heading=document.createElement('div');heading.className='video-data-heading';
+  const caption=document.createElement('span');caption.textContent='Video data · Recorded force';
+  chartStatus.className='video-data-clock';chartStatus.setAttribute('aria-live','off');chartStatus.title='Simulation time in this video';
+  chartStatus.textContent='Loading…';
+  dataPanel.querySelector('h4').replaceWith(heading);heading.append(caption,chartStatus);
+  video.closest('#evo-demo-view').append(dataPanel);
+  let signals=null, loadingData=false, chartScene=null, recordedFrame=null;
+  function drawRecorded(mediaTime=video.currentTime) {
     if(!signals)return;
-    const signal=signals[id], left=35,right=306,top=17,bottom=105,max=Math.max(1.5,...signal.samples.map(row=>row[1]));
+    const width=Math.max(240,Math.round(chart.clientWidth||320));
+    const signal=signals[id], left=38,right=width-10,top=10,bottom=66,max=Math.max(1.5,...signal.samples.map(row=>row[1]));
     const xy=(t,f)=>[left+t/signal.duration*(right-left),bottom-f/max*(bottom-top)];
-    if(chartScene!==id){
+    const key=`${id}:${width}`;
+    if(chartScene!==key){
       const path=signal.samples.map(([t,f],i)=>(i?'L':'M')+xy(t,f).map(n=>n.toFixed(2)).join(' ')).join('');
-      chart.innerHTML=`<path d="M${left} ${top}V${bottom}H${right}" fill="none" stroke="#cbdad2"/><text x="28" y="${top+5}" text-anchor="end">${max.toFixed(1)}</text><text x="28" y="${bottom+4}" text-anchor="end">0</text><text x="${left}" y="124">0</text><text x="${right}" y="124" text-anchor="end">${signal.duration.toFixed(1)} s</text><path class="evo-recorded-series" d="${path}" fill="none" stroke="#577f69" stroke-width="2"/><path class="evo-recorded-cursor" d="M0 ${top}V${bottom}" stroke="#9c7957" stroke-width="1.5"/>`;
-      chartScene=id;
+      chart.setAttribute('viewBox',`0 0 ${width} 90`);
+      chart.innerHTML=`<path d="M${left} ${top}V${bottom}H${right}" fill="none" stroke="#cbdad2"/><text x="32" y="${top+4}" text-anchor="end">${max.toFixed(1)}</text><text x="32" y="${bottom+4}" text-anchor="end">0</text><text x="${left}" y="84">0</text><text x="${right}" y="84" text-anchor="end">${signal.duration.toFixed(1)} s</text><path class="evo-recorded-series" d="${path}" fill="none" stroke="#577f69" stroke-width="2"/><g class="video-time-marker evo-time-marker evo-recorded-cursor"><title></title><path class="video-time-halo" d="M0 ${top}V${bottom}"/><path class="video-time-line evo-time-line" d="M0 ${top}V${bottom}"/><path class="video-time-head evo-time-head" d="M-4 ${top-6}H4L0 ${top}Z"/><circle class="evo-time-point" cx="0" r="3.5"/></g>`;
+      chartScene=key;
     }
-    const t=(video.currentTime||0)/(Number.isFinite(video.duration)?video.duration:10)*signal.duration;
-    chart.querySelector('.evo-recorded-cursor').setAttribute('transform',`translate(${xy(t,0)[0]},0)`);
-    chartStatus.textContent=`Demo time · ${t.toFixed(1)} s`;
+    const t=Math.max(0,Math.min(signal.duration,(mediaTime||0)/(Number.isFinite(video.duration)&&video.duration>0?video.duration:10)*signal.duration));
+    let lo=0,hi=signal.samples.length;
+    while(lo<hi){const mid=(lo+hi)>>1;if(signal.samples[mid][0]<=t)lo=mid+1;else hi=mid;}
+    const force=signal.samples[Math.max(0,lo-1)][1],marker=chart.querySelector('.evo-recorded-cursor');
+    marker.setAttribute('transform',`translate(${xy(t,force)[0]},0)`);
+    marker.setAttribute('data-time',t.toFixed(3));
+    marker.querySelector('.evo-time-point').setAttribute('cy',xy(t,force)[1]);
+    marker.querySelector('title').textContent=`Video simulation time: ${t.toFixed(2)} s`;
+    const label=`t = ${t.toFixed(2)} s`;
+    if(chartStatus.textContent!==label)chartStatus.textContent=label;
   }
+  function cancelRecordedFrame(){
+    if(recordedFrame===null)return;
+    if(video.cancelVideoFrameCallback)video.cancelVideoFrameCallback(recordedFrame);else cancelAnimationFrame(recordedFrame);
+    recordedFrame=null;
+  }
+  function animateRecorded(_now,metadata){
+    recordedFrame=null;drawRecorded(metadata?.mediaTime);
+    if(signals&&!video.paused&&!video.ended&&!document.hidden&&!video.closest('[hidden]')){
+      recordedFrame=video.requestVideoFrameCallback?video.requestVideoFrameCallback(animateRecorded):requestAnimationFrame(animateRecorded);
+    }
+  }
+  function syncRecorded(){cancelRecordedFrame();animateRecorded();}
   async function loadData(){
     if(signals){drawRecorded();return;}if(loadingData)return;loadingData=true;
-    root.querySelector('#evo-chart-retry').hidden=true;
+    retry.hidden=true;
     try{
       const response=await fetch('data/evolution-signals.json',{signal:AbortSignal.timeout(20000)});
-      if(!response.ok)throw Error('Data unavailable');signals=await response.json();drawRecorded();
-    }catch(_){chartStatus.textContent='Recorded data could not load.';root.querySelector('#evo-chart-retry').hidden=false;}
+      if(!response.ok)throw Error('Data unavailable');signals=await response.json();syncRecorded();
+    }catch(_){chartStatus.textContent='Unavailable';retry.hidden=false;}
     finally{loadingData=false;}
   }
-  root.querySelector('#evo-chart-retry').addEventListener('click',loadData);
-  for(const event of ['timeupdate','seeked','loadedmetadata'])video.addEventListener(event,drawRecorded);
+  retry.addEventListener('click',loadData);
+  for(const event of ['timeupdate','seeking','seeked','loadedmetadata'])video.addEventListener(event,()=>{if(event!=='timeupdate'||video.paused||video.seeking)drawRecorded();});
+  for(const event of ['playing','pause','ended','emptied'])video.addEventListener(event,syncRecorded);
+  document.addEventListener('visibilitychange',syncRecorded);
   new IntersectionObserver(entries=>{if(entries[0].isIntersecting)loadData();},{rootMargin:'50px'}).observe(chart);
-  return Object.freeze({getState:()=>({id,value,time,playing,...evaluate(id,value,time)}),setParameter:parameter,setScene:select,setActive(active){root.hidden=!active;clock.sync();}});
+  new ResizeObserver(()=>{if(chart.clientWidth)drawRecorded();}).observe(chart);
+  return Object.freeze({getState:()=>({id,value,time,playing,...evaluate(id,value,time)}),setParameter:parameter,setScene:select,setActive(active){root.hidden=!active;clock.sync();if(active)loadData();syncRecorded();}});
   }
   window.LongChangEvolutionModel=Object.freeze({create});
 })();

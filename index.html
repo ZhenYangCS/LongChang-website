@@ -27,6 +27,8 @@
   <link rel="stylesheet" href="assets/case-films.css">
   <link rel="stylesheet" href="assets/evolution.css">
   <link rel="stylesheet" href="assets/chapters.css">
+  <link rel="stylesheet" href="assets/compact-model.css">
+  <link rel="stylesheet" href="assets/video-data.css">
   <script src="assets/logo.js" defer></script>
   <script src="data/paper.js" defer></script>
   <script src="data/discoveries.js" defer></script>
@@ -81,7 +83,7 @@
     </section>
 
     <section id="worlds" class="section container atlas-section chapter" aria-labelledby="worlds-title">
-      <div class="section-heading chapter-heading"><h2 id="worlds-title"><span class="section-number">01</span> The 15 Worlds</h2></div>
+      <div class="section-heading chapter-heading"><h2 id="worlds-title">Explore the Worlds</h2></div>
       <div class="scene-workspace">
       <aside class="scene-index" aria-label="Scene guide from Table 1">
 
@@ -89,7 +91,7 @@
         <div id="scene-picker" class="scene-picker" role="tablist" aria-orientation="horizontal" aria-label="Choose one of fifteen simulated worlds"></div>
       </aside>
       <div id="scene-detail" class="world-detail atlas-detail" role="tabpanel" aria-labelledby="scene-tab-01">
-        <div class="atlas-topline"><div class="atlas-view-switch" role="group" aria-label="Scene view"><button data-atlas-view="physics" aria-pressed="false" title="Watch the demo and explore its rule" hidden>Demo</button><button data-atlas-view="motion" aria-pressed="true" title="Push and drag objects in the simulation">Experiment</button></div></div>
+        <div class="atlas-topline"><div class="atlas-view-switch" role="group" aria-label="Scene view"><button data-atlas-view="physics" aria-pressed="false" title="Watch the demo and explore its rule" hidden>Demo</button><button data-atlas-view="motion" aria-pressed="true" title="Push and drag objects in the simulation">Interactive</button></div></div>
         <div class="atlas-body">
           <div class="atlas-visual">
             <div id="analysis-formula" class="analysis-formula" hidden></div>
@@ -104,24 +106,24 @@
             <div class="world-image" id="atlas-initial-view" hidden><img id="scene-image" src="assets/images/scene-01.webp" width="1000" height="620" alt="Recorded initial state of Scene 01" loading="lazy"><span class="image-label">INITIAL STATE · RECORDED WORLD</span></div>
             <div class="atlas-playback"><button id="atlas-play" class="round-control" aria-label="Play scene illustration">▶</button><button id="atlas-reset" class="round-control" aria-label="Reset scene illustration">↺</button><label class="sr-only" for="atlas-progress">Scene illustration progress</label><input id="atlas-progress" type="range" min="0" max="800" value="0"><span id="atlas-time">0.0 / 8.0 s</span><button id="analysis-fullscreen" class="round-control" aria-label="Expand mathematical illustration"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button></div>
           </div>
-          <div class="world-copy atlas-copy"><h3 id="scene-name">Normal control</h3><p id="scene-description"></p><div class="oracle-panel"><span id="oracle-kind">The hidden rule</span><p id="oracle-plain"></p></div><div class="atlas-trigger"><span>THE DEMONSTRATION</span><p id="atlas-trigger-text"></p></div><div class="atlas-controls" id="atlas-controls"></div><div class="atlas-observation"><span>WHAT TO WATCH</span><p id="atlas-observation" aria-live="polite"></p></div><section id="scene-law" class="world-law" aria-label="Rule and recorded data"><section class="full-rule" aria-labelledby="full-rule-label"><h4 id="full-rule-label">Full rule</h4><p id="scene-law-text"></p></section><p id="oracle-formula"></p></section><a id="atlas-evidence" href="#explore" hidden>Follow a successful exploration ↗</a></div>
+          <div class="world-copy atlas-copy"><h3 id="scene-name">Normal control</h3><p id="scene-description"></p><div class="oracle-panel"><span id="oracle-kind">The hidden rule</span><p id="oracle-plain"></p></div><div class="atlas-trigger"><span>THE DEMONSTRATION</span><p id="atlas-trigger-text"></p></div><div class="atlas-controls" id="atlas-controls"></div><div class="atlas-observation"><span>WHAT TO WATCH</span><p id="atlas-observation" aria-live="polite"></p></div><section id="scene-law" class="world-law" aria-label="Scene rule"><section class="full-rule" aria-labelledby="full-rule-label"><h4 id="full-rule-label">Full rule</h4><p id="scene-law-text"></p></section><p id="oracle-formula"></p></section><a id="atlas-evidence" href="#explore" hidden>Follow a successful exploration ↗</a></div>
         </div>
         <div class="atlas-bottomline"><p id="atlas-model-note" hidden>Native scene physics.</p><div><button id="atlas-prev" aria-label="Previous world">←</button><span id="atlas-position">01 / 15</span><button id="atlas-next" aria-label="Next world">→</button></div></div>
       </div>
       <section id="demo-explanation" class="demo-explanation" aria-labelledby="model-heading">
         <div class="demo-model">
-          <header class="model-heading"><h3 id="model-heading">Simplified model</h3><p class="model-control-scope">These controls change only the model.</p></header>
+          <header class="model-heading"><h3 id="model-heading" title="These controls change only the model.">Simplified model</h3><p class="model-control-scope sr-only">These controls change only the model.</p></header>
+          <aside id="demo-rule" aria-label="Scene rule"></aside>
           <div id="model-controls"></div>
           <div id="model-diagram"></div>
         </div>
-        <aside id="demo-rule" aria-label="Scene rule and recorded demo data"></aside>
       </section>
       </div>
     </section>
 
     <section id="framework" class="framework-section chapter" aria-labelledby="framework-title">
       <div class="container section">
-        <div class="section-heading chapter-heading"><h2 id="framework-title"><span class="section-number">02</span> Framework</h2></div>
+        <div class="section-heading chapter-heading"><h2 id="framework-title">Framework</h2></div>
         <figure class="framework-figure" id="framework-flow">
           <figcaption class="fw-caption">
           <div class="fw-toolbar">
@@ -164,83 +166,80 @@
 
     <section id="results" class="results-section chapter" aria-labelledby="results-title">
       <div class="container section">
-        <div class="section-heading chapter-heading"><h2 id="results-title"><span class="section-number">03</span> Main Results</h2></div>
+        <div class="section-heading chapter-heading"><h2 id="results-title">Main Results</h2></div>
         <figure class="main-results-figure" aria-labelledby="main-results-caption">
-          <figcaption id="main-results-caption">A discovery requires <strong>both a correct law and experimental support.</strong></figcaption>
-          <div class="results-toolbar">
-            <span class="results-metric-label"><i class="result-dot result-D" aria-hidden="true"></i>D · Discovery rate</span>
-            <label class="results-sort" for="results-sort">Sort<select id="results-sort"><option value="paper">Paper order</option><option value="score">Highest first</option></select></label>
-          </div>
           <div class="results-layout">
             <div class="results-plot">
               <div class="results-axis" aria-hidden="true"><span>0</span><span>25</span><span>50</span><span>75</span><span>100%</span></div>
               <div id="model-chart" class="results-chart" role="group" aria-label="Discovery rates. Select a model to inspect its reports." data-view="D"></div>
+              <section id="result-outcomes" class="result-outcomes" aria-label="Discovery checks for the selected model"></section>
+              <section id="result-exploration" class="result-exploration" aria-label="Exploration statistics for the selected model"></section>
             </div>
             <aside id="results-inspector" class="results-inspector" aria-labelledby="result-model-title"></aside>
           </div>
           <p id="results-announcement" class="sr-only" role="status"></p>
-          <div class="results-source"><span>14 altered scenes × 3 runs per model.</span><a id="results-json-download" href="downloads/longchang-main-study-json.zip" download>All 540 runs · JSON ZIP ↓</a></div>
+          <figcaption id="main-results-caption" class="results-source"><span>Judge: GPT-6.1-Sol · 14 altered scenes × 3 runs per model.</span><a id="results-json-download" href="downloads/longchang-main-study-json.zip" download title="Complete original session and evaluation JSON files for all 540 main-study runs">Original JSON · 540 runs ↓</a></figcaption>
         </figure>
       </div>
     </section>
 
     <section id="controlled" class="section container discovery-practice case-studies chapter" aria-labelledby="controlled-title">
       <div class="section-heading chapter-heading">
-        <h2 id="controlled-title"><span class="section-number">04</span> Discovery in Practice</h2>
+        <h2 id="controlled-title">Discovery in Practice</h2>
       </div>
       <div class="discovery-practice-grid">
       <div class="discovery-findings">
         <h3 class="discovery-subheading">Controlled comparisons</h3>
-        <p class="discovery-context">GPT-6-Astra · discovery rate</p>
+        <p class="discovery-context">GPT-6-Astra · Discovery (%)</p>
         <div id="controlled-comparisons" class="controlled-comparisons"></div>
-        <p class="controlled-baseline">Budget uses a separate matched baseline.</p>
       </div>
       <section id="explore" class="discovery-cases" aria-labelledby="cases-title">
-      <header class="discovery-case-heading"><h3 id="cases-title" class="discovery-subheading"><span id="cases">Recorded case studies</span></h3><p class="discovery-context">Follow the observation, the test, and the finding.</p></header>
-      <div class="case-player">
+      <header class="discovery-case-heading"><h3 id="cases-title" class="discovery-subheading"><span id="cases">Case studies</span></h3>
       <div class="case-tabs" role="tablist" aria-label="Choose a case study">
         <button id="question-tab" role="tab" aria-controls="question-case" aria-selected="true" data-case="question">Anomaly</button>
         <button id="color-tab" role="tab" aria-controls="color-case" aria-selected="false" tabindex="-1" data-case="color">Color swap</button>
         <button id="tool-tab" role="tab" aria-controls="tool-case" aria-selected="false" tabindex="-1" data-case="tool">Tool design</button>
       </div>
+      </header>
+      <div class="case-player">
       <div id="question-case" class="case-panel" role="tabpanel" aria-labelledby="question-tab">
         <figure class="case-film" data-film="question" data-duration="32">
-          <figcaption class="case-question-intro"><h3>Red restarts. Who investigates?</h3><p>Two independent runs: same setup, no research task.</p></figcaption>
-          <div class="case-question-models"><div><strong>GPT-6-Astra</strong><span>Investigates the restart</span></div><div><strong>Gemini-3.7-Flash</strong><span>Continues the original plan</span></div></div>
+          <figcaption class="case-question-intro"><h3>Red restarts. Who investigates?</h3></figcaption>
+          <div class="case-question-models"><div><strong>GPT-6-Astra</strong></div><div><strong>Gemini-3.7-Flash</strong></div></div>
           <div class="case-film-screen">
             <video id="case-question-video" src="assets/videos/case-question.mp4" poster="assets/images/case-question.webp" controls muted playsinline preload="none" aria-label="Two models see red restart without a new push. Astra investigates; Gemini continues its planned tests."></video>
             <div class="case-film-status" role="status" hidden><span></span><button type="button" hidden>Try again</button></div>
           </div>
           <div class="case-question-story">
-            <div class="case-question-step" data-case-stage="0" data-start="0"><p class="case-question-stage">01 · The unexpected observation</p><div class="case-question-comparison"><p><strong>Red moves without a new push.</strong><span>Astra was holding blue still when red restarted.</span></p><p><strong>The log also reports a restart.</strong><span>Red is against the wall, so its motion is barely visible.</span></p></div></div>
-            <div class="case-question-step" data-case-stage="1" data-start="8" hidden><p class="case-question-stage">02 · What do they test next?</p><div class="case-question-comparison"><p><strong>Changes the plan to test the anomaly.</strong><span>Pushes red, then waits. Red restarts about 10 s after the push.</span></p><p><strong>Keeps the planned gravity test.</strong><span>Throws red upward, without testing why it restarted.</span></p></div></div>
-            <div class="case-question-step" data-case-stage="2" data-start="20" hidden><p class="case-question-stage">03 · Follow-up and outcome</p><div class="case-question-comparison"><p><strong>Checks whether blue resets the delay.</strong><span>Pushes blue too: red again restarts about 10 s later.</span></p><p><strong>Leaves the restart unexplained.</strong><span>Runs a collision test, then ends the exploration.</span></p></div></div>
+            <div class="case-question-step" data-case-stage="0" data-start="0"><div class="case-question-comparison"><p><strong>Red moves without a new push.</strong><span>Astra was holding blue still when red restarted.</span></p><p><strong>The log also reports a restart.</strong><span>Red is against the wall, so its motion is barely visible.</span></p></div></div>
+            <div class="case-question-step" data-case-stage="1" data-start="8" hidden><div class="case-question-comparison"><p><strong>Changes the plan to test the anomaly.</strong><span>Pushes red, then waits. Red restarts about 10 s after the push.</span></p><p><strong>Keeps the planned gravity test.</strong><span>Throws red upward, without testing why it restarted.</span></p></div></div>
+            <div class="case-question-step" data-case-stage="2" data-start="20" hidden><div class="case-question-comparison"><p><strong>Checks whether blue resets the delay.</strong><span>Pushes blue too: red again restarts about 10 s later.</span></p><p><strong>Leaves the restart unexplained.</strong><span>Runs a collision test, then ends the exploration.</span></p></div></div>
           </div>
-          <p class="case-question-finding"><strong>Astra’s finding</strong> A push or throw pauses red’s hidden northward force for 10 s.</p>
+          <p class="case-question-finding"><strong>Astra:</strong> A push or throw pauses red’s hidden northward force for 10 s.</p>
         </figure>
         <p class="case-film-source">Scene 15 · 100-turn main study</p>
       </div>
       <div id="color-case" class="case-panel" role="tabpanel" aria-labelledby="color-tab" hidden>
         <figure class="case-film" data-film="color" data-duration="18">
-          <figcaption class="case-question-intro"><h3>Color exchange or independent flips?</h3><p>A matching-color collision separates two explanations.</p></figcaption>
+          <figcaption class="case-question-intro"><h3>Color exchange or independent flips?</h3></figcaption>
           <div class="case-film-screen">
             <video id="case-color-video" src="assets/videos/case-color.mp4" poster="assets/images/case-color.webp" controls muted playsinline preload="none" aria-label="Do the balls swap colors or flip independently? Recorded experiment."></video>
             <div class="case-film-status" role="status" hidden><span></span><button type="button" hidden>Try again</button></div>
           </div>
-          <p class="case-question-finding"><strong>The decisive test</strong> Red meets red: both stay red. The balls exchange colors at contact.</p>
+          <p class="case-question-finding">Red meets red: both stay red. The balls exchange colors at contact.</p>
         </figure>
-        <p class="case-film-source">Scene 12 · selected 500-turn run</p>
+        <p class="case-film-source">Scene 12 · 500-turn run</p>
       </div>
       <div id="tool-case" class="case-panel" role="tabpanel" aria-labelledby="tool-tab" hidden>
         <figure class="case-film" data-film="tool" data-duration="21">
-          <figcaption class="case-question-intro"><h3>How do you weigh a drifting ball?</h3><p>Revise the instrument when the first measurement fails.</p></figcaption>
+          <figcaption class="case-question-intro"><h3>How do you weigh a drifting ball?</h3></figcaption>
           <div class="case-film-screen">
             <video id="case-tool-video" src="assets/videos/case-tool.mp4" poster="assets/images/case-tool.webp" controls muted playsinline preload="none" aria-label="How do you weigh a ball that drifts away? Recorded experiment."></video>
             <div class="case-film-status" role="status" hidden><span></span><button type="button" hidden>Try again</button></div>
           </div>
-          <p class="case-question-finding"><strong>The useful revision</strong> Retaining walls keep the ball in the pan, enabling a stable reading.</p>
+          <p class="case-question-finding">Retaining walls keep the ball in the pan, enabling a stable reading.</p>
         </figure>
-        <p class="case-film-source">Scene 15 · selected 500-turn run</p>
+        <p class="case-film-source">Scene 15 · 500-turn run</p>
       </div>
       </div>
       </section>
@@ -248,7 +247,7 @@
       <details class="controlled-details">
         <summary>Full results &amp; setup <span aria-hidden="true">+</span></summary>
         <div id="controlled-tables" class="controlled-tables"></div>
-        <p class="controlled-setup">All comparisons use GPT-6-Astra. Guidance adds a discovery task, an altered-physics notice and a scene-specific clue. Guidance and tool access use the 100-turn main baseline; the explorer chooses whether to build. Budget runs use a separate matched baseline without context compaction.</p>
+        <p class="controlled-setup">All comparisons use GPT-6-Astra. Guidance adds a discovery task, an altered-physics notice and a scene-specific clue. Guidance and tool access use the 100-turn main baseline; the explorer chooses whether to build. Budget runs use a separate matched baseline without context compaction. The anomaly case compares two independent 100-turn runs with the same setup and no research task; the color and tool cases use selected 500-turn runs.</p>
       </details>
       <template id="case-playback-template">
         <div class="case-playback" role="group" aria-label="Case study playback">
@@ -264,7 +263,7 @@
 
     <section id="evolution" class="evolution-section evolution-compact chapter" aria-labelledby="evolution-title">
       <div class="container section">
-        <div class="section-heading chapter-heading"><h2 id="evolution-title"><span class="section-number">05</span> Scene Evolution</h2></div>
+        <div class="section-heading chapter-heading"><h2 id="evolution-title">Scene Evolution</h2></div>
         <div class="scene-workspace evo-workspace" data-view="physics">
           <aside class="scene-index" aria-label="Choose an evolved world">
             <div id="evo-picker" class="scene-picker" role="tablist" aria-label="Evolved scenes" aria-orientation="vertical">
@@ -274,7 +273,7 @@
             </div>
           </aside>
           <div id="evo-detail" class="world-detail atlas-detail" role="tabpanel" aria-labelledby="evo-tab-generate" data-view="physics">
-            <div class="atlas-topline"><div class="atlas-view-switch" role="group" aria-label="Evolution view"><button type="button" data-evo-view="demo" aria-pressed="true" aria-controls="evo-demo-view">Demo</button><button type="button" data-evo-view="experiment" aria-pressed="false" aria-controls="evo-experiment-view">Experiment</button></div></div>
+            <div class="atlas-topline"><div class="atlas-view-switch" role="group" aria-label="Evolution view"><button type="button" data-evo-view="demo" aria-pressed="true" aria-controls="evo-demo-view">Demo</button><button type="button" data-evo-view="experiment" aria-pressed="false" aria-controls="evo-experiment-view">Interactive</button></div></div>
             <div class="atlas-body">
               <div id="evo-visual" class="atlas-visual">
                 <div id="evo-demo-view" class="scene-physics-view">
@@ -287,7 +286,8 @@
           </div>
           <section id="evo-explanation" class="demo-explanation" aria-labelledby="evo-model-heading">
             <div class="demo-model">
-              <header class="model-heading"><h3 id="evo-model-heading">Simplified model</h3><p class="model-control-scope">Controls change only this model.</p></header>
+              <header class="model-heading"><h3 id="evo-model-heading" title="These controls change only the model.">Simplified model</h3><p class="model-control-scope sr-only">Video unchanged</p></header>
+              <aside class="evo-model-rule" aria-label="Evolved scene rule"><div class="evo-rule-copy"><h4>Scene rule</h4><p id="evo-model-rule"></p></div><div class="evo-demo-data"><h4>Demo data <span>Recorded force</span></h4><svg id="evo-demo-chart" viewBox="0 0 320 132" role="img" aria-label="Extra force measured in the recorded demo"></svg><p id="evo-chart-status" role="status">Loading recorded data…</p><button id="evo-chart-retry" type="button" hidden>Retry data</button></div></aside>
               <div id="evo-model-controls"><div class="atlas-playback">
                 <div id="evo-model-settings" class="atlas-controls"><label for="evo-model-parameter">Push schedule</label><select id="evo-model-parameter"><option value="once">Once at 0 s</option><option value="repeat">Every 8 s</option></select></div>
                 <button id="evo-model-play" class="round-control" type="button" aria-label="Play explanatory model">▶</button><button id="evo-model-reset" class="round-control" type="button" aria-label="Reset explanatory model">↺</button><button id="evo-model-fullscreen" class="round-control" type="button" aria-label="Expand explanatory model"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
@@ -298,7 +298,7 @@
               <div class="model-timebar"><label class="sr-only" for="evo-model-progress">Explanatory model time</label><input id="evo-model-progress" type="range" min="0" max="200" value="0"><output id="evo-model-time" for="evo-model-progress">0.0 s</output></div>
               <p id="evo-model-note" class="model-note">Force timing; positions are schematic.</p>
             </div>
-            <aside class="evo-model-rule" aria-label="Evolved scene rule and recorded demo data"><h4>Scene rule</h4><p id="evo-model-rule"></p><div class="evo-demo-data"><h4>Demo data <span>Recorded force</span></h4><svg id="evo-demo-chart" viewBox="0 0 320 132" role="img" aria-label="Extra force measured in the recorded demo"></svg><p id="evo-chart-status" role="status">Loading recorded data…</p><button id="evo-chart-retry" type="button" hidden>Retry data</button></div></aside>
+
           </section>
           <div class="evo-context"><p class="evo-rationale"><strong>Trace → design</strong><span id="evo-rationale">The trace mistook a paused force for no force. This world tests the same error with repulsion.</span></p>
               <details class="evo-design"><summary>Trace reference &amp; full rule <span aria-hidden="true">+</span></summary><section class="evo-reference" aria-labelledby="evo-reference-title">
@@ -328,9 +328,9 @@
       <div id="evidence-checks" class="evidence-checks"></div>
       <div class="evidence-columns">
         <section><h4>Original report</h4><div id="evidence-claims"></div><details class="evidence-full-report"><summary>Full model report</summary><pre id="evidence-full-report"></pre></details></section>
-        <aside><section class="evidence-judgement"><h4>Evaluation</h4><details><summary>Read the evaluator’s explanation</summary><p class="evidence-attribution">GPT-6.1-Sol · original evaluation</p><p id="evidence-reason"></p></details></section><section class="evidence-reference"><h4>Reference rule</h4><p id="evidence-rule-preview"></p><details><summary>Full rule</summary><p id="evidence-truth"></p></details></section></aside>
+        <aside><section class="evidence-judgement"><h4>Evaluation</h4><p class="evidence-summary-label">English summary</p><p id="evidence-summary" lang="en"></p><details><summary>Original judge reason</summary><p class="evidence-attribution">GPT-6.1-Sol · original evaluation</p><p id="evidence-reason"></p></details></section><section class="evidence-reference"><h4>Reference rule</h4><p id="evidence-rule-preview"></p><details><summary>Full rule</summary><p id="evidence-truth"></p></details></section></aside>
       </div>
-      <footer class="evidence-actions"><button id="evidence-film" type="button" hidden>Watch experiments ↗</button><a id="evidence-record-download" download title="Complete session.json and evaluation.json for this run">Full JSON · ZIP ↓</a></footer>
+      <footer class="evidence-actions"><button id="evidence-film" type="button" hidden>Watch experiments ↗</button><a id="evidence-record-download" download title="Complete original session.json and evaluation.json for this run">Original JSON · ZIP ↓</a></footer>
     </div>
   </dialog>
   <dialog id="evidence-turn-dialog" class="evidence-turn-dialog" aria-labelledby="evidence-turn-title">

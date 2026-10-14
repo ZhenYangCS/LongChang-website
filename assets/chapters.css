@@ -24,15 +24,16 @@
 #main .chapter-heading > button { margin-top:18px; font-size:14px; }
 #main > #worlds.chapter { padding-block:40px; }
 #worlds .chapter-heading { margin-bottom:24px; }
+#main > #controlled.chapter { padding-block:28px; }
+#main #controlled .chapter-heading { margin-bottom:16px; }
 .site-header nav { gap:24px; font-size:13px; font-weight:500; }
 
 
-.main-results-figure > figcaption { font-size:14px; }
-.results-sort,.results-axis { font-size:12px; }
+.results-axis { font-size:12px; }
 .result-model-name { font-size:13px; }
 .result-row-value { font-size:12px; }
 .result-score dt,.result-behavior-heading,.result-behavior > div,.result-scene-heading,.result-control { font-size:12px; }
-.result-score dd > span,.result-control > span:last-child { font-size:11px; }
+.result-control > span:last-child { font-size:11px; }
 .evolution-origin { font-size:15px; }
 .evolution-demo p,.evo-rule-details p { font-size:14px; line-height:1.7; }
 .evolution-demo figcaption > span { font-size:12px; }
@@ -59,6 +60,7 @@
   #main .chapter-heading .section-number { font-size:14px; margin-right:10px; }
 }
 @media(max-width:560px) {
+  #main > #controlled.chapter { padding-block:24px; }
   #main .chapter-heading h2 { font-size:28px; }
   #main .chapter-heading .section-number { font-size:13px; margin-right:8px; }
 }

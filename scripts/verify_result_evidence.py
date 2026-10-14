@@ -23,6 +23,9 @@ def main():
     with source_path.open() as stream:
         source = {row['episode_id']:row for row in csv.DictReader(stream)}
     manifest = json.loads((DATA/'manifest.json').read_text())
+    english_download = json.loads((SITE/'downloads/longchang-judge-summaries-en.json').read_text())
+    english_summaries = {entry['episode_id']:entry for entry in english_download['runs']}
+    assert len(english_summaries) == 540
     assert manifest['source_sha256'] == hashlib.sha256(source_path.read_bytes()).hexdigest()
     paper = json.loads((SITE/'data/paper.js').read_text().removeprefix('window.LONGCHANG = ').rstrip(';\n'))
     models = {model['name']:model for model in paper['models']}
@@ -33,6 +36,10 @@ def main():
         assert [run['repeat'] for run in group['runs']] == [1,2,3]
         for run in group['runs']:
             row = source[run['id']]
+            summary = english_summaries[run['id']]
+            assert summary['evaluation_sha256'] == run['evaluation_sha256']
+            assert summary['reason_sha256'] == hashlib.sha256(run['reason'].encode()).hexdigest()
+            assert (summary['D'], summary['C'], summary['S']) == (run['D'], run['C'], run['S'])
             assert run['id'] not in seen
             seen.add(run['id'])
             assert row['scene'][:2] == group['scene']
@@ -104,15 +111,14 @@ def main():
         page.on('pageerror', lambda error: errors.append(str(error)))
         page.goto(args.url, wait_until='domcontentloaded')
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>r.name.includes("/result-evidence/"))')
+        assert not page.evaluate('performance.getEntriesByType("resource").some(r=>r.name.includes("/judge-summaries/"))')
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>r.name.includes("/result-json/")||r.name.endsWith("longchang-main-study-json.zip"))')
         assert page.locator('#evidence-provenance').count() == 0
         assert page.locator('#results-json-download').get_attribute('href') == manifest['archive']['path']
         assert page.locator('#model-chart .result-lane:visible').count() == 12
         assert page.locator('#model-chart [data-result-metric="D"]').count() == 12
         assert page.locator('[data-result-view]').count() == 0
-        page.locator('#results-sort').select_option('score')
-        assert page.locator('.result-model-name').all_text_contents() == sorted(models, key=lambda name: -models[name]['D'])
-        page.locator('#results-sort').select_option('paper')
+        assert page.locator('.result-model-name').all_text_contents() == list(models)
         for name in models:
             page.locator(f'[data-model="{name}"]').click()
             assert page.locator('.result-scene').count() == 14
@@ -132,6 +138,8 @@ def main():
                 assert page.locator('.evidence-claim-text').all_text_contents() == [claim['claim'] for claim in run['report']['conclusions']]
                 assert page.locator('.evidence-claim > summary:visible').count() == min(3, len(run['report']['conclusions']))
                 assert page.locator('.evidence-claim-text:visible').count() == 0
+                expect(page.locator('#evidence-summary')).to_have_text(english_summaries[run['id']]['summary'])
+                assert page.locator('#evidence-summary').get_attribute('lang') == 'en'
                 expect(page.locator('#evidence-reason')).not_to_be_visible()
                 page.locator('.evidence-judgement summary').click()
                 assert page.locator('#evidence-reason').inner_text() == run['reason']
@@ -174,7 +182,7 @@ def main():
         with zipfile.ZipFile(download.value.path()) as archive:
             verify_archive(archive.read)
         page.keyboard.press('Escape')
-        print('PASS: D-only chart and sorting, all model/scene counts, compact three-run reports, expandable original text and citations, normal controls and exact-run film links.', flush=True)
+        print('PASS: D-only chart in paper order, all model/scene counts, English judge summaries, expandable original text and citations, normal controls and exact-run film links.', flush=True)
         page.route('**/result-evidence/qwen3-max/03.json', lambda route: route.fulfill(status=503,body='unavailable'))
         page.evaluate('showResultEvidence("Qwen3-Max","03")')
         expect(page.locator('#evidence-retry')).to_be_visible()

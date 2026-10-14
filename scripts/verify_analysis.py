@@ -10,7 +10,7 @@ def main():
         browser=p.chromium.launch(headless=True,args=['--no-sandbox','--enable-unsafe-swiftshader'])
         page=browser.new_page(viewport={'width':1366,'height':768});page.on('pageerror',lambda e:errors.append(str(e)))
         page.goto(args.url+'/#worlds');page.wait_for_load_state('networkidle')
-        assert page.locator('#worlds .atlas-view-switch button').all_text_contents()==['Demo','Experiment']
+        assert page.locator('#worlds .atlas-view-switch button').all_text_contents()==['Demo','Interactive']
         assert not page.evaluate('performance.getEntriesByType("resource").some(r=>/\\.(wasm|mp4)/.test(r.name))')
         page.locator('[data-atlas-view=physics]').click();page.locator('#demo-explanation').scroll_into_view_if_needed()
         for i in range(1,16):
@@ -51,7 +51,7 @@ def main():
             assert '^' not in text and '_' not in text,(i,text)
             page.locator('#demo-rule').scroll_into_view_if_needed()
             page.wait_for_function('!document.querySelector("#oracle-chart-wrap").hidden')
-            assert page.locator('#oracle-signal').text_content().startswith('Demo data · ')
+            assert page.locator('#oracle-signal').text_content().startswith('Video data · ')
             assert page.locator('#oracle-chart').is_visible() and page.locator('#scene-law a[download]').count()==0
             assert page.locator('#scene-law summary').count()==0
             if i==8:

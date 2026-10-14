@@ -71,8 +71,71 @@ async def check(url):
         await page.wait_for_function('RoomDemo.getState().positions.blue_ball[2]<.6')
         print('PASS: first held gesture survives loading; released gestures stay cancelled; small targets and stable lift/drop.', flush=True)
 
+        await page.evaluate('showWorld("01")')
         await page.locator('[data-atlas-view=motion]').click()
-        await page.locator('[data-scene-mode=drag]').click()
+        await page.wait_for_function('window.SceneRoom?.getState().scene==="01"')
+        assert await page.evaluate('SceneRoom.getState().mode') == 'drag'
+        assert not await page.evaluate('SceneRoom.isRunning()')
+        await page.locator('#scene-live-stage').scroll_into_view_if_needed()
+        start = await page.evaluate('SceneRoom.getState().positions.red_ball[2]')
+        point = await page.evaluate('SceneRoom.project("red_ball")')
+        box = await page.locator('#scene-live-stage').bounding_box()
+        relative = ((point['x']-box['x'])/box['width'], (point['y']-box['y'])/box['height'])
+
+        for release_early in [False, True]:
+            cold = await browser.new_page(viewport={'width':1366, 'height':900})
+            cold.on('pageerror', lambda e: errors.append(str(e)))
+            ready = asyncio.Event()
+
+            async def wait_for_first_drag(route):
+                await ready.wait()
+                await route.continue_()
+
+            await cold.route('**/mujoco.wasm', wait_for_first_drag)
+            await cold.goto(url+'?scene=01#worlds', wait_until='networkidle')
+            await cold.locator('[data-atlas-view=motion]').click()
+            await cold.locator('#scene-live-stage').scroll_into_view_if_needed()
+            await cold.wait_for_function('document.querySelector("#scene-live-stage img").complete && document.querySelector("#scene-live-stage img").naturalWidth>0')
+            assert not await cold.evaluate('!!window.SceneRoom')
+            box = await cold.locator('#scene-live-stage').bounding_box()
+            x, y = box['x']+relative[0]*box['width'], box['y']+relative[1]*box['height']
+            await cold.mouse.move(x, y)
+            await cold.mouse.down()
+            await cold.mouse.move(x, y-45, steps=5)
+            if release_early:
+                await cold.mouse.up()
+            ready.set()
+            await cold.wait_for_function('!!window.SceneRoom', timeout=60000)
+            if release_early:
+                await cold.wait_for_timeout(150)
+                assert await cold.evaluate('SceneRoom.getState().oracle.held') is None
+                assert await cold.evaluate('SceneRoom.getState().time') == 0
+            else:
+                assert await cold.evaluate('SceneRoom.getState().oracle.held') == 'red_ball'
+                await cold.wait_for_function('z=>SceneRoom.getState().positions.red_ball[2]>z+.2', arg=start)
+                await cold.mouse.up()
+                assert await cold.evaluate('SceneRoom.getState().oracle.held') is None
+            await cold.close()
+        print('PASS: first native drag survives a stalled WASM download; a released gesture never replays.', flush=True)
+
+        # A miss does not start a paused world. Grabbing above the agent hand's
+        # 3 m reach must work for visitors, up to the physical roof/walls.
+        await page.mouse.click(box['x']+8, box['y']+8)
+        assert await page.evaluate('SceneRoom.getState().time') == 0
+        await page.evaluate('SceneRoom.push("red_ball",[0,0,9])')
+        await page.wait_for_function('SceneRoom.getState().positions.red_ball[2]>3.2')
+        await page.evaluate('SceneRoom.pause()')
+        point = await page.evaluate('SceneRoom.project("red_ball")')
+        await page.mouse.move(point['x'], point['y'])
+        await page.mouse.down()
+        assert await page.evaluate('SceneRoom.getState().oracle.held') == 'red_ball'
+        await page.mouse.move(point['x'], point['y']-1000, steps=5)
+        target = await page.evaluate('SceneRoom.getState().oracle.gripTarget')
+        assert 11 < target[2] < 12, target
+        await page.mouse.up()
+        await page.evaluate('SceneRoom.pause()')
+        print('PASS: misses stay paused; a high ball is grabbed on the first attempt and the hand respects the roof.', flush=True)
+
         for i in range(1, 16):
             scene = f'{i:02}'
             await page.evaluate('id=>showWorld(id)', scene)

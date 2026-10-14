@@ -244,7 +244,7 @@ export async function createRoom(stage,status,options={}) {
     if((live&&active)||drag||forces.length||data.time<until||quietSince===null||data.time-quietSince<.5)frame=requestAnimationFrame(tick);else active=false;
   }
   function wake(seconds=12){if(disposed)return;active=true;quietSince=null;until=Math.max(until,data.time+seconds);if(!frame&&visible&&!document.hidden){last=performance.now();frame=requestAnimationFrame(tick);}}
-  function push(body,impulse,point){const bid=typeof body==='number'?body:bodyIds[body];if(live){const name=Object.keys(bodyIds).find(n=>bodyIds[n]===bid);if(simulation.info().held===name){status('Release the object to push it.');return;}simulation.launch(name,impulse);wake();draw();return;}forces.push({body:bid,force:impulse.map(v=>v/.12),point:point||new T.Vector3().fromArray(data.xpos,bid*3),end:data.time+.12});wake();}
+  function push(body,impulse,point){const bid=typeof body==='number'?body:bodyIds[body];if(live){const name=Object.keys(bodyIds).find(n=>bodyIds[n]===bid);if(simulation.info().held===name){status('Release the object to push it.');return;}simulation.launch(name,impulse);options.onInteraction?.();wake();draw();return;}forces.push({body:bid,force:impulse.map(v=>v/.12),point:point||new T.Vector3().fromArray(data.xpos,bid*3),end:data.time+.12});wake();}
   const labels={red_ball:'Red ball',blue_ball:'Blue ball',test_block:'Block',pendulum_arm:'Pendulum',balance_arm:'Balance'};
   function releaseDrag(){const pointer=drag?.pointer;drag=null;simulation?.releaseGrip();arrow.visible=false;markHit(null);marker.classList.remove('is-held');canvas.style.cursor=mode==='view'?'grab':'default';if(pointer!==undefined&&canvas.hasPointerCapture(pointer))canvas.releasePointerCapture(pointer);}
   function beginInteraction(e){
@@ -259,9 +259,9 @@ export async function createRoom(stage,status,options={}) {
       drag.lift={center,right:new T.Vector3(1,0,0).applyQuaternion(camera.quaternion),pixelsPerUnit:height/(camera.top-camera.bottom)*camera.zoom,pixelsPerZ:Math.max(1,Math.abs(higher.y-screen.y)*height/2)};
       drag.floorPlane=new T.Plane().setFromNormalAndCoplanarPoint(new T.Vector3(0,0,1),hit.point);
     }
-    if(live&&mode==='drag'){const center=new T.Vector3().fromArray(data.xpos,body*3);if(center.z>simulation.config.grip.reach_height+.04){releaseDrag();status('Object is above hand reach. Wait for it to fall.');return;}drag.centerOffset=hit.point.clone().sub(center);simulation.setGrip(selected,center.toArray());}
+    if(live&&mode==='drag'){const center=new T.Vector3().fromArray(data.xpos,body*3);drag.centerOffset=hit.point.clone().sub(center);simulation.setGrip(selected,center.toArray());}
     markHit(hit);marker.classList.add('is-held');canvas.style.cursor='grabbing';
-    status(`${labels[selected]||selected.replaceAll('_',' ')} · ${mode==='push'?'release to push':'release to drop'}`);if(mode==='drag')wake(20);
+    status(`${labels[selected]||selected.replaceAll('_',' ')} · ${mode==='push'?'release to push':'release to drop'}`);if(mode==='drag'){options.onInteraction?.();wake(20);}
   }
   function moveInteraction(e){
     if(!drag){
@@ -279,7 +279,7 @@ export async function createRoom(stage,status,options={}) {
     }else p=ray.ray.intersectPlane(drag.lift?drag.floorPlane:drag.plane,new T.Vector3());
     if(!p)return;
     const limit=live?5.8:3.7;if(!(live&&drag.kind==='drag')){p.x=T.MathUtils.clamp(p.x,-limit,limit);p.y=T.MathUtils.clamp(p.y,-limit,limit);p.z=T.MathUtils.clamp(p.z,.15,live?simulation.config.grip.reach_height:5.4);}drag.target=p;
-    if(live&&drag.kind==='drag'){const target=p.clone().sub(drag.centerOffset),clamped=simulation.clampGripTarget(selected,target.toArray());simulation.setGrip(selected,clamped);if(clamped[2]>=simulation.config.grip.reach_height-.01)status(`Hand reaches ${simulation.config.grip.reach_height} m · release to drop`);}
+    if(live&&drag.kind==='drag'){const target=p.clone().sub(drag.centerOffset),clamped=simulation.clampGripTarget(selected,target.toArray(),ceiling);simulation.setGrip(selected,clamped);}
     if(drag.kind==='push'){const d=p.clone().sub(drag.point);d.z=0;arrow.position.copy(drag.point);if(d.length()>.01){arrow.setDirection(d.clone().normalize());arrow.setLength(Math.min(d.length(),2.5),.22,.13);}arrow.visible=d.length()>.04;draw();}
   }
   canvas.addEventListener('pointerdown',beginInteraction);
