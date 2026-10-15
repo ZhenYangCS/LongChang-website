@@ -34,17 +34,18 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 - 视频曲线明确标注纵轴物理量及单位：高度、速度、垂直速度、力、相对重力、能量或颜色；横轴标注模拟时间。显示中的 s 为模拟秒，与原生记录的计时值一致。
 - 页面先展示静图，未播放的视频不下载。首屏物理引擎只在操作时加载；场景索引只含播放元数据和低清预览，完整测量数据不随首屏下载，测量数组单独按需读取。高清图解码前先显示内嵌预览，避免空白。预览服务压缩 JS / JSON / WASM，保留视频 Range 请求；视频和引擎下载超时会提供重试。
 - 48 秒四幕概览与全屏演示模式；120 秒全场景 MP4、15 个逐场景 GIF 和合集可直接下载。
-- 04 Discovery in Practice 使用等高的左右卡片：左侧三组对照均分可用高度，右侧为 Anomaly / Color swap / Tool design 三个案例。切换案例和视频阶段时预留相同的内容高度，避免页面跳动；每个案例都有标题和结论。删除标题下的重复说明、模型名旁的行为标签和阶段编号；保留实验观察、结论及来源，独立基线等设置集中到 Full results & setup。点击案例直接从头播放整段影片。播放条紧接画面，观察过程和结论位于下方；支持播放/暂停、重播、拖动回看、0.5×–4× 倍速（默认 4×）和全屏，不遮挡影片字幕。拖动时暂停预览，松手后保持拖动前的播放状态；手机改为上下卡片，滑杆独占一行。原始材料仍保存在下载数据中。
+- 04 Discovery in Practice 与上方场景区使用相同的通栏宽度，使用等高的左右卡片：左侧三组对照均分可用高度，右侧为 Anomaly / Color swap / Tool design 三个案例。切换案例和视频阶段时预留相同的内容高度，避免页面跳动；每个案例都有标题和结论。删除标题下的重复说明、模型名旁的行为标签和阶段编号；保留实验观察、结论及来源，独立基线等设置集中到 Full results & setup。点击案例直接从头播放整段影片。播放条紧接画面，观察过程和结论位于下方；支持播放/暂停、重播、拖动回看、0.5×–4× 倍速（默认 4×）和全屏，不遮挡影片字幕。拖动时暂停预览，松手后保持拖动前的播放状态；手机改为上下卡片，滑杆独占一行。原始材料仍保存在下载数据中。
 - 主结果的 Reports by scene 保留按模型、场景与三次运行核对结果。报告弹窗只分 Summary / Full report，默认显示本次判定与英文评估总结；Full report 直接展示全部模型结论、报告中的实验、原始判分理由和参考规律，不再层层展开。三个 Run 用紧凑标签切换；引用轮次可打开原始动作、反馈与观察，单次完整记录仍可下载。主结果下方将 All records / Summaries 两个下载入口放在一起。全部 540 次总结按 episode、场景、重复编号及评估哈希匹配原判分，不重新评分；540 份 session/evaluation 和 30,223 轮原始记录经过哈希核验。数据与 ZIP 仍按需加载，正常对照单独显示接受或拒绝。
 - 框架按论文 Figure 2 的“环境构建 → 自主探索 → 发现评估”三栏展示，五步导航置顶，步骤或节点摘要紧接导航，桌面摘要区约 82 px；删除摘要中的重复阶段编号，保留输入输出。手机按视口预留稳定的摘要高度，切换内容时流程图不会上下跳动。节点只保留名称和一句说明，桌面流程区约 400 px。保留世界与探索者的观察/行动循环、器材审核与安装、报告和完整记录进入评估、探索证据返回场景演化。金色通路单独显示隐藏规律进入评估者；Hidden law / Evaluation only 标签放在 Judge 上方的入线旁，在桌面和手机均可见，与左侧 Claims 标签分开。光点按阶段沿实际连线流动；点击节点或阶段会固定当前通路并继续播放，弱化无关节点，暂停后恢复仍保留选择，重置回到完整轮播。完整记录直接连接探索者，表示所有探索回合均被记录；评估终点明确标为 D · Discovery，要求 C、S 同时通过。离屏或打开任意弹窗时暂停，减少动态效果设置默认静止。窄屏改为纵向排布并重算连线；线路标签置于线上方或线侧，保留完整的流动路径。实现位于 `assets/framework.js` 和 `assets/framework.css`。四个有视频的成功运行，在对应运行记录里可打开并排实验对照；影片、目标标记和原始轨迹保持同步。 Explore 到 Evaluate 的证据线沿栏间通道进入 judge 中心，窄屏从记录底部单独引出，避免与记录和反馈路线相交；构建与评估节点在各自栏内居中。
 - 每个场景的完整规律、适用对象与触发条件可展开阅读。
 - 第三节左侧只展示 12 个模型的 D（Discovery）发现率，固定按论文顺序排列。图表下方用虚线分开两组指标卡：Discovery outcome 的 D/C/S 显示百分比、简短定义和统一的 42 次改变规律场景统计口径，D 明确标注 C + S must pass；Exploration behavior 的五项指标各自标明轮数上限或分母，覆盖含正常对照的 45 次运行。不重复显示报数段落或百分比与通过次数两套数值，精确通过次数保留在提示中。右侧模型名称旁不再放 CSV 下载图标，场景报告和完整原始 JSON 下载保持可用。1000 px 及以下通过模型详情弹窗显示指标；实现为 assets/results.js 和 assets/results.css。
-- Framework 后直接进入主结果，相关工作对照留在论文中。04 Discovery in Practice 合并控制实验与案例分析：桌面左侧仅展示三条结论及各组发现率，右侧为三个可切换的原始案例影片；手机上下排列，结论与数字同排。D/C/S/L/AF 完整数据与实验设置收在 Full results & setup 中，预算实验的独立基线说明常显。影片下方只标场景与来源条件，不把 500-turn 精选案例当作 100-turn 控制实验的直接证据。原有 #controlled、#explore 和 #cases 链接仍可用。实现为 `assets/comparisons.js` / `assets/comparisons.css`。
+- Framework 后直接进入主结果，相关工作对照留在论文中。04 Discovery in Practice 合并控制实验与案例分析：桌面左侧展示三组对照：任务引导与工具访问显示发现率，预算实验显示实际使用轮数；任务对照明确标为 No task / Task-guided，并常显发现目标、异常规律提示与场景线索的区别，右侧为三个可切换的原始案例影片；手机上下排列，结论与数字同排。D/C/S/L/AF 完整数据与实验设置收在 Full results & setup 中，预算实验的独立基线说明常显。影片下方只标场景与来源条件，不把 500-turn 精选案例当作 100-turn 控制实验的直接证据。原有 #controlled、#explore 和 #cases 链接仍可用。实现为 `assets/comparisons.js` / `assets/comparisons.css`。
 - 三个案例影片分别为32秒 Astra/Gemini 对照、18秒颜色交换、21秒称重装置改造。选中后加载并播放；切换案例、离屏或切到后台时暂停。首次播放前也可直接拖动滑杆定位，键盘方向键可微调进度。
-- 第一个案例明确比较“发现异常后是否追查”：Astra 改变计划，检验红球重新运动的延迟，并进一步推动蓝球；Gemini 继续竖直抛射与碰撞测试，未检验重新运动的原因。页面按观察、后续实验、结果三步显示可读文字，拖动进度时同步切换；两列来自同一设置下的独立运行。1280×512 视频只展示原始实验近景、返回观察中的静止/运动状态，以及推动/抛射后的真实模拟计时；Gemini 的贴墙重新运动标为 Log，并说明位移几乎不可见。说明和结论放在视频外，保留默认 4×。`scripts/prepare_case_question.py` 复用已有渲染帧合成标注，逐帧状态和计时在 `data/case-question-cues.json`；完整渲染入口会自动调用它。
+- 第一个案例明确比较“发现异常后是否追查”：Astra 改变计划，检验红球重新运动的延迟，并进一步推动蓝球；Gemini 继续竖直抛射与碰撞测试，未检验重新运动的原因。页面按观察、后续实验、结果三步显示可读文字，拖动进度时同步切换；两列来自同一设置下的独立运行。案例画面不再受 215 px 高度限制，模型名、双列观察和结论分别对齐到视频的两半；1280×512 视频只展示原始实验近景、返回观察中的静止/运动状态，以及推动/抛射后的真实模拟计时；Gemini 的贴墙重新运动标为 Log，并说明位移几乎不可见。说明和结论放在视频外，保留默认 4×。`scripts/prepare_case_question.py` 复用已有渲染帧合成标注，逐帧状态和计时在 `data/case-question-cues.json`；完整渲染入口会自动调用它。
 - 案例播放器位于 04 的右栏，随栏宽缩放；手机上下排列，切换、画面、控制栏和简短来源放在同一框内。全屏包含画面与同一条控制栏，手机端也可用原生视频全屏。
 - 案例视频使用首图相同的 Blender Cycles 材质与灯光重新渲染：珐琅红/蓝球、瓷砖地面、蓝灰金属和青绿色托盘，64 samples 并去噪。近景以剖视方式隐藏遮挡实验的玻璃墙与边框。保留原始 MuJoCo 状态中的位置、尺寸、红/蓝身份和仪器结构；分屏两侧独立调整影片时间，原始回合与模拟时间保存在来源记录中。颜色案例依次展示首次交换、再次交换、红球与红球碰撞；仪器案例依次展示滑出平盘、红球留在深盘、蓝球稳定称重。章节间切到后续试验，不模拟装置变形或构建过程。来源、视频及首图材质源码哈希在 `data/case-films.json`，逐帧原始状态哈希和时间映射在 `data/case-rendering.json`。生成入口为 `scripts/prepare_case_studio.py`，复用 `scripts/prepare_case_films.py` 的案例选段与字幕；`scripts/blender_case_films.py` 负责渲染。播放器为 `assets/case-films.js` / `assets/case-films.css`。
-- Scene evolution 的 Demo 右侧恢复与 15 Worlds 一致的 Simplified model：可选推动计划、蓝球位置或第二次推动时机，独立播放、重置、拖动时间并查看公式与动态图解；Scene rule 放在参数和图解上方；原始 Demo 力曲线移到左侧视频下方，竖线与时间读数随视频同步。assets/evolution-model.js 只定义三种演化模型，复用 LongChangMotion 的绘图、LongChangMath 的公式、scene-player.js 的模型时钟及 demo-model.css 的面板样式；01 也使用同一个模型时钟。模型参数不改动视频、实录数据或 Interactive。桌面选择栏、视频、解释面板严格等高，平板保留视频与解释并排，手机纵排；Interactive 隐藏解释面板。trace 与三行 D/C/S × 五个场景的紧凑评测表仍紧接下方。data/evolution-signals.json 从原始演示状态导出，可由 prepare_evolution_interactive.py 重建；verify_evolution_model.py 核对规律时点、媒体独立性、原始曲线和各尺寸对齐。
+- Scene Evolution 与 15 Worlds 共用 `assets/scene-layout.css`：桌面三栏的宽度、高度、标题和模式切换对齐，平板与手机都使用场景下拉框；三张演化卡片使用与场景目录一致的机制线图。Demo 右侧使用一致的 Rule illustration：可选推动计划、蓝球位置或第二次推动时机，独立播放、重置、拖动时间并查看公式与动态图解；Scene rule 放在参数和图解上方；原始 Demo 力曲线移到左侧视频下方，竖线与时间读数随视频同步。assets/evolution-model.js 只定义三种演化模型，复用 LongChangMotion 的绘图、LongChangMath 的公式、scene-player.js 的模型时钟及 demo-model.css 的面板样式；01 也使用同一个模型时钟。模型参数不改动视频、实录数据或 Interactive。桌面选择栏、视频、解释面板严格等高，平板保留视频与解释并排，手机纵排；Interactive 隐藏解释面板。Trace 放在演示下方的来源说明中；评测表独立放在来源说明之后，以 Source scenes / Evolved scenes 两组列对照三行 D/C/S × 五个场景。data/evolution-signals.json 从原始演示状态导出，可由 prepare_evolution_interactive.py 重建；verify_evolution_model.py 核对规律时点、媒体独立性、原始曲线和各尺寸对齐。
+- 三段演化 Demo 使用与 15 个基础场景相同的 Blender Cycles 材质、低斜角视角、1600×800 / 60 fps 近景及轨迹/力箭头，移除旧画面内的标题、SCRIPTED DEMO 与 counts 字幕。数据与模拟秒在画面外显示，默认 4×。`scripts/refresh_evolution_media.py` 先按冻结程序重放并逐项核对原生状态、动作和时间映射，再生成并发布全部视频与 poster；物理记录和评测数值不变。
 - 匿名论文、540 条结果记录、原始 prompt、案例笔记，以及三张结果图的 SVG/PNG 下载。
 
 - 场景 13 的 Demo 图解使用正面红蓝球和可点击的 1 / 2 / 3 步骤，清楚显示前两次无额外跳跃、第三次双球向上跳；持续接触与撞墙作为对照。图解标题为 Count the touches，说明用简短英文，保留向上速度 4 和原始两球的计数范围。步骤按钮与图解播放只控制示意模型，不改动左侧原始影片、进度或测量数据。
@@ -58,7 +59,7 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 | Table 3 · 主结果与探索行为 | 03 交互图及同屏模型详情，全部九项指标 |
 | Table 4 · 控制实验 | 04 三条发现率结论；完整五项指标与设置按需展开 |
 | Table 5 · 场景演化案例 | 05 原始 trace、三种演化的参考说明及实时交互 |
-| Table 6 · 演化评测 | 与 Demo / Interactive 同组展示三行 D/C/S、五个场景的横向对照 |
+| Table 6 · 演化评测 | 演示和来源说明下方独立展示，按原场景与演化场景分组 |
 | Table 7 · 基础场景规律 | 01 的 Demo 侧栏展示当前场景规则与公式 |
 | Table 8 · 演化场景规律 | 05 的 Trace reference & full rule 展示精确规则与冻结设计 |
 | Table 9 · 动作接口 | 论文附录保留参数和接口参考 |
@@ -166,6 +167,8 @@ python scripts/verify_case_films.py --url http://127.0.0.1:8765
 
 # 在论文接受的三个演化场景中运行脚本化干预并导出 demo
 python scripts/prepare_evolution_interactive.py
+# Use the same camera, materials and 60 fps presentation as the original scenes.
+python scripts/refresh_evolution_media.py --ffmpeg /path/to/ffmpeg
 python scripts/verify_evolution_demos.py --url http://127.0.0.1:8765
 python scripts/verify_evolution_model.py --url http://127.0.0.1:8765
 

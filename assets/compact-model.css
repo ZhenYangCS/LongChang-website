@@ -96,18 +96,6 @@
 :is(#atlas-canvas,#evo-model-canvas) circle[r="14"] { r:var(--model-ball-radius,14px); }
 :is(#atlas-canvas,#evo-model-canvas) text { font-size:var(--model-text-size,14px); }
 :is(#atlas-canvas,#evo-model-canvas) text[fill="#fff"] { font-size:var(--model-ball-label,14px); dominant-baseline:central; transform:translateY(-4px); }
-@media(min-width:1100px) {
-  #worlds .scene-workspace[data-view=physics] { grid-template-columns:clamp(210px,17vw,250px) minmax(0,1fr) clamp(380px,31vw,420px); }
-  #evolution .evo-workspace[data-view=physics] { grid-template-columns:150px minmax(0,1fr) clamp(380px,30vw,410px); }
-}
-@media(min-width:801px) {
-  #worlds .scene-workspace[data-view] { height:clamp(550px,calc(100svh - 200px),730px); }
-  #evolution .evo-workspace { --evo-height:540px; }
-}
-@media(min-width:801px) and (max-width:1099px) {
-  #worlds .scene-workspace[data-view],#worlds .scene-workspace[data-view=physics] { height:auto; grid-template-columns:minmax(0,1.4fr) minmax(360px,1fr); grid-template-rows:auto clamp(550px,calc(100svh - 240px),700px); }
-  #evolution .evo-workspace,#evolution .evo-workspace[data-view=motion] { --evo-height:560px; grid-template-columns:minmax(0,1fr) 380px; }
-}
 @media(max-width:800px) {
   :is(#demo-explanation,#evo-explanation) .demo-model { flex:none; grid-template-rows:repeat(5,max-content) clamp(160px,45vw,240px) max-content; }
   :is(#demo-explanation,#evo-explanation) .typeset-rule math { font-size:18px; }
@@ -140,6 +128,3 @@
 #worlds #scene-detail .atlas-copy,#evo-detail .atlas-copy { padding:8px 16px 12px; }
 #worlds #scene-detail .atlas-copy h3,#evo-detail .atlas-copy h3 { max-width:100%; margin-inline:auto; text-align:center; text-wrap:balance; }
 #worlds #oracle-plain,#evo-detail #evo-law { width:100%; justify-content:center; text-align:center; text-wrap:balance; }
-@media(min-width:1100px) {
-  #evolution .evo-workspace[data-view=motion] { grid-template-columns:150px minmax(0,1fr); }
-}

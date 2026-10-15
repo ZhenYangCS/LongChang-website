@@ -1,5 +1,5 @@
 
-.discovery-practice-grid { display:grid; grid-template-columns:320px minmax(0,1fr); align-items:stretch; gap:24px; max-width:1120px; margin-inline:auto; }
+.discovery-practice-grid { display:grid; grid-template-columns:320px minmax(0,1fr); align-items:stretch; gap:20px; width:100%; margin-inline:auto; }
 .discovery-findings,.discovery-cases { min-width:0; }
 .discovery-findings,.discovery-cases { border:1px solid var(--line); border-radius:14px; background:#fbfcfa; overflow:hidden; }
 .discovery-findings { display:flex; flex-direction:column; padding:12px 20px 10px; }
@@ -24,7 +24,7 @@
 .discovery-findings .controlled-baseline { margin-top:6px; padding-top:9px; border-top:1px solid var(--line); font-size:11px; line-height:1.6; color:var(--muted); }
 .discovery-cases .case-player { width:100%; flex:1; border:0; border-top:1px solid var(--line); border-radius:0; }
 .case-film-source { padding:5px 16px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; line-height:1.5; }
-.controlled-details { max-width:1120px; margin:12px auto 0; border-top:1px solid var(--line); }
+.controlled-details { width:100%; margin:16px auto 0; border-top:1px solid var(--line); }
 .controlled-details > summary { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:10px 0 0; color:var(--teal); font-size:12px; cursor:pointer; list-style:none; }
 .controlled-details > summary::-webkit-details-marker { display:none; }
 .controlled-details > summary > span { font-size:20px; line-height:1; }

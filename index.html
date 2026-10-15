@@ -29,6 +29,7 @@
   <link rel="stylesheet" href="assets/chapters.css">
   <link rel="stylesheet" href="assets/compact-model.css">
   <link rel="stylesheet" href="assets/video-data.css">
+  <link rel="stylesheet" href="assets/scene-layout.css">
   <script src="assets/logo.js" defer></script>
   <script src="data/paper.js" defer></script>
   <script src="data/discoveries.js" defer></script>
@@ -191,7 +192,7 @@
       <div class="discovery-practice-grid">
       <div class="discovery-findings">
         <h3 class="discovery-subheading">Controlled comparisons</h3>
-        <p class="discovery-context">GPT-6-Astra · Discovery (%)</p>
+        <p class="discovery-context">GPT-6-Astra · Controlled experiments</p>
         <div id="controlled-comparisons" class="controlled-comparisons"></div>
       </div>
       <section id="explore" class="discovery-cases" aria-labelledby="cases-title">
@@ -205,7 +206,7 @@
       <div class="case-player">
       <div id="question-case" class="case-panel" role="tabpanel" aria-labelledby="question-tab">
         <figure class="case-film" data-film="question" data-duration="32">
-          <figcaption class="case-question-intro"><h3>Red restarts. Who investigates?</h3></figcaption>
+          <figcaption class="case-question-intro"><h3>Red restarts. Who investigates?</h3><p>The same unexpected motion, two different responses.</p></figcaption>
           <div class="case-question-models"><div><strong>GPT-6-Astra</strong></div><div><strong>Gemini-3.7-Flash</strong></div></div>
           <div class="case-film-screen">
             <video id="case-question-video" src="assets/videos/case-question.mp4" poster="assets/images/case-question.webp" controls muted playsinline preload="none" aria-label="Two models see red restart without a new push. Astra investigates; Gemini continues its planned tests."></video>
@@ -216,7 +217,7 @@
             <div class="case-question-step" data-case-stage="1" data-start="8" hidden><div class="case-question-comparison"><p><strong>Changes the plan to test the anomaly.</strong><span>Pushes red, then waits. Red restarts about 10 s after the push.</span></p><p><strong>Keeps the planned gravity test.</strong><span>Throws red upward, without testing why it restarted.</span></p></div></div>
             <div class="case-question-step" data-case-stage="2" data-start="20" hidden><div class="case-question-comparison"><p><strong>Checks whether blue resets the delay.</strong><span>Pushes blue too: red again restarts about 10 s later.</span></p><p><strong>Leaves the restart unexplained.</strong><span>Runs a collision test, then ends the exploration.</span></p></div></div>
           </div>
-          <p class="case-question-finding"><strong>Astra:</strong> A push or throw pauses red’s hidden northward force for 10 s.</p>
+          <p class="case-question-finding"><strong>Astra’s finding</strong><span>A nonzero push or throw on either ball pauses red’s northward force for 10 s.</span></p>
         </figure>
         <p class="case-film-source">Scene 15 · 100-turn main study</p>
       </div>
@@ -267,10 +268,11 @@
         <div class="section-heading chapter-heading"><h2 id="evolution-title">Scene Evolution</h2></div>
         <div class="scene-workspace evo-workspace" data-view="physics">
           <aside class="scene-index" aria-label="Choose an evolved world">
+            <label class="sr-only" for="evo-mobile-select">Choose an evolved scene</label><select id="evo-mobile-select"><option value="generate">01 · Generation</option><option value="mutate">02 · Refinement</option><option value="compose">03 · Composition</option></select>
             <div id="evo-picker" class="scene-picker" role="tablist" aria-label="Evolved scenes" aria-orientation="vertical">
-              <button id="evo-tab-generate" role="tab" type="button" data-evolution="generate" aria-selected="true" aria-controls="evo-detail"><span class="scene-choice-number">01</span><span class="scene-choice-name">Generation</span><img class="scene-choice-symbol" src="assets/images/evolution-generate.webp" alt="" loading="lazy"></button>
-              <button id="evo-tab-mutate" role="tab" type="button" data-evolution="mutate" aria-selected="false" aria-controls="evo-detail" tabindex="-1"><span class="scene-choice-number">02</span><span class="scene-choice-name">Refinement</span><img class="scene-choice-symbol" src="assets/images/evolution-mutate.webp" alt="" loading="lazy"></button>
-              <button id="evo-tab-compose" role="tab" type="button" data-evolution="compose" aria-selected="false" aria-controls="evo-detail" tabindex="-1"><span class="scene-choice-number">03</span><span class="scene-choice-name">Composition</span><img class="scene-choice-symbol" src="assets/images/evolution-compose.webp" alt="" loading="lazy"></button>
+              <button id="evo-tab-generate" role="tab" type="button" data-evolution="generate" aria-selected="true" aria-controls="evo-detail"><span class="scene-choice-number">01</span><span class="scene-choice-name">Generation</span><img class="scene-choice-symbol" src="assets/evolution/generate.svg" alt="" loading="lazy"></button>
+              <button id="evo-tab-mutate" role="tab" type="button" data-evolution="mutate" aria-selected="false" aria-controls="evo-detail" tabindex="-1"><span class="scene-choice-number">02</span><span class="scene-choice-name">Refinement</span><img class="scene-choice-symbol" src="assets/evolution/mutate.svg" alt="" loading="lazy"></button>
+              <button id="evo-tab-compose" role="tab" type="button" data-evolution="compose" aria-selected="false" aria-controls="evo-detail" tabindex="-1"><span class="scene-choice-number">03</span><span class="scene-choice-name">Composition</span><img class="scene-choice-symbol" src="assets/evolution/compose.svg" alt="" loading="lazy"></button>
             </div>
           </aside>
           <div id="evo-detail" class="world-detail atlas-detail" role="tabpanel" aria-labelledby="evo-tab-generate" data-view="physics">
@@ -279,6 +281,7 @@
               <div id="evo-visual" class="atlas-visual">
                 <div id="evo-demo-view" class="scene-physics-view">
                   <div class="physics-video-frame is-clear"><video id="evo-demo-video" muted playsinline loop preload="none" poster="assets/images/evolution-generate.webp" aria-label="Scripted demonstration: Change the force"></video><button id="evo-demo-retry" class="scene-play-overlay" type="button" hidden>↻ Retry</button><p id="evo-demo-error" role="status" hidden>Demo could not load.</p></div>
+                  <div class="scene-motion-key" aria-label="Motion guide legend"><span><i style="color:#647f89"></i>Motion</span><span><i class="is-force" style="color:#347b69"></i>Force</span></div>
                 </div>
                 <div id="evo-experiment-view" class="scene-motion-view" hidden></div>
               </div>
@@ -301,6 +304,7 @@
             </div>
 
           </section>
+        </div>
           <div class="evo-context"><p class="evo-rationale"><strong>Trace → design</strong><span id="evo-rationale">The trace mistook a paused force for no force. This world tests the same error with repulsion.</span></p>
               <details class="evo-design"><summary>Trace reference &amp; full rule <span aria-hidden="true">+</span></summary><section class="evo-reference" aria-labelledby="evo-reference-title">
           <div class="evo-reference-heading"><h4 id="evo-reference-title">The shared source trace</h4><span>Scene 15 · GPT-6-Astra · Run 2</span></div>
@@ -312,8 +316,7 @@
           <div class="evo-reference-footer"><p>This error was corrected during a successful exploration.</p><a href="data/evolution/reference-trace.json" target="_blank" rel="noopener">Read the source trace ↗</a></div>
         </section><p id="evo-full-rule"></p><p id="evo-design-quote"></p><p class="evo-scope">Interactive trials use prepared starting positions; time is in simulation seconds.</p><a id="evo-design-link" href="data/evolution/generate-design.json" target="_blank" rel="noopener">Read the frozen design ↗</a></details>
           </div>
-          <div class="evolution-evaluation"><p class="evaluation-sample">GPT-6-Astra · 3 runs per scene · independent source-scene baseline</p><table id="evolution-results"><caption class="sr-only">Discovery, law correctness and evidence support in source and evolved scenes</caption></table></div>
-        </div>
+          <section class="evolution-evaluation" aria-labelledby="evolution-evaluation-title"><header class="evaluation-heading"><h3 id="evolution-evaluation-title">Evaluating the new scenes</h3><p class="evaluation-sample">GPT-6-Astra · 3 runs per scene · independent source-scene baseline</p></header><table id="evolution-results"><caption class="sr-only">Discovery, law correctness and evidence support in source and evolved scenes</caption></table></section>
 
 
       </div>

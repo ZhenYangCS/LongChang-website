@@ -47,7 +47,7 @@
   interactiveTab.addEventListener('pointerenter', live.prepare, {passive:true});
   interactiveTab.addEventListener('focus', live.prepare);
   const demo = window.LongChangScenePlayer.playback({
-    host: $('#evo-demo-view'), prefix: 'evo-demo', video,
+    host: $('#evo-demo-view'), prefix: 'evo-demo', video, speed: 4,
     handlers: {
       toggle() { demoWanted = !demoWanted || video.paused; sync(); },
       reset() { demoWanted = false; video.pause(); seekTime = null; if (video.readyState) video.currentTime = 0; demo.update(); },
@@ -88,6 +88,7 @@
     video.poster = `assets/images/evolution-${key}.webp`;
     video.setAttribute('aria-label', `Scripted demonstration: ${d.name}`);
     $('#evo-detail').setAttribute('aria-labelledby', `evo-tab-${key}`);
+    $('#evo-mobile-select').value = key;
     for (const tab of tabs) { const active = tab.dataset.evolution === key; tab.setAttribute('aria-selected', String(active)); tab.tabIndex = active ? 0 : -1; }
   }
   function setView(selected) {
@@ -122,6 +123,7 @@
     });
   }
   for (const button of document.querySelectorAll('[data-evo-view]')) button.addEventListener('click', () => setView(button.dataset.evoView));
+  $('#evo-mobile-select').addEventListener('change', event => choose(event.target.value));
   $('#evo-demo-retry').addEventListener('click', () => { demoKey = null; demoWanted = true; sync(); });
   video.addEventListener('loadeddata', () => { clearTimeout(demoTimer); demo.update(); });
   video.addEventListener('loadedmetadata', () => { video.playbackRate = Number(demo.speed.value); if (seekTime !== null) { video.currentTime = seekTime; seekTime = null; } demo.update(); });

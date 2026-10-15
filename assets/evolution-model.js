@@ -123,7 +123,7 @@
   const dataPanel=chart.closest('.evo-demo-data'),retry=dataPanel.querySelector('#evo-chart-retry');
   dataPanel.classList.add('video-data');
   const heading=document.createElement('div');heading.className='video-data-heading';
-  const caption=document.createElement('span');caption.textContent='Video data · Recorded force';
+  const caption=document.createElement('span');caption.textContent='Video data';
   chartStatus.className='video-data-clock';chartStatus.setAttribute('aria-live','off');chartStatus.title='Simulation time in this video';
   chartStatus.textContent='Loading…';
   dataPanel.querySelector('h4').replaceWith(heading);heading.append(caption,chartStatus);
@@ -132,13 +132,13 @@
   function drawRecorded(mediaTime=video.currentTime) {
     if(!signals)return;
     const width=Math.max(240,Math.round(chart.clientWidth||320));
-    const signal=signals[id], left=38,right=width-10,top=10,bottom=66,max=Math.max(1.5,...signal.samples.map(row=>row[1]));
+    const signal=signals[id], left=38,right=width-10,top=25,bottom=76,max=Math.max(1.5,...signal.samples.map(row=>row[1]));
     const xy=(t,f)=>[left+t/signal.duration*(right-left),bottom-f/max*(bottom-top)];
     const key=`${id}:${width}`;
     if(chartScene!==key){
       const path=signal.samples.map(([t,f],i)=>(i?'L':'M')+xy(t,f).map(n=>n.toFixed(2)).join(' ')).join('');
-      chart.setAttribute('viewBox',`0 0 ${width} 90`);
-      chart.innerHTML=`<path d="M${left} ${top}V${bottom}H${right}" fill="none" stroke="#cbdad2"/><text x="32" y="${top+4}" text-anchor="end">${max.toFixed(1)}</text><text x="32" y="${bottom+4}" text-anchor="end">0</text><text x="${left}" y="84">0</text><text x="${right}" y="84" text-anchor="end">${signal.duration.toFixed(1)} s</text><path class="evo-recorded-series" d="${path}" fill="none" stroke="#577f69" stroke-width="2"/><g class="video-time-marker evo-time-marker evo-recorded-cursor"><title></title><path class="video-time-halo" d="M0 ${top}V${bottom}"/><path class="video-time-line evo-time-line" d="M0 ${top}V${bottom}"/><path class="video-time-head evo-time-head" d="M-4 ${top-6}H4L0 ${top}Z"/><circle class="evo-time-point" cx="0" r="3.5"/></g>`;
+      chart.setAttribute('viewBox',`0 0 ${width} 106`);
+      chart.innerHTML=`<text x="${left}" y="13">${id==='generate'?'Repulsive':'Northward'} force (N)</text><path d="M${left} ${top}V${bottom}H${right}" fill="none" stroke="#cbdad2"/><text x="32" y="${top+4}" text-anchor="end">${max.toFixed(1)}</text><text x="32" y="${bottom+4}" text-anchor="end">0</text><text x="${left}" y="93">0</text><text x="${right}" y="93" text-anchor="end">${signal.duration.toFixed(1)}</text><text x="${(left+right)/2}" y="103" text-anchor="middle">Simulation time (s)</text><path class="evo-recorded-series" d="${path}" fill="none" stroke="#577f69" stroke-width="2"/><g class="video-time-marker evo-time-marker evo-recorded-cursor"><title></title><path class="video-time-halo" d="M0 ${top}V${bottom}"/><path class="video-time-line evo-time-line" d="M0 ${top}V${bottom}"/><path class="video-time-head evo-time-head" d="M-4 ${top-6}H4L0 ${top}Z"/><circle class="evo-time-point" cx="0" r="3.5"/></g>`;
       chartScene=key;
     }
     const t=Math.max(0,Math.min(signal.duration,(mediaTime||0)/(Number.isFinite(video.duration)&&video.duration>0?video.duration:10)*signal.duration));

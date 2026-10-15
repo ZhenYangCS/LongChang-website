@@ -12,7 +12,7 @@
     {key:'AF', label:'Failed actions'}
   ];
   const groups = [
-    {id:'guidance', title:'Guidance helps.', names:['Free exploration','Task-guided'], labels:['Free','Guided'], setup:'Task guidance · 100-turn limit'},
+    {id:'guidance', title:'A discovery task helps.', names:['Free exploration','Task-guided'], labels:['No task','Task-guided'], note:'Guided runs add a discovery goal, an altered-physics notice and a scene-specific clue.', setup:'Task guidance · 100-turn limit'},
     {id:'budget', title:'More time goes unused.', metric:'L', note:'Mean turns used', names:['100 turns','500 turns'], labels:['100-turn limit','500-turn limit'], setup:'Turn budget · no context compaction'},
     {id:'apparatus', title:'Tool access helps.', names:['Disabled','Enabled'], labels:['Tools off','Tools on'], setup:'Tool access · 100-turn limit'}
   ];
@@ -37,7 +37,8 @@
 
   const evolution = document.querySelector('#evolution-results');
   if (evolution) {
-    const labels=['Source 15','Source 14','Generate','Refine','Compose'];
-    evolution.innerHTML = `<caption class="sr-only">Independent GPT-6-Astra evaluation, three runs per scene; all rates in percent</caption><thead><tr><th scope="col">Metric</th>${data.evolution.map((row,i)=>`<th scope="col" data-evolution-result="${esc(row.name)}" title="${esc(row.name)}">${labels[i]}</th>`).join('')}</tr></thead><tbody>${fields.slice(0,3).map(({key,label})=>`<tr><th scope="row">${label}</th>${data.evolution.map((row,i)=>`<td data-condition="${esc(row.name)}" data-metric="${key}" ${i>=2?'class="evolved-result"':''}>${row[key].toFixed(1)}%</td>`).join('')}</tr>`).join('')}</tbody>`;
+    const labels=['Scene 15','Scene 14','Generation','Refinement','Composition'];
+    const shortLabels=['Scene 15','Scene 14','Generate','Refine','Compose'];
+    evolution.innerHTML = `<caption class="sr-only">Independent GPT-6-Astra evaluation, three runs per scene; all rates in percent</caption><colgroup><col></colgroup><colgroup span="2"></colgroup><colgroup span="3"></colgroup><thead><tr class="evaluation-groups"><td></td><th scope="colgroup" colspan="2">Source scenes</th><th scope="colgroup" colspan="3">Evolved scenes</th></tr><tr><th scope="col">Metric</th>${data.evolution.map((row,i)=>`<th scope="col" data-evolution-result="${esc(row.name)}" title="${esc(row.name)}"><span class="evaluation-name">${labels[i]}</span><span class="evaluation-short">${shortLabels[i]}</span></th>`).join('')}</tr></thead><tbody>${fields.slice(0,3).map(({key,label})=>`<tr><th scope="row">${label}</th>${data.evolution.map((row,i)=>`<td data-condition="${esc(row.name)}" data-metric="${key}" ${i>=2?'class="evolved-result"':''}>${row[key].toFixed(1)}%</td>`).join('')}</tr>`).join('')}</tbody>`;
   }
 })();

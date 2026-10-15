@@ -138,9 +138,15 @@ def main():
         for quote, selector in [(trace['weakness']['evidence'][0]['quote'], '#evo-trace-error'), (trace['weakness']['contradiction'][0]['quote'], '#evo-trace-correction')]:
             assert page.locator(selector).text_content().strip('“”') == quote
         assert page.locator('#controlled #evolution-results').count() == 0
-        assert page.locator('#evolution .evo-workspace #evolution-results tbody tr').count() == 3
+        assert page.locator('#evolution .evo-workspace #evolution-results').count() == 0
+        assert page.locator('#evolution-results tbody tr').count() == 3
         assert page.locator('#evolution-results tbody td').count() == 15
-        assert page.locator('.evolution-evaluation').bounding_box()['height'] < 190
+        table = page.locator('.evolution-evaluation').bounding_box()
+        workspace = page.locator('#evolution .evo-workspace').bounding_box()
+        context = page.locator('.evo-context').bounding_box()
+        assert table['y'] >= context['y'] + context['height']
+        assert abs(table['x'] - workspace['x']) < 1 and abs(table['width'] - workspace['width']) < 1
+        assert page.locator('#evolution-results th[scope=colgroup]').all_text_contents() == ['Source scenes', 'Evolved scenes']
         page.locator('.evo-design summary').click()
         expect(page.locator('#evo-trace-error')).to_be_visible()
         page.locator('.evo-design summary').click()
@@ -248,7 +254,7 @@ def main():
         phone.locator('#evo-play').tap()
         phone.locator('#evolution').screenshot(path='/tmp/evolution-experiment-mobile.png')
         phone.route('**/data/evolution/mutate.json', lambda route:route.abort())
-        phone.locator('#evo-tab-mutate').tap()
+        phone.locator('#evo-mobile-select').select_option('mutate')
         phone.locator('#evo-stage').scroll_into_view_if_needed()
         expect(phone.locator('#evo-hint')).to_have_text('Could not load. Tap Drag to retry.')
         phone.unroute('**/data/evolution/mutate.json')
@@ -259,7 +265,7 @@ def main():
         assert phone.locator('#evo-stage canvas.room-canvas').count()==1
         # Demo failures can be retried independently of the live world.
         phone.route('**/evolution-compose.mp4',lambda route:route.abort())
-        phone.locator('[data-evo-view=demo]').tap(); phone.locator('#evo-tab-compose').tap()
+        phone.locator('[data-evo-view=demo]').tap(); phone.locator('#evo-mobile-select').select_option('compose')
         phone.locator('#evo-visual').scroll_into_view_if_needed()
         expect(phone.locator('#evo-demo-error')).to_be_visible()
         phone.unroute('**/evolution-compose.mp4')

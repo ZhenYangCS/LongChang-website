@@ -40,8 +40,6 @@
 #demo-rule #oracle-chart { max-height:190px; }
 #demo-rule #oracle-chart-legend { font-size:11px; }
 @media(min-width:801px) {
-  #worlds .scene-workspace[data-view] { grid-template-columns:clamp(210px,17vw,250px) minmax(0,1fr); grid-template-rows:minmax(0,1fr); height:clamp(510px,calc(100svh - 200px),730px); gap:8px; }
-  #worlds .scene-workspace[data-view=physics] { grid-template-columns:clamp(210px,17vw,250px) minmax(0,1fr) clamp(300px,26vw,360px); }
   #worlds #scene-detail { position:relative; }
   #worlds .atlas-topline { position:absolute; top:12px; right:12px; left:auto; min-height:0; padding:0; border:0; background:none; z-index:2; }
   #worlds .atlas-copy h3 { max-width:calc(100% - 160px); margin:0; text-align:left; font-size:22px; }
@@ -58,7 +56,6 @@
   :is(#demo-explanation,#evo-explanation) .atlas-scene-readout { padding:10px 16px; }
 }
 @media(min-width:801px) and (max-width:1099px) {
-  #worlds .scene-workspace[data-view],#worlds .scene-workspace[data-view=physics] { height:auto; grid-template-columns:minmax(0,1.4fr) minmax(300px,1fr); grid-template-rows:auto clamp(520px,calc(100svh - 240px),700px); }
   #worlds .scene-index { grid-column:1/-1; height:auto; min-height:0; border:0; background:none; }
   #worlds .scene-picker { display:none; }
   #worlds #scene-mobile-select { display:block; width:100%; min-height:38px; margin:0; padding:8px 12px; border:1px solid #d4dfd8; border-radius:7px; background:#fbfdf9; color:#426351; font:400 13px/1.5 var(--sans); }
