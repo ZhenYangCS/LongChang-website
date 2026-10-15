@@ -14,10 +14,10 @@
 :is(#worlds,#evolution) .scene-index,
 :is(#scene-detail,#evo-detail,#demo-explanation,#evo-explanation) { min-height:0; height:100%; }
 #evolution .scene-picker { grid-template-columns:1fr; grid-template-rows:repeat(3,minmax(0,1fr)); gap:4px; padding:4px; }
-#evolution .scene-picker button { position:relative; display:flex; flex-direction:column; justify-content:center; gap:12px; padding:22px 12px 12px; }
+#evolution .scene-picker button { position:relative; display:flex; flex-direction:column; justify-content:center; gap:6px; padding:18px 6px 8px; }
 #evolution .scene-choice-number { position:absolute; top:6px; left:6px; }
 #evolution .scene-choice-name { min-height:0; font:400 12px/1.4 var(--sans); }
-#evolution .scene-picker .scene-choice-symbol { width:116px; max-width:100%; height:40px; }
+#evolution .scene-picker .scene-choice-symbol { width:116px; max-width:100%; height:30px; }
 #evo-mobile-select { display:none; }
 #worlds #scene-detail .atlas-copy h3,#evo-detail .atlas-copy h3 { font-size:22px; }
 #evo-detail #evo-law { margin:8px 0 0; font-size:14px; line-height:1.55; }
@@ -25,22 +25,22 @@
 #evo-demo-view #evo-demo-chart { height:106px; }
 #evo-explanation .demo-model { gap:7px 6px; }
 
-/* Provenance and aggregate evaluation follow the browser, outside its grid. */
-#evolution .evo-context { margin-top:16px; padding:14px 0; border:0; border-block:1px solid var(--line); border-radius:0; background:none; }
-#evolution .evolution-evaluation { margin:28px 0 0; padding:0; border:0; border-radius:0; background:none; }
-.evaluation-heading { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px 24px; margin-bottom:14px; }
-#evolution .evaluation-heading h3 { margin:0; font:600 17px/1.4 var(--sans); color:var(--ink); }
-#evolution .evaluation-sample { margin:0; font-size:12px; }
-#evolution-results { width:100%; border-block:1px solid #c9d9cd; }
-#evolution-results th,#evolution-results td { padding:11px 10px; font-size:13px; line-height:1.45; }
-#evolution-results thead { background:#f4f8f3; }
-#evolution-results thead th { font-size:12px; font-weight:500; }
-#evolution-results .evaluation-groups > * { padding-block:9px; font-size:11px; color:#637c6b; }
-#evolution-results .evaluation-groups th:last-child { background:#eaf2e6; }
-#evolution-results tbody tr:first-child { font-weight:600; }
-#evolution-results .evolved-result { background:#eef5eb; }
-#evolution-results tr > :nth-child(4) { border-left:1px solid #d6e2d3; }
-.evaluation-short { display:none; }
+/* Each scene choice carries its own evaluation; the source baseline stays nearby. */
+#evolution .evo-evaluation-meta { flex-shrink:0; margin:0; padding:10px 8px 6px; color:var(--muted); font:400 10.5px/1.5 var(--sans); text-align:center; }
+#evolution .evo-choice-scores { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; width:100%; margin:5px 0 0; padding:8px 0 0; border-top:1px solid #d7e4da; }
+#evolution .evo-choice-scores > span { display:flex; flex-direction:column; align-items:center; gap:3px; }
+#evolution .evo-score-label { color:#607969; font:400 10px/1.4 var(--sans); white-space:nowrap; }
+#evolution .evo-choice-scores strong { color:#315f47; font:500 17px/1.3 var(--sans); font-variant-numeric:tabular-nums; }
+#evolution #evo-mobile-scores { display:none; }
+#evolution .evo-baseline { flex-shrink:0; margin:4px 8px 0; padding:8px 0; border-top:1px solid #d7e4da; }
+.evo-baseline summary { color:var(--muted); font:500 11px/1.5 var(--sans); cursor:pointer; }
+#evo-source-results { width:100%; margin-top:6px; table-layout:fixed; }
+#evo-source-results th,#evo-source-results td { padding:4px 1px; border-color:#dce6dd; text-align:center; font:400 11px/1.35 var(--sans); font-variant-numeric:tabular-nums; white-space:nowrap; }
+#evo-source-results thead { background:none; }
+#evo-source-results thead th { color:var(--muted); font-size:9px; }
+#evo-source-results th:first-child { width:18%; }
+#evo-source-results tbody tr:last-child > * { border:0; }
+#evolution .evo-context { display:block; margin:8px 0 0; padding:5px 0; border:0; border-radius:0; background:none; }
 
 @media(min-width:801px) and (max-width:1099px) {
   :is(#worlds,#evolution) .scene-workspace[data-view],
@@ -64,21 +64,12 @@
   #evolution .scene-index { border:0; background:none; }
   #evolution .scene-picker { display:none; }
   #evo-explanation .demo-model { grid-template-rows:repeat(5,max-content) clamp(160px,45vw,240px) max-content; }
-  #evolution .evo-context { padding-block:12px; }
-  #evolution .evolution-evaluation { margin-top:24px; }
-  #evolution-results th,#evolution-results td { padding:9px 4px; font-size:11px; }
-  #evolution-results thead th { font-size:10px; overflow-wrap:anywhere; }
-  #evolution-results th:first-child { width:20%; }
-  .evaluation-heading { display:block; }
-  #evolution .evaluation-sample { margin-top:6px; font-size:11px; }
+  #evolution .evo-context { padding-block:5px; }
 }
-@media(max-width:600px) {
-  #evolution-results .evaluation-name { display:none; }
-  #evolution-results .evaluation-short { display:inline; }
-  #evolution-results th,#evolution-results td { padding-inline:2px; }
-  #evolution-results thead th { overflow-wrap:normal; }
-}
-@media(max-width:380px) {
-  #evolution-results th:first-child { width:24%; }
-  #evolution-results thead th { font-size:9px; }
+@media(max-width:1099px) {
+  #evolution .evo-evaluation-meta { padding:0 0 6px; text-align:left; }
+  #evolution #evo-mobile-select { border-radius:7px 7px 0 0; }
+  #evolution #evo-mobile-scores { display:grid; margin:0; padding:7px 12px; border:1px solid #d4dfd8; border-top:0; border-radius:0 0 7px 7px; background:#fbfdf9; }
+  #evolution .evo-baseline { margin:0; padding:6px 0 0; border:0; }
+  #evolution .evo-choice-scores strong { font-size:15px; }
 }

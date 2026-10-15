@@ -191,55 +191,64 @@
       </div>
       <div class="discovery-practice-grid">
       <div class="discovery-findings">
-        <h3 class="discovery-subheading">Controlled comparisons</h3>
-        <p class="discovery-context">GPT-6-Astra · Controlled experiments</p>
+        <header class="discovery-findings-heading"><h3 class="discovery-subheading">Comparisons</h3><p class="discovery-context">GPT-6-Astra</p></header>
         <div id="controlled-comparisons" class="controlled-comparisons"></div>
       </div>
       <section id="explore" class="discovery-cases" aria-labelledby="cases-title">
-      <header class="discovery-case-heading"><h3 id="cases-title" class="discovery-subheading"><span id="cases">Case studies</span></h3>
+      <header class="discovery-case-heading"><h3 id="cases-title" class="sr-only"><span id="cases">Case studies</span></h3>
       <div class="case-tabs" role="tablist" aria-label="Choose a case study">
-        <button id="question-tab" role="tab" aria-controls="question-case" aria-selected="true" data-case="question">Anomaly</button>
-        <button id="color-tab" role="tab" aria-controls="color-case" aria-selected="false" tabindex="-1" data-case="color">Color swap</button>
-        <button id="tool-tab" role="tab" aria-controls="tool-case" aria-selected="false" tabindex="-1" data-case="tool">Tool design</button>
+        <button id="question-tab" role="tab" aria-controls="question-case" aria-selected="true" data-case="question">Forming Research Questions</button>
+        <button id="color-tab" role="tab" aria-controls="color-case" aria-selected="false" tabindex="-1" data-case="color">Validating Scientific Claims</button>
+        <button id="tool-tab" role="tab" aria-controls="tool-case" aria-selected="false" tabindex="-1" data-case="tool">Using Experimental Resources</button>
       </div>
       </header>
       <div class="case-player">
       <div id="question-case" class="case-panel" role="tabpanel" aria-labelledby="question-tab">
         <figure class="case-film" data-film="question" data-duration="32">
-          <figcaption class="case-question-intro"><h3>Red restarts. Who investigates?</h3><p>The same unexpected motion, two different responses.</p></figcaption>
+          <figcaption class="case-question-intro"><h3>Does an unexpected observation become a research question?</h3><p>Both models see the red ball start moving again without a new push. Do they investigate its cause?</p></figcaption>
           <div class="case-question-models"><div><strong>GPT-6-Astra</strong></div><div><strong>Gemini-3.7-Flash</strong></div></div>
           <div class="case-film-screen">
             <video id="case-question-video" src="assets/videos/case-question.mp4" poster="assets/images/case-question.webp" controls muted playsinline preload="none" aria-label="Two models see red restart without a new push. Astra investigates; Gemini continues its planned tests."></video>
             <div class="case-film-status" role="status" hidden><span></span><button type="button" hidden>Try again</button></div>
           </div>
           <div class="case-question-story">
-            <div class="case-question-step" data-case-stage="0" data-start="0"><div class="case-question-comparison"><p><strong>Red moves without a new push.</strong><span>Astra was holding blue still when red restarted.</span></p><p><strong>The log also reports a restart.</strong><span>Red is against the wall, so its motion is barely visible.</span></p></div></div>
-            <div class="case-question-step" data-case-stage="1" data-start="8" hidden><div class="case-question-comparison"><p><strong>Changes the plan to test the anomaly.</strong><span>Pushes red, then waits. Red restarts about 10 s after the push.</span></p><p><strong>Keeps the planned gravity test.</strong><span>Throws red upward, without testing why it restarted.</span></p></div></div>
-            <div class="case-question-step" data-case-stage="2" data-start="20" hidden><div class="case-question-comparison"><p><strong>Checks whether blue resets the delay.</strong><span>Pushes blue too: red again restarts about 10 s later.</span></p><p><strong>Leaves the restart unexplained.</strong><span>Runs a collision test, then ends the exploration.</span></p></div></div>
+            <div class="case-question-step" data-case-stage="0" data-start="0"><div class="case-question-comparison"><p><strong>Astra notices unexplained motion.</strong><span>The red ball starts moving again while Astra holds blue still, without a new push on red.</span></p><p><strong>Gemini also observes a restart.</strong><span>Its log reports renewed motion at the wall, where the displacement is barely visible.</span></p></div></div>
+            <div class="case-question-step" data-case-stage="1" data-start="8" hidden><div class="case-question-comparison"><p><strong>Astra changes its plan to investigate.</strong><span>It postpones a collision test, pushes red, and waits. Red starts moving north again about 10 s later.</span></p><p><strong>Gemini continues its original plan.</strong><span>It throws red to study gravity, without testing why the ball restarted.</span></p></div></div>
+            <div class="case-question-step" data-case-stage="2" data-start="20" hidden><div class="case-question-comparison"><p><strong>Astra tests whether blue resets red’s delay.</strong><span>Pushing blue interrupts red’s northward motion. Red resumes about 10 s later, showing that actions on either ball reset the delay.</span></p><p><strong>Gemini leaves the restart unexplained.</strong><span>It carries out a collision test, then ends the exploration without investigating the spontaneous motion.</span></p></div></div>
           </div>
-          <p class="case-question-finding"><strong>Astra’s finding</strong><span>A nonzero push or throw on either ball pauses red’s northward force for 10 s.</span></p>
+          <p class="case-question-finding"><strong>What Astra discovers:</strong> An extra force drives red north. Pushing or throwing either ball temporarily turns this force off; it returns after 10 s without another such action.</p>
         </figure>
-        <p class="case-film-source">Scene 15 · 100-turn main study</p>
+        <p class="case-film-source">Scene 15 · 100-turn study</p>
       </div>
       <div id="color-case" class="case-panel" role="tabpanel" aria-labelledby="color-tab" hidden>
         <figure class="case-film" data-film="color" data-duration="18">
-          <figcaption class="case-question-intro"><h3>Color exchange or independent flips?</h3></figcaption>
+          <figcaption class="case-question-intro"><h3>Color exchange or independent flipping?</h3><p>A red–blue collision fits both explanations. Astra needs a test where their predictions differ.</p></figcaption>
           <div class="case-film-screen">
             <video id="case-color-video" src="assets/videos/case-color.mp4" poster="assets/images/case-color.webp" controls muted playsinline preload="none" aria-label="Do the balls swap colors or flip independently? Recorded experiment."></video>
             <div class="case-film-status" role="status" hidden><span></span><button type="button" hidden>Try again</button></div>
           </div>
-          <p class="case-question-finding">Red meets red: both stay red. The balls exchange colors at contact.</p>
+          <div class="case-question-story case-single-story">
+            <div class="case-question-step" data-case-stage="0" data-start="0"><p><strong>One observation, two explanations.</strong><span>Both balls change color after a red–blue collision. They may exchange colors, or each may independently flip between red and blue.</span></p></div>
+            <div class="case-question-step" data-case-stage="1" data-start="6" hidden><p><strong>Repeating the test does not distinguish them.</strong><span>A second red–blue collision restores the original colors. Both exchange and independent flipping predict this result.</span></p></div>
+            <div class="case-question-step" data-case-stage="2" data-start="12" hidden><p><strong>Astra tests two red balls.</strong><span>Exchange predicts that both stay red; independent flipping predicts that both turn blue. Both stay red, supporting exchange and ruling out independent flipping.</span></p></div>
+          </div>
+          <p class="case-question-finding"><strong>Why this test matters:</strong> The red–red collision separates the two explanations; repeated red–blue collisions cannot.</p>
         </figure>
         <p class="case-film-source">Scene 12 · 500-turn run</p>
       </div>
       <div id="tool-case" class="case-panel" role="tabpanel" aria-labelledby="tool-tab" hidden>
         <figure class="case-film" data-film="tool" data-duration="21">
-          <figcaption class="case-question-intro"><h3>How do you weigh a drifting ball?</h3></figcaption>
+          <figcaption class="case-question-intro"><h3>Redesigning a weighing platform</h3><p>Astra builds a platform to compare the balls’ loads, but the red ball drifts off the first pan.</p></figcaption>
           <div class="case-film-screen">
             <video id="case-tool-video" src="assets/videos/case-tool.mp4" poster="assets/images/case-tool.webp" controls muted playsinline preload="none" aria-label="How do you weigh a ball that drifts away? Recorded experiment."></video>
             <div class="case-film-status" role="status" hidden><span></span><button type="button" hidden>Try again</button></div>
           </div>
-          <p class="case-question-finding">Retaining walls keep the ball in the pan, enabling a stable reading.</p>
+          <div class="case-question-story case-single-story">
+            <div class="case-question-step" data-case-stage="0" data-start="0"><p><strong>The first instrument cannot hold the load.</strong><span>After release, red drifts off the flat pan. The changing load prevents a stable comparison with blue.</span></p></div>
+            <div class="case-question-step" data-case-stage="1" data-start="7" hidden><p><strong>Astra redesigns the instrument.</strong><span>It adds retaining walls and allows more vertical travel. The red ball now stays in the pan after release.</span></p></div>
+            <div class="case-question-step" data-case-stage="2" data-start="14" hidden><p><strong>The revised platform supports a comparison.</strong><span>Blue also stays in the new pan. Releasing each ball produces a stable reading, so their loads can be compared.</span></p></div>
+          </div>
+          <p class="case-question-finding"><strong>Why the redesign matters:</strong> A useful instrument must keep the ball in place long enough to obtain a stable reading.</p>
         </figure>
         <p class="case-film-source">Scene 15 · 500-turn run</p>
       </div>
@@ -248,8 +257,9 @@
       </div>
       <details class="controlled-details">
         <summary>Full results &amp; setup <span aria-hidden="true">+</span></summary>
+        <p class="controlled-overview">GPT-6-Astra throughout. Guidance and apparatus access use the main 100-turn baseline.</p>
         <div id="controlled-tables" class="controlled-tables"></div>
-        <p class="controlled-setup">All comparisons use GPT-6-Astra. Guidance adds a discovery task, an altered-physics notice and a scene-specific clue. Guidance and tool access use the 100-turn main baseline; the explorer chooses whether to build. Budget runs use a separate matched baseline without context compaction. The anomaly case compares two independent 100-turn runs with the same setup and no research task; the color and tool cases use selected 500-turn runs.</p>
+        <dl class="controlled-case-sources" aria-label="Case study sources"><div><dt>Forming Research Questions</dt><dd>Two independent 100-turn runs with the same setup and no assigned research task.</dd></div><div><dt>Validating Scientific Claims · Using Experimental Resources</dt><dd>Selected 500-turn runs.</dd></div></dl>
       </details>
       <template id="case-playback-template">
         <div class="case-playback" role="group" aria-label="Case study playback">
@@ -268,12 +278,15 @@
         <div class="section-heading chapter-heading"><h2 id="evolution-title">Scene Evolution</h2></div>
         <div class="scene-workspace evo-workspace" data-view="physics">
           <aside class="scene-index" aria-label="Choose an evolved world">
+            <p class="evo-evaluation-meta">GPT-6-Astra · 3 runs / scene</p>
             <label class="sr-only" for="evo-mobile-select">Choose an evolved scene</label><select id="evo-mobile-select"><option value="generate">01 · Generation</option><option value="mutate">02 · Refinement</option><option value="compose">03 · Composition</option></select>
             <div id="evo-picker" class="scene-picker" role="tablist" aria-label="Evolved scenes" aria-orientation="vertical">
               <button id="evo-tab-generate" role="tab" type="button" data-evolution="generate" aria-selected="true" aria-controls="evo-detail"><span class="scene-choice-number">01</span><span class="scene-choice-name">Generation</span><img class="scene-choice-symbol" src="assets/evolution/generate.svg" alt="" loading="lazy"></button>
               <button id="evo-tab-mutate" role="tab" type="button" data-evolution="mutate" aria-selected="false" aria-controls="evo-detail" tabindex="-1"><span class="scene-choice-number">02</span><span class="scene-choice-name">Refinement</span><img class="scene-choice-symbol" src="assets/evolution/mutate.svg" alt="" loading="lazy"></button>
               <button id="evo-tab-compose" role="tab" type="button" data-evolution="compose" aria-selected="false" aria-controls="evo-detail" tabindex="-1"><span class="scene-choice-number">03</span><span class="scene-choice-name">Composition</span><img class="scene-choice-symbol" src="assets/evolution/compose.svg" alt="" loading="lazy"></button>
             </div>
+            <div id="evo-mobile-scores" class="evo-choice-scores" aria-label="Selected scene evaluation"></div>
+            <details class="evo-baseline"><summary>Source baseline</summary><table id="evo-source-results"><caption class="sr-only">Independent source-scene evaluation</caption></table></details>
           </aside>
           <div id="evo-detail" class="world-detail atlas-detail" role="tabpanel" aria-labelledby="evo-tab-generate" data-view="physics">
             <div class="atlas-topline"><div class="atlas-view-switch" role="group" aria-label="Evolution view"><button type="button" data-evo-view="demo" aria-pressed="true" aria-controls="evo-demo-view">Demo</button><button type="button" data-evo-view="experiment" aria-pressed="false" aria-controls="evo-experiment-view">Interactive</button></div></div>
@@ -297,7 +310,7 @@
                 <button id="evo-model-play" class="round-control" type="button" aria-label="Play explanatory model">▶</button><button id="evo-model-reset" class="round-control" type="button" aria-label="Reset explanatory model">↺</button><button id="evo-model-fullscreen" class="round-control" type="button" aria-label="Expand explanatory model"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M21 16v5h-5M8 21H3v-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
               </div></div>
               <div id="evo-model-formula" class="analysis-formula"></div>
-              <div id="evo-model-diagram"><svg id="evo-model-canvas" viewBox="0 0 640 410" role="img" aria-label="Simplified timing model of the evolved law"></svg></div>
+              <div id="evo-model-diagram"><svg id="evo-model-canvas" viewBox="0 95 640 315" role="img" aria-label="Simplified timing model of the evolved law"></svg></div>
               <div class="atlas-scene-readout"><span id="evo-model-state">Repulsion paused</span><strong id="evo-model-value">Resumes in 10.0 s</strong></div>
               <div class="model-timebar"><label class="sr-only" for="evo-model-progress">Explanatory model time</label><input id="evo-model-progress" type="range" min="0" max="200" value="0"><output id="evo-model-time" for="evo-model-progress">0.0 s</output></div>
               <p id="evo-model-note" class="model-note">Force timing; positions are schematic.</p>
@@ -305,8 +318,7 @@
 
           </section>
         </div>
-          <div class="evo-context"><p class="evo-rationale"><strong>Trace → design</strong><span id="evo-rationale">The trace mistook a paused force for no force. This world tests the same error with repulsion.</span></p>
-              <details class="evo-design"><summary>Trace reference &amp; full rule <span aria-hidden="true">+</span></summary><section class="evo-reference" aria-labelledby="evo-reference-title">
+        <div class="evo-context"><details class="evo-design"><summary>Source &amp; full rule <span aria-hidden="true">+</span></summary><p id="evo-rationale">The trace mistook a paused force for no force. This world tests the same error with repulsion.</p><p>Source scenes use an independent baseline with the same evaluation settings.</p><section class="evo-reference" aria-labelledby="evo-reference-title">
           <div class="evo-reference-heading"><h4 id="evo-reference-title">The shared source trace</h4><span>Scene 15 · GPT-6-Astra · Run 2</span></div>
           <p class="evo-source-law">Source rule: any nonzero push or throw pauses red’s northward force for 10 seconds.</p>
           <div class="evo-quotes">
@@ -314,9 +326,7 @@
             <figure><figcaption>Turn 31 · The correction</figcaption><blockquote id="evo-trace-correction">“Red restarted north after 3.884 counts of turn 30, about 10 counts after the southward push, while blue stayed still. This corrects my earlier inference: the effect is delayed, not absent.”</blockquote></figure>
           </div>
           <div class="evo-reference-footer"><p>This error was corrected during a successful exploration.</p><a href="data/evolution/reference-trace.json" target="_blank" rel="noopener">Read the source trace ↗</a></div>
-        </section><p id="evo-full-rule"></p><p id="evo-design-quote"></p><p class="evo-scope">Interactive trials use prepared starting positions; time is in simulation seconds.</p><a id="evo-design-link" href="data/evolution/generate-design.json" target="_blank" rel="noopener">Read the frozen design ↗</a></details>
-          </div>
-          <section class="evolution-evaluation" aria-labelledby="evolution-evaluation-title"><header class="evaluation-heading"><h3 id="evolution-evaluation-title">Evaluating the new scenes</h3><p class="evaluation-sample">GPT-6-Astra · 3 runs per scene · independent source-scene baseline</p></header><table id="evolution-results"><caption class="sr-only">Discovery, law correctness and evidence support in source and evolved scenes</caption></table></section>
+        </section><p id="evo-full-rule"></p><p id="evo-design-quote"></p><p class="evo-scope">Interactive trials use prepared starting positions; time is in simulation seconds.</p><a id="evo-design-link" href="data/evolution/generate-design.json" target="_blank" rel="noopener">Read the frozen design ↗</a></details></div>
 
 
       </div>

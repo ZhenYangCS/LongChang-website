@@ -137,16 +137,13 @@ def main():
             assert page.evaluate('!LongChangEvolution.current()')
         for quote, selector in [(trace['weakness']['evidence'][0]['quote'], '#evo-trace-error'), (trace['weakness']['contradiction'][0]['quote'], '#evo-trace-correction')]:
             assert page.locator(selector).text_content().strip('“”') == quote
-        assert page.locator('#controlled #evolution-results').count() == 0
-        assert page.locator('#evolution .evo-workspace #evolution-results').count() == 0
-        assert page.locator('#evolution-results tbody tr').count() == 3
-        assert page.locator('#evolution-results tbody td').count() == 15
-        table = page.locator('.evolution-evaluation').bounding_box()
-        workspace = page.locator('#evolution .evo-workspace').bounding_box()
-        context = page.locator('.evo-context').bounding_box()
-        assert table['y'] >= context['y'] + context['height']
-        assert abs(table['x'] - workspace['x']) < 1 and abs(table['width'] - workspace['width']) < 1
-        assert page.locator('#evolution-results th[scope=colgroup]').all_text_contents() == ['Source scenes', 'Evolved scenes']
+        assert page.locator('#evolution-results, .evolution-evaluation').count() == 0
+        assert page.locator('#evo-picker .evo-choice-scores [data-metric]').count() == 9
+        assert page.locator('#evo-source-results tbody td').count() == 6
+        assert page.evaluate("""() => {
+          const cells=[...document.querySelectorAll('#evo-picker [data-metric], #evo-source-results td')];
+          return cells.every(cell=>parseFloat(cell.textContent)===LONGCHANG.evolution.find(row=>row.name===cell.dataset.condition)[cell.dataset.metric]);
+        }""")
         page.locator('.evo-design summary').click()
         expect(page.locator('#evo-trace-error')).to_be_visible()
         page.locator('.evo-design summary').click()

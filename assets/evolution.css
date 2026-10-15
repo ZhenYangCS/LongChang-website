@@ -62,13 +62,6 @@
 .evo-quotes figcaption { font-size:11px; color:var(--teal); }
 .evo-quotes blockquote { margin:6px 0 0; padding:0; border:0; font:14px/1.65 var(--serif); }
 .evo-design a { display:inline-block; margin-top:9px; color:var(--teal); text-decoration:underline; text-underline-offset:3px; }
-#evolution .evolution-evaluation { grid-column:1/-1; display:block; margin:0; padding:5px 12px 6px; border:1px solid #d5e1d8; border-radius:8px; background:#fbfdfb; }
-#evolution .evaluation-sample { margin:0 0 5px; font-size:11px; line-height:1.5; }
-#evolution-results th,#evolution-results td { padding:3px 8px; font-size:12px; line-height:1.4; text-align:center; }
-#evolution-results th:first-child { width:18%; text-align:left; }
-#evolution-results thead th { font-size:11px; }
-#evolution-results .evolved-result { background:#eef5eb; }
-#evolution-results tbody tr:last-child > * { border:0; }
 #evolution :is(button,select,summary,a):focus-visible { outline:2px solid var(--teal); outline-offset:3px; }
 #evo-explanation:fullscreen { display:grid; grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr); width:100%; height:100dvh; }
 #evo-explanation:fullscreen .demo-model { min-height:0; height:100%; }
@@ -82,14 +75,10 @@
   .evo-context { grid-template-columns:1fr; padding:8px 10px; }
   .evo-rationale { gap:8px; font-size:12px; }
   .evo-quotes { grid-template-columns:1fr; }
-  #evolution-results th,#evolution-results td { padding:4px 3px; font-size:11px; }
-  #evolution-results thead th { font-size:10px; }
-  #evolution .evolution-evaluation { padding:8px; }
   #evo-explanation:fullscreen { display:flex; }
 }
 @media(max-width:380px) {
   #evo-detail .atlas-copy h3 { font-size:17px; }
-  #evolution-results th,#evolution-results td { font-size:10px; padding-inline:2px; }
   .evo-rationale { display:block; }
   .evo-rationale strong { margin-right:8px; }
 }

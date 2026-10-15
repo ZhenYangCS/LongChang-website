@@ -12,9 +12,9 @@
     {key:'AF', label:'Failed actions'}
   ];
   const groups = [
-    {id:'guidance', title:'A discovery task helps.', names:['Free exploration','Task-guided'], labels:['No task','Task-guided'], note:'Guided runs add a discovery goal, an altered-physics notice and a scene-specific clue.', setup:'Task guidance · 100-turn limit'},
-    {id:'budget', title:'More time goes unused.', metric:'L', note:'Mean turns used', names:['100 turns','500 turns'], labels:['100-turn limit','500-turn limit'], setup:'Turn budget · no context compaction'},
-    {id:'apparatus', title:'Tool access helps.', names:['Disabled','Enabled'], labels:['Tools off','Tools on'], setup:'Tool access · 100-turn limit'}
+    {id:'guidance', title:'Task guidance', note:'Discovery rate', names:['Free exploration','Task-guided'], labels:['Without guidance','With guidance'], setup:'Task guidance · 100-turn limit', description:'Guided runs add a discovery task, a notice that physics may be altered, and a scene-specific clue.'},
+    {id:'budget', title:'Turn budget', metric:'L', note:'Mean turns used', names:['100 turns','500 turns'], labels:['100-turn limit','500-turn limit'], setup:'Turn budget', description:'A separate matched baseline compares 100 and 500 turns, without context compaction.'},
+    {id:'apparatus', title:'Apparatus access', note:'Discovery rate', names:['Disabled','Enabled'], labels:['Disabled','Enabled'], setup:'Apparatus access · 100-turn limit', description:'Construction is enabled or disabled. The explorer decides whether to build.'}
   ];
   const conditionsFor = group => group.names.map(name => data.controlled.find(row => row.name === name));
   const target = document.querySelector('#controlled-comparisons');
@@ -32,13 +32,28 @@
   if (tables) tables.innerHTML = groups.map(group => {
     const conditions = conditionsFor(group);
     const orderedFields = group.metric === 'L' ? [fields.find(field => field.key === 'L'), ...fields.filter(field => field.key !== 'L')] : fields;
-    return `<table class="controlled-table"><caption>${group.setup}</caption><thead><tr><th scope="col">Metric</th>${group.labels.map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${orderedFields.map(({key, label}) => `<tr><th scope="row">${label}</th>${conditions.map(row => `<td data-condition="${esc(row.name)}" data-metric="${key}">${row[key].toFixed(1)}${key === 'L' ? '' : '%'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    return `<div class="controlled-table-group"><table class="controlled-table" aria-describedby="${group.id}-setup"><caption>${group.setup}</caption><thead><tr><th scope="col">Metric</th>${group.labels.map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${orderedFields.map(({key, label}) => `<tr><th scope="row">${label}</th>${conditions.map(row => `<td data-condition="${esc(row.name)}" data-metric="${key}">${row[key].toFixed(1)}${key === 'L' ? '' : '%'}</td>`).join('')}</tr>`).join('')}</tbody></table><p id="${group.id}-setup" class="controlled-setting">${group.description}</p></div>`;
   }).join('');
 
-  const evolution = document.querySelector('#evolution-results');
-  if (evolution) {
-    const labels=['Scene 15','Scene 14','Generation','Refinement','Composition'];
-    const shortLabels=['Scene 15','Scene 14','Generate','Refine','Compose'];
-    evolution.innerHTML = `<caption class="sr-only">Independent GPT-6-Astra evaluation, three runs per scene; all rates in percent</caption><colgroup><col></colgroup><colgroup span="2"></colgroup><colgroup span="3"></colgroup><thead><tr class="evaluation-groups"><td></td><th scope="colgroup" colspan="2">Source scenes</th><th scope="colgroup" colspan="3">Evolved scenes</th></tr><tr><th scope="col">Metric</th>${data.evolution.map((row,i)=>`<th scope="col" data-evolution-result="${esc(row.name)}" title="${esc(row.name)}"><span class="evaluation-name">${labels[i]}</span><span class="evaluation-short">${shortLabels[i]}</span></th>`).join('')}</tr></thead><tbody>${fields.slice(0,3).map(({key,label})=>`<tr><th scope="row">${label}</th>${data.evolution.map((row,i)=>`<td data-condition="${esc(row.name)}" data-metric="${key}" ${i>=2?'class="evolved-result"':''}>${row[key].toFixed(1)}%</td>`).join('')}</tr>`).join('')}</tbody>`;
+  const baseline = document.querySelector('#evo-source-results');
+  if (baseline) {
+    const metrics=[{key:'D',label:'Discovery'},{key:'C',label:'Correct law'},{key:'S',label:'Support'}];
+    const scores=row=>metrics.map(({key,label})=>`<span><span class="evo-score-label">${label}</span><strong data-condition="${esc(row.name)}" data-metric="${key}">${Number(row[key].toFixed(1))}%</strong></span>`).join('');
+    const keys=['generate','mutate','compose'];
+    for (const [index,key] of keys.entries()) {
+      const panel=document.createElement('span');
+      panel.className='evo-choice-scores';
+      panel.innerHTML=scores(data.evolution[index+2]);
+      document.querySelector(`#evo-tab-${key}`).append(panel);
+    }
+    const mobile=document.querySelector('#evo-mobile-scores');
+    const syncScores=key=>{mobile.innerHTML=scores(data.evolution[keys.indexOf(key)+2]);};
+    syncScores('generate');
+    document.addEventListener('longchang:evolution-scene',event=>syncScores(event.detail.id));
+    baseline.innerHTML=`<caption class="sr-only">Independent source-scene baseline; D: discovery, C: law correctness, S: evidence support</caption><thead><tr><th scope="col">Scene</th>${metrics.map(({label})=>`<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${data.evolution.slice(0,2).map((row,i)=>`<tr><th scope="row">${i?'14':'15'}</th>${metrics.map(({key})=>`<td data-condition="${esc(row.name)}" data-metric="${key}">${Number(row[key].toFixed(1))}%</td>`).join('')}</tr>`).join('')}</tbody>`;
+    const wide=matchMedia('(min-width:1100px)');
+    const disclosure=baseline.closest('details');
+    const syncBaseline=()=>{disclosure.open=wide.matches;};
+    syncBaseline();wide.addEventListener('change',syncBaseline);
   }
 })();

@@ -35,8 +35,8 @@
 }
 #main > #framework.chapter > .section { padding-top:56px; }
 #worlds .chapter-heading { margin-bottom:24px; }
-#main > #controlled.chapter { padding-block:28px; }
-#main #controlled .chapter-heading { margin-bottom:16px; }
+#main > #controlled.chapter { padding-block:24px; }
+#main #controlled .chapter-heading { margin-bottom:12px; }
 .site-header nav { gap:24px; font-size:13px; font-weight:500; }
 
 
@@ -48,8 +48,6 @@
 .evolution-origin { font-size:15px; }
 .evolution-demo p,.evo-rule-details p { font-size:14px; line-height:1.7; }
 .evolution-demo figcaption > span { font-size:12px; }
-.evolution-evaluation p { font-size:14px; }
-.evolution-evaluation .evaluation-sample { font-size:12px; }
 .fw-detail-body > p { font-size:14px; line-height:1.65; }
 
 @media(min-width:801px) {

@@ -34,9 +34,10 @@ def main():
         assert page.locator('.controlled-finding').count()==3
         assert page.locator('.controlled-table td').count()==30
         assert not page.locator('.controlled-details').evaluate('e=>e.open')
-        assert page.locator('#evolution-results tbody tr').count()==3
+        assert page.locator('#evo-picker .evo-choice-scores').count()==3
+        assert page.locator('#evo-source-results tbody tr').count()==2
         assert not page.locator('#controlled-comparisons').evaluate('(e)=>!!e.closest("details")')
-        assert not page.locator('#evolution-results').evaluate('(e)=>!!e.closest("details")')
+        assert not page.locator('#evo-picker').evaluate('(e)=>!!e.closest("details")')
         assert page.locator('[data-behavior="L"]').inner_text()=='39.3'
         assert page.locator('[data-behavior="CS"]').inner_text()=='11 / 45'
         assert page.locator('#model-chart [data-result-metric]').count()==12

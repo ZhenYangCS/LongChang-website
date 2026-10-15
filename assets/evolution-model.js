@@ -3,7 +3,7 @@
   'use strict';
   function create({host:root,video}) {
   const $ = suffix => root.querySelector(`#evo-model-${suffix}`);
-  const {base, point, line, text, polygon, ball} = window.LongChangMotion.draw;
+  const {base, point, line, polygon, ball} = window.LongChangMotion.draw;
   const uid = 'evolution-model', duration = 20, reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const modelCaption=document.createElement('p');modelCaption.id='evo-model-caption';
   const readout=root.querySelector('.atlas-scene-readout');readout.append(modelCaption);
@@ -43,37 +43,20 @@
   const arrow = (a,b,active) => line(a,b,active ? '#3b837b' : '#b8c9c0', `stroke-width="3" ${active ? `marker-end="url(#${uid}-arrow)"` : 'stroke-dasharray="4 5"'}`);
   function diagram(state) {
     let svg = base(uid);
-    // Same time axis for every condition; only the stated exceptional force is shown.
-    svg += text(92,37,'EXTRA FORCE', 'font-size="13" font-weight="500"');
-    svg += text(67,62,'on', 'text-anchor="end" font-size="13"') + text(67,96,'off', 'text-anchor="end" font-size="13"');
-    svg += line([84,58],[579,58],'#d6e3da') + line([84,92],[579,92],'#d6e3da');
-    let path = '';
-    for (let n=0; n<=200; n++) {
-      const t=n/10, x=84+t/20*495, y=evaluate(id,value,t).active ? 58 : 92;
-      path += `${n ? 'H' : 'M'}${x.toFixed(1)}${n ? 'V' : ','}${y}`;
-    }
-    svg += `<path d="${path}" stroke="#52856e" stroke-width="3" fill="none"/>`;
-    const cursor = 84+time/20*495;
-    svg += `<g class="evo-time-marker evo-model-cursor" transform="translate(${cursor},0)" data-time="${time.toFixed(3)}"><title>Model time: ${time.toFixed(1)} s</title><path class="evo-time-line" d="M0 43V103"/><path class="evo-time-head" d="M-6 39H6L0 47Z"/><circle class="evo-time-point" cx="0" cy="${state.active ? 58 : 92}" r="6"/></g>` + text(84,114,'0', 'font-size="12"') + text(579,114,'20 s','font-size="12" text-anchor="end"');
     if (id === 'generate') {
       const r=[2,3.7], b=[4.2,2.5];
       svg += arrow(point(...r,.35),point(.9,4.3,.35),state.active) + arrow(point(...b,.35),point(5.3,1.9,.35),state.active);
       svg += ball(uid,...r,.12,'red','R') + ball(uid,...b,.12,'blue','B');
-      svg += text(320,332,state.active ? 'Repulsion on' : 'Repulsion paused','text-anchor="middle" font-size="17"');
     } else if (id === 'mutate') {
       svg += polygon([[2.5,2.5],[3.5,2.5],[3.5,3.5],[2.5,3.5]].map(p=>point(...p,.025)), '#b9c7c8', 'stroke="#8ea6a0" stroke-width="1.2"');
       const blueX = state.blocked ? 3 : 4.5;
       svg += arrow(point(1.6,2.9,.35),point(1.6,4.1,.35),state.active);
       svg += ball(uid,1.6,2.9,.12,'red','R');
       svg += `<g class="model-object" data-evo-model-blue><title>Click blue to move it inside or outside</title>${ball(uid,blueX,3,.12,'blue','B')}<circle class="model-hit" cx="${point(blueX,3,.12)[0]}" cy="${point(blueX,3,.12)[1]-13}" r="26"/></g>`;
-      svg += text(320,333,state.blocked ? 'Blue blocks the force' : 'Blue is outside','text-anchor="middle" font-size="17"');
     } else {
       svg += arrow(point(1.8,3.5,.35),point(1.8,4.6,.35),state.active);
       if (state.copied) svg += arrow(point(3.4,3.5,.35),point(3.4,2.35,.35),true);
       svg += ball(uid,1.8,3.5,.12,'red','R') + ball(uid,3.4,3.5,.12,'green','G') + ball(uid,4.8,1.9,.12,'blue','B');
-      const copyX=84+12/20*495;
-      svg += `<circle cx="${copyX}" cy="92" r="4" fill="#6b9b7e"/>` + text(copyX,135,'copy at 12 s','text-anchor="middle" font-size="13"');
-      svg += text(320,338,state.copied ? 'Green copied red’s launch velocity' : 'Green’s copy is queued','text-anchor="middle" font-size="16"');
     }
     return svg+'</g>';
   }
