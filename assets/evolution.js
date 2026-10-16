@@ -6,22 +6,22 @@
   const descriptions = {
     generate: {
       name: 'Change the force',
-      law: 'Red and blue repel. A push pauses repulsion for 10 s.',
-      rationale: 'The trace mistook a paused force for no force. This world tests the same error with repulsion.',
+      law: 'Replace red’s northward force with mutual repulsion, retaining the 10 s pause.',
+      rationale: 'Generation targets the same mistake with a different force: pushing either ball temporarily suppresses their mutual repulsion, so an immediate test can miss the effect.',
       full: 'Each ball accelerates horizontally away from the other at 1.5 bricks/s². At zero horizontal separation, the extra force is zero. Any nonzero push or throw restarts a shared 10-second pause; hand movement and zero impulses do not.',
       quote: 'Frozen design: “Replace solitary drift with paired repulsion that pauses after intervention, making an apparently ordinary separation test temporarily disable the tendency.”',
     },
     mutate: {
       name: 'Add a condition',
-      law: 'Blue inside the square blocks red’s northward force.',
-      rationale: 'Waiting corrected the source error; here, blue must also leave the square.',
+      law: 'Add a condition: red’s force stays off while blue is inside the gray square.',
+      rationale: 'Refinement adds a spatial condition. Waiting through the 10 s pause no longer guarantees recovery; blue must also leave the gray square before red’s force returns.',
       full: 'Red accelerates north at 1.5 bricks/s² only when the latest nonzero push or throw was at least 10 seconds ago AND blue is outside x ∈ [2.5, 3.5], y ∈ [2.5, 3.5]. The square includes its boundary and the test ignores height. Dragging by hand does not restart the pause.',
       quote: 'Frozen design: “Gate the original shy drift by blue’s position, so harmless-looking relocation can prolong negative observations without increasing the suppression interval.”',
     },
     compose: {
       name: 'Combine two rules',
-      law: 'Red drifts north; green copies red’s launch velocity 12 s later.',
-      rationale: 'A second effect can hide the paused drift that the source trace initially dismissed.',
+      law: 'Combine the paused force with Scene 14: green copies red’s launch velocity 12 s later.',
+      rationale: 'Composition preserves the paused northward force and adds Scene 14’s delayed velocity copy. Pushing blue delays red’s force recovery while green’s scheduled copy still occurs.',
       full: 'Red accelerates north at 1.5 bricks/s² outside the 10-second pause after any nonzero push or throw. Every red launch independently queues its full resulting 3D velocity for green, 12 seconds later. Later launches do not cancel copies; a copy does not restart the pause. Coincident copies use the latest originating launch.',
       quote: 'Frozen design: “Use separated paths so blue’s intervention delays red’s drift while green still copies red’s earlier southward motion.” Scene 14 supplies the second law; the shared error still comes from Scene 15, turns 30–31.',
     },

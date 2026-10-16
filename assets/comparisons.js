@@ -12,9 +12,9 @@
     {key:'AF', label:'Failed actions'}
   ];
   const groups = [
-    {id:'guidance', title:'Task guidance', note:'Discovery rate', names:['Free exploration','Task-guided'], labels:['Without guidance','With guidance'], setup:'Task guidance · 100-turn limit', description:'Guided runs add a discovery task, a notice that physics may be altered, and a scene-specific clue.'},
-    {id:'budget', title:'Turn budget', metric:'L', note:'Mean turns used', names:['100 turns','500 turns'], labels:['100-turn limit','500-turn limit'], setup:'Turn budget', description:'A separate matched baseline compares 100 and 500 turns, without context compaction.'},
-    {id:'apparatus', title:'Apparatus access', note:'Discovery rate', names:['Disabled','Enabled'], labels:['Disabled','Enabled'], setup:'Apparatus access · 100-turn limit', description:'Construction is enabled or disabled. The explorer decides whether to build.'}
+    {id:'guidance', title:'Task guidance', note:'Discovery rate', names:['Free exploration','Task-guided'], labels:['Without guidance','With guidance'], setup:'Task guidance · 100 turns · task + clues'},
+    {id:'budget', title:'Turn budget', metric:'L', note:'Mean turns used', names:['100 turns','500 turns'], labels:['100-turn limit','500-turn limit'], setup:'Turn budget · separate baseline · no context compaction'},
+    {id:'apparatus', title:'Apparatus access', note:'Discovery rate', names:['Disabled','Enabled'], labels:['Disabled','Enabled'], setup:'Apparatus access · 100 turns'}
   ];
   const conditionsFor = group => group.names.map(name => data.controlled.find(row => row.name === name));
   const target = document.querySelector('#controlled-comparisons');
@@ -32,7 +32,7 @@
   if (tables) tables.innerHTML = groups.map(group => {
     const conditions = conditionsFor(group);
     const orderedFields = group.metric === 'L' ? [fields.find(field => field.key === 'L'), ...fields.filter(field => field.key !== 'L')] : fields;
-    return `<div class="controlled-table-group"><table class="controlled-table" aria-describedby="${group.id}-setup"><caption>${group.setup}</caption><thead><tr><th scope="col">Metric</th>${group.labels.map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${orderedFields.map(({key, label}) => `<tr><th scope="row">${label}</th>${conditions.map(row => `<td data-condition="${esc(row.name)}" data-metric="${key}">${row[key].toFixed(1)}${key === 'L' ? '' : '%'}</td>`).join('')}</tr>`).join('')}</tbody></table><p id="${group.id}-setup" class="controlled-setting">${group.description}</p></div>`;
+    return `<table class="controlled-table"><caption>${group.setup}</caption><thead><tr><th scope="col">Metric</th>${group.labels.map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${orderedFields.map(({key, label}) => `<tr><th scope="row">${label}</th>${conditions.map(row => `<td data-condition="${esc(row.name)}" data-metric="${key}">${row[key].toFixed(1)}${key === 'L' ? '' : '%'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
   }).join('');
 
   const baseline = document.querySelector('#evo-source-results');

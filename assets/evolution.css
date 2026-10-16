@@ -1,6 +1,16 @@
 /* The 15 Worlds' atlas and model components, arranged for three evolved scenes. */
 #main > #evolution.chapter > .section { padding-block:28px; }
 #main > #evolution .chapter-heading { margin-bottom:16px; }
+.evo-premise { margin:0 0 18px; padding:15px 18px; border:1px solid #d5e1d8; border-radius:11px; background:#fbfdfb; }
+.evo-premise-intro { margin:0; color:#355846; font:400 14px/1.55 var(--sans); }
+.evo-premise-intro strong { font-weight:600; }
+.evo-premise-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; margin:13px 0 0; padding:0; list-style:none; }
+.evo-premise-steps li { min-width:0; padding-left:12px; border-left:2px solid #adc9b7; }
+.evo-premise-steps li:nth-child(2) { border-color:#c5b69d; }
+.evo-premise-steps h3 { margin:0 0 4px; color:#315b45; font:600 12px/1.5 var(--sans); }
+.evo-premise-steps h3 span { color:var(--muted); font-weight:400; }
+.evo-premise-steps p { margin:0; color:#526c5b; font:400 13px/1.55 var(--sans); }
+.evo-premise-bridge { margin:12px 0 0; color:#526c5b; font:400 13px/1.55 var(--sans); }
 #evo-detail { position:relative; }
 #evo-detail .atlas-topline { position:absolute; top:12px; right:12px; left:auto; padding:0; min-height:0; border:0; background:none; z-index:3; }
 #evo-detail .atlas-copy { align-items:flex-start; text-align:left; padding:10px 16px 8px; }
@@ -67,6 +77,8 @@
 #evo-explanation:fullscreen .demo-model { min-height:0; height:100%; }
 #evo-explanation:fullscreen .evo-model-rule { border-top:0; border-left:1px solid #dce7df; }
 @media(max-width:800px) {
+  .evo-premise { margin-bottom:14px; padding:13px 14px; }
+  .evo-premise-steps { grid-template-columns:1fr; gap:12px; }
   #evo-detail .atlas-copy h3 { font-size:20px; max-width:calc(100% - 140px); }
   #evo-detail .atlas-visual,#evo-demo-view { flex:none; height:auto; }
   #evo-demo-view .physics-video-frame,#evo-experiment-view { flex:none; height:auto; aspect-ratio:3/2; }

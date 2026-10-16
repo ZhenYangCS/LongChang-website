@@ -1,17 +1,16 @@
-.case-player { display:grid; grid-template-rows:1fr; width:min(100%,880px,calc(100svh - 48px)); margin-inline:auto; overflow:hidden; border:1px solid var(--line); border-radius:14px; background:#f5f8f7; }
-.case-studies .case-player > .case-panel { grid-area:1 / 1; display:flex; flex-direction:column; min-width:0; }
-/* Keep each film's intrinsic size in the shared grid, so changing tabs never shifts the section. */
-.case-studies .case-player > .case-panel[hidden] { display:flex!important; visibility:hidden; pointer-events:none; }
+.case-player { display:block; width:min(100%,880px,calc(100svh - 48px)); margin-inline:auto; overflow:hidden; border:1px solid var(--line); border-radius:14px; background:#f5f8f7; }
+.case-studies .case-player > .case-panel { min-width:0; }
+/* Size the player to the selected case, without space from hidden panels. */
+.case-studies .case-player > .case-panel[hidden] { display:none!important; }
 .case-studies .case-tabs { display:flex; justify-content:center; gap:6px; padding:4px 12px; border:0; border-bottom:1px solid var(--line); background:#fbfcfa; }
 .case-studies .case-tabs button { flex:1; min-width:0; justify-content:center; padding:7px 10px; border:1px solid transparent; border-radius:6px; background:transparent; font-size:12px; line-height:1.45; text-align:center; text-wrap:balance; transition:background .2s,color .2s; }
 .case-studies .case-tabs button::after { display:none; }
 .case-studies .case-tabs button:hover { color:var(--teal); background:#eef4f0; }
 .case-studies .case-tabs button[aria-selected=true] { color:var(--teal); background:#e6efea; border-color:#c5d7ce; }
 .case-studies .case-panel { padding:0; }
-.case-film { display:flex; flex:1; flex-direction:column; margin:0; background:#f5f8f7; }
+.case-film { display:flex; flex-direction:column; margin:0; background:#f5f8f7; }
 .case-film > * { flex-shrink:0; }
 .case-film .case-playback { margin-top:0; }
-.case-film-source { margin:0; }
 .case-film-screen { position:relative; width:100%; aspect-ratio:16/9; max-height:clamp(210px,calc(100svh - 440px),280px); min-height:0; background:#f5f8f7; }
 .case-film-screen video { width:100%; height:100%; object-fit:contain; }
 .case-playback { display:flex; align-items:center; gap:10px; padding:4px 16px; border-top:1px solid var(--line); background:#f5f8f7; }
@@ -41,7 +40,7 @@
 .case-question-models span { font-size:11px; color:var(--muted); }
 .case-question-models > div:first-child span { color:var(--teal); }
 .case-film[data-film=question] .case-film-screen { aspect-ratio:5/2; }
-.case-question-story { display:grid; min-height:0; padding:0; border-top:1px solid var(--line); background:#fbfcfa; }
+.case-question-story { display:grid; flex:0 0 auto; align-content:start; min-height:0; padding:0; border-top:1px solid var(--line); background:#fbfcfa; }
 .case-question-step { grid-area:1 / 1; }
 .case-question-step[hidden] { display:block!important; visibility:hidden; }
 .case-question-stage { margin:0 0 4px; color:var(--muted); font-size:11px; }
@@ -50,12 +49,13 @@
 .case-question-comparison p + p { border-left:1px solid var(--line); }
 .case-question-comparison strong,.case-single-story strong { color:var(--ink); font-weight:600; }
 .case-question-comparison span,.case-single-story span { color:var(--muted); }
-.case-question-finding { margin-top:auto; padding:8px 16px; border-top:1px solid #d5e3da; background:#edf4ee; color:#3c6751; font-size:13px; line-height:1.5; }
+.case-question-finding { margin:0; padding:8px 16px; border-top:1px solid #d5e3da; background:#edf4ee; color:#3c6751; font-size:13px; line-height:1.5; }
 .case-question-finding strong { margin-right:7px; font-weight:600; }
 .case-film[data-film=question] .case-question-finding strong { margin-right:4px; }
 .case-question-intro,.case-question-models,.case-question-story,.case-question-finding { flex-shrink:0; }
 .case-film:fullscreen { display:flex; flex-direction:column; width:100%; height:100%; }
 .case-film:fullscreen .case-film-screen { flex:1; aspect-ratio:auto; max-height:none; }
+.case-film:fullscreen .case-question-story { flex:0 0 auto; }
 .case-film:fullscreen .case-question-finding { flex:0 0 auto; }
 .case-film:fullscreen .case-playback { flex-shrink:0; padding:12px 20px; padding-bottom:max(12px,env(safe-area-inset-bottom)); }
 .case-studies .discovery-case-heading .case-tabs { padding:0; border:0; }

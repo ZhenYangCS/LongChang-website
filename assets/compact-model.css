@@ -120,10 +120,16 @@
 #scene-detail,#evo-detail { container:scene-panel / inline-size; }
 #worlds .atlas-topline,#evo-detail .atlas-topline {
   position:static; justify-content:flex-start; flex-shrink:0;
-  min-height:44px; padding:5px 14px 0; border:0; background:none;
+  min-height:68px; padding:9px 12px; border:0; border-bottom:1px solid #d5e2d7; background:#f3f8f3;
 }
-#worlds .atlas-view-switch,#evo-detail .atlas-view-switch { margin:0; gap:20px; }
-#worlds .atlas-view-switch button,#evo-detail .atlas-view-switch button { min-height:36px; font-size:12px; }
+#worlds .atlas-view-switch,#evo-detail .atlas-view-switch { display:flex; align-items:stretch; width:min(100%,310px); margin:0; padding:4px; gap:4px; border:1px solid #b9cec0; border-radius:12px; background:#e5eee7; }
+#worlds .atlas-view-switch button,#evo-detail .atlas-view-switch button { flex:1; display:flex; align-items:center; justify-content:center; gap:7px; min-width:0; min-height:44px; padding:6px 9px; border:1px solid transparent; border-radius:8px; background:#fbfdfb; color:#3c6550; font:600 14px/1.2 var(--sans); box-shadow:none; cursor:pointer; }
+#worlds .atlas-view-switch button:hover,#evo-detail .atlas-view-switch button:hover { background:#f1f8f0; border-color:#90b69c; }
+#worlds .atlas-view-switch button[aria-pressed=true],#evo-detail .atlas-view-switch button[aria-pressed=true] { background:#2d6c55; color:#fff; border-color:#2d6c55; box-shadow:0 2px 5px #244b3520; }
+#worlds .atlas-view-switch button:focus-visible,#evo-detail .atlas-view-switch button:focus-visible { outline:2px solid #285d48; outline-offset:3px; }
+.atlas-view-switch svg { flex:none; width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.atlas-view-switch .scene-mode-copy { display:flex; flex-direction:column; align-items:flex-start; gap:2px; }
+.atlas-view-switch .scene-mode-copy small { color:inherit; font:400 11px/1.2 var(--sans); }
 #scene-detail .atlas-copy,#evo-detail .atlas-copy { align-items:center; text-align:center; }
 #worlds #scene-detail .atlas-copy,#evo-detail .atlas-copy { padding:8px 16px 12px; }
 #worlds #scene-detail .atlas-copy h3,#evo-detail .atlas-copy h3 { max-width:100%; margin-inline:auto; text-align:center; text-wrap:balance; }
