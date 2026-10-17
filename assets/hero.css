@@ -12,18 +12,18 @@ html { scroll-padding-top:24px; }
 .longchang-logo .logo-gaze { transform:translate(var(--gaze-x,0px),var(--gaze-y,0px)); transition:transform 140ms ease-out; }
 @keyframes logo-blink { 0%,81%,89%,100% { transform:scaleY(1); } 84%,86% { transform:scaleY(.13); } }
 .publication-hero .paper-title { max-width:1100px; margin:0 auto 9.6px; font:italic 400 24.8px/1.6 'Noto Serif',var(--serif); letter-spacing:normal; color:#4b5563; text-wrap:balance; }
-.publication-hero .hero-authors { display:grid; justify-items:center; gap:5px; margin:0 0 6.4px; font:400 16.8px/1.6 'Inter',var(--sans); color:#1f2937; }
-.hero-author-list { display:flex; flex-wrap:wrap; justify-content:center; gap:4px 18px; margin:0; }
+.publication-hero .hero-authors { display:grid; justify-items:center; gap:8px; margin:0 0 6.4px; font:400 16.8px/1.6 'Inter',var(--sans); color:#1f2937; }
+.hero-author-list { display:flex; flex-wrap:wrap; justify-content:center; gap:4px 18px; margin:0; color:inherit; }
 .hero-author-list > span,.hero-affiliations > span { white-space:nowrap; }
 .hero-author-list a:hover { color:#176c4d; text-decoration:underline; text-underline-offset:3px; }
-.hero-authors sup { margin-left:1px; font-size:.65em; line-height:0; }
-.hero-author-details { display:flex; justify-content:center; align-items:baseline; flex-wrap:wrap; gap:2px 14px; }
-.hero-affiliations { margin:0; color:#5d7165; font:400 13px/1.7 'Inter',var(--sans); text-wrap:balance; }
-.hero-affiliations sup { margin-right:2px; margin-left:0; }
-.hero-correspondence { margin:0; padding-left:14px; border-left:1px solid #d5dfd7; color:#748278; font:400 11px/1.5 'Inter',var(--sans); }
-.hero-correspondence sup { margin-right:2px; }
-.publication-hero .hero-actions { justify-content:center; gap:9.6px; margin:12.8px 0 0; }
-.publication-hero .hero-actions .button { display:inline-flex; align-items:center; justify-content:center; height:40px; padding:8.8px 17.6px; gap:7.2px; border:0; border-radius:999px; background:#1f2937; color:#fff; font:600 16px/1.5 'Inter',var(--sans); box-shadow:none; transition:background .15s; }
+.hero-authors sup { margin-left:3px; color:#176c4d; font-size:.65em; line-height:0; }
+.hero-author-details { display:grid; justify-items:center; gap:6px; }
+.hero-affiliations { display:flex; flex-wrap:wrap; justify-content:center; align-items:baseline; gap:6px 22px; margin:0; color:#5d7165; font:400 13.5px/1.6 'Inter',var(--sans); }
+.hero-affiliations sup { margin:0 4px 0 0; font-size:.72em; }
+.hero-correspondence { margin:0; color:#6b7a71; font:400 11.5px/1.5 'Inter',var(--sans); }
+.hero-correspondence sup { margin:0 4px 0 0; font-size:.85em; }
+.publication-hero .hero-actions { flex-direction:row; align-items:center; justify-content:center; gap:9.6px; margin:16px 0 0; }
+.publication-hero .hero-actions .button { display:inline-flex; align-items:center; justify-content:center; min-width:0; height:40px; padding:8.8px 17.6px; gap:7.2px; border:0; border-radius:999px; background:#1f2937; color:#fff; font:600 16px/1.5 'Inter',var(--sans); box-shadow:none; transition:background .15s; }
 .publication-hero .hero-actions .button:hover { background:#176c4d; transform:none; }
 .publication-hero .hero-actions svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
 .publication-hero .paper-hero-art { width:calc(100% - 48px); max-width:720px; align-self:center; min-height:0; margin:24px auto 0; padding:0; }
@@ -50,9 +50,7 @@ html { scroll-padding-top:24px; }
 }
 @media(max-width:600px) {
  .hero-author-list { display:grid; grid-template-columns:repeat(2,max-content); gap:3px 16px; font-size:15px; }
- .hero-affiliations { max-width:330px; font-size:12px; }
- .hero-author-details { flex-direction:column; align-items:center; }
- .hero-correspondence { padding-left:0; border:0; }
+ .hero-affiliations { display:grid; grid-template-columns:repeat(2,max-content); gap:4px 20px; font-size:12.5px; }
  .publication-hero .hero-actions { gap:8px; }
  .publication-hero .hero-actions .button { padding-inline:12px; font-size:14px; }
 }
