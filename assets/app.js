@@ -64,5 +64,21 @@
   $$('.case-tabs button').forEach(b=>b.addEventListener('click',()=>chooseCase(b)));
   wireTabs($('.case-tabs'),chooseCase);
 
+  const bibtexCopy=$('#bibtex-copy');
+  let copyTimer;
+  bibtexCopy?.addEventListener('click',async()=>{
+    const code=$('#bibtex-entry'),status=$('#bibtex-status');
+    clearTimeout(copyTimer);
+    try {
+      await navigator.clipboard.writeText(code.textContent);
+      bibtexCopy.textContent='copied!';status.textContent='BibTeX copied.';
+    } catch (_) {
+      const range=document.createRange();range.selectNodeContents(code);
+      const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);
+      status.textContent='Citation selected. Copy it with your keyboard or browser menu.';
+    }
+    copyTimer=setTimeout(()=>{bibtexCopy.textContent='copy';},1500);
+  });
+
 
 })();

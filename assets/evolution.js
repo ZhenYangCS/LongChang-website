@@ -9,22 +9,25 @@
       name: 'Repulsion with a pause',
       lineage: 'Generated from Scene 15 · Northward force',
       law: 'Replace red’s northward force with mutual red–blue repulsion; keep the 10 s pause after a push or throw.',
-      rationale: 'Compare one push with repeated pushes. Each push restarts the 10 s pause.',
     },
     mutate: {
       name: 'Northward force with a spatial condition',
       lineage: 'Refined from Scene 15 · Northward force',
       law: 'Keep the 10 s pause, and also block red’s northward force while blue is inside the gray square.',
-      rationale: 'After 10 s without a push, move blue inside and outside the square. Red’s force follows blue’s position.',
     },
     compose: {
       name: 'Northward force + velocity copy',
       lineage: 'Combined from Scene 15 · Northward force + Scene 14 · Velocity copy',
       law: 'Red keeps its paused northward force; green also copies red’s launch velocity 12 s later.',
-      rationale: 'Push blue after launching red. The drift pauses again; green’s scheduled velocity copy still occurs.',
     },
   };
   const video = $('#evo-demo-video'), tabs = [...document.querySelectorAll('[data-evolution]')];
+  const discovery = Object.fromEntries(['generate','mutate','compose'].map((id,index)=>[id,Math.round(window.LONGCHANG.evolution[index+2].D*3/100)]));
+  for (const tab of tabs) {
+    const score=document.createElement('span');score.className='evo-choice-discovery';
+    score.innerHTML=`<span>Discovery</span><strong>${discovery[tab.dataset.evolution]} / 3</strong>`;
+    tab.append(score);
+  }
   const model = window.LongChangEvolutionModel.create({host:$('#evo-explanation'), video});
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   let key = 'generate', view = 'demo', demoWanted = !reduced.matches, demoKey = null, demoFailed = false, demoTimer, revision = 0, seekTime = null;
@@ -81,8 +84,8 @@
   function content() {
     const d = descriptions[key];
     model.setScene(key, d);
-    for (const field of ['name','lineage','law','rationale']) setText(`#evo-${field}`, d[field]);
-    $('#evo-design-link').href = `data/evolution/${key}-design.json`;
+    for (const field of ['name','lineage','law']) setText(`#evo-${field}`, d[field]);
+    setText('#evo-mobile-discovery',`Discovery: ${discovery[key]} / 3 runs · GPT-6-Astra`);
     video.poster = media[key].poster;
     video.setAttribute('aria-label', `Scripted demonstration: ${d.name}`);
     $('#evo-detail').setAttribute('aria-labelledby', `evo-tab-${key}`);

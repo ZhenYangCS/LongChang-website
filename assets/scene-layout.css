@@ -29,12 +29,18 @@
 
 /* Source scenes lead directly to the three evolution choices. */
 #evolution .evo-picker-label { flex-shrink:0; margin:0; padding:12px 14px 6px; color:#617b69; font:500 11px/1.5 var(--sans); }
+.evo-evaluation-label { display:block; margin-top:3px; color:#788a7d; font:400 9px/1.4 var(--sans); }
+.evo-choice-discovery { display:flex; justify-content:space-between; gap:10px; width:100%; margin-top:6px; padding-top:6px; border-top:1px solid #d7e4da; color:#617b69; font:400 11px/1.4 var(--sans); }
+.evo-choice-discovery strong { color:#315f47; font-weight:500; white-space:nowrap; }
+#evo-mobile-discovery { display:none; }
 #evolution .evo-sources { flex-shrink:0; margin:0 12px; padding:12px 0; border-bottom:1px solid #d7e4da; }
 .evo-sources h4 { margin:0; color:#496b57; font:500 11px/1.5 var(--sans); }
 .evo-sources ul { display:grid; gap:8px; margin:9px 0 0; padding:0; list-style:none; }
 .evo-sources a { display:flex; align-items:center; gap:8px; color:#315f47; font:400 12px/1.5 var(--sans); }
-.evo-sources a > span:last-child { text-decoration:underline; text-decoration-color:#a9c1b1; text-underline-offset:2px; }
-#evolution .evo-context { display:block; margin:8px 0 0; padding:5px 0; border:0; border-radius:0; background:none; }
+.evo-sources a > span:nth-child(2) { text-decoration:underline; text-decoration-color:#a9c1b1; text-underline-offset:2px; }
+.evo-source-status { flex-shrink:0; margin-left:auto; padding:1px 5px; border-radius:4px; background:#e8f2e9; color:#416f4b; font:500 9px/1.5 var(--sans); white-space:nowrap; }
+.evo-sources .evo-source-note { margin:6px 0 0; color:#5d7566; font:400 11.5px/1.55 var(--sans); }
+.evo-sources .evo-source-record { display:inline-block; margin-top:4px; font-size:10.5px; text-decoration:underline; text-decoration-color:#a9c1b1; text-underline-offset:2px; }
 
 @media(min-width:801px) and (max-width:1099px) {
   :is(#worlds,#evolution) .scene-workspace[data-view],
@@ -58,9 +64,19 @@
   #evolution .scene-index { border:0; background:none; }
   #evolution .scene-picker { display:none; }
   #evo-explanation .demo-model { grid-template-rows:repeat(5,max-content) clamp(160px,45vw,240px) max-content; }
-  #evolution .evo-context { padding-block:5px; }
 }
 @media(max-width:1099px) {
   #evolution .evo-picker-label { display:none; }
+  #evo-mobile-discovery { display:block; margin:6px 0 0; color:#617b69; font:400 11px/1.5 var(--sans); }
   #evolution .evo-sources { margin:0 0 10px; padding:0 0 10px; }
+  .evo-sources .evo-source-note { font-size:12px; }
+}
+@media(min-width:1100px) and (max-height:800px) {
+  #evolution .evo-sources { padding-block:8px; }
+  .evo-sources ul { gap:6px; }
+  .evo-sources .evo-source-note { font-size:11px; line-height:1.45; }
+  .evo-sources .evo-source-record { margin-top:2px; }
+  #evolution .evo-picker-label { padding:6px 12px 4px; }
+  #evolution .scene-picker button { gap:3px; padding:6px 10px; }
+  .evo-choice-discovery { margin-top:3px; padding-top:3px; font-size:10.5px; }
 }

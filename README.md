@@ -1,6 +1,6 @@
-# LongChang anonymous project page
+# LongChang project page
 
-纯静态的英文匿名论文主页，可直接部署到 GitHub Pages，线上不需要 Python 服务、API key 或后端。部署步骤见 [PAGES.md](PAGES.md)，已同时提供独立站点仓库和当前目录结构的 GitHub Actions 配置。
+纯静态英文论文主页；作者区可独立切换为匿名形式，可直接部署到 GitHub Pages，线上不需要 Python 服务、API key 或后端。部署步骤见 [PAGES.md](PAGES.md)，已同时提供独立站点仓库和当前目录结构的 GitHub Actions 配置。
 
 以下 Python 命令仅供本地预览使用，不属于线上运行依赖：
 
@@ -19,10 +19,10 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 ## 内容
 
 - 章节按“15 个场景 → Framework → 主结果 → Discovery in Practice（控制实验与案例）→ 场景演化”排列，成功探索从结果中的场景格子打开。页面以场景演化收尾，取消单独的 Materials 章节及导航入口；论文与 Code 位于首屏，补充素材保存在项目文件中。
-- 页头按提供的 StreamMA 参考实现：取消顶部导航与重复的项目名，显示左侧玻璃房图标、居中的 LongChang、斜体论文标题、匿名署名及统一深色 Paper / Code / Demo 按钮。使用本地 Inter 与 Noto Serif 字体；桌面项目名 57.6 px、手机 41.6 px，字体与间距按参考页取值。图标内两颗彩色球同步眨动，减少动态效果时静止。样式在 `assets/hero.css`，图标是内联 SVG。五个章节使用独立的大标题，见 `assets/chapters.css`。Explore the Worlds 与 Framework 之间保留充分留白，以通栏细线、中央短线和浅绿色章节底色分隔。
+- 页头采用居中的论文标题布局：取消顶部导航与重复的项目名，显示左侧玻璃房图标、居中的 LongChang、斜体论文标题、独立作者区及统一深色 Paper / Code / BibTeX 按钮。使用本地 Inter 与 Noto Serif 字体；桌面项目名 57.6 px、手机 41.6 px，字体与间距按参考页取值。图标内两颗彩色球同步眨动，减少动态效果时静止。样式在 `assets/hero.css`，图标是内联 SVG。五个章节使用独立的大标题，见 `assets/chapters.css`。Explore the Worlds 与 Framework 之间保留充分留白，以通栏细线、中央短线和浅绿色章节底色分隔。
 - 五个章节与页头统一使用页面的浅色底色（`--paper`），分隔沿用两侧渐淡的细线与中央空心菱形；桌面章节上下留白 40 px，手机 32 px，分隔装饰不参与点击或滚动布局。
-- Paper / Code / Demo 下方的题记保持三行：知行合一、The unity of knowing and doing、Named for Wang Yangming’s Longchang awakening (1508)，最后一行直接说明项目命名源于龙场悟道。中文使用本地 Noto Serif SC 四字子集，OFL 授权见 `assets/fonts/NotoSerifSC-LICENSE.txt`。
-- 居中论文标题下方采用左侧 Abstract、右侧 Figure 1 玻璃房的布局；直接使用论文摘要主体约 170 词，分四段呈现研究动机、探索框架、自动审核与场景演化、评测结果，省略重复的材料链接句。桌面右侧图示区与摘要等高，玻璃房按可用宽高保持原比例放大，取消 420 px 和视口高度上限；手机先显示摘要再显示玻璃房。首图交互入口保持在图下。
+- LongChang 标题下方用一句命名说明，将中文“龙场悟道”嵌入英文来源句，避免重复翻译占用两行；桌面将单位与通讯作者说明并列，手机自然换行。顶部只保留 Paper、Code、BibTeX 入口。页面不再使用与“无任务提示的自主科学发现”不够贴切的修身或知行语录。
+- 居中论文标题下方采用左侧 Abstract、右侧 Figure 1 玻璃房的布局；论文摘要分四段呈现研究动机、探索框架、自动审核与场景演化、评测结果。整个区块沿用下方章节的同一容器，桌面两栏等宽、间隔 48 px，取消摘要和图示内部的独立宽度上限；玻璃房保持原比例占满右栏，让图的右边缘与后续章节一致。窄屏先显示摘要再显示全宽玻璃房，首图交互入口保持在图下。
 - 首屏先显示 Figure 1 原图。点击 Push / Drag / Rotate 后加载本地 MuJoCo WASM，用原始 `workspace.xml` 实时计算推动、拖放、碰撞、摆锤和天平运动；Three.js 绘制玻璃、金属、珐琅与阴影。支持转视角、缩放、键盘推动和重置。
 - 首页、15 个基础场景和三个演化场景共用 `assets/room-world.js` 的运动中 Push：优先匹配当前位置，Push 额外接受最近 250 ms 的已显示位置，Drag 保持 120 ms；推力按鼠标或触点的相对位移计算，箭头和施力点随选中的物体移动。操作不暂停、回退或重置物理，场景 14 的延迟复制和场景 15 的干预计时仍由原有规律处理。`verify_moving_push.py` 用真实鼠标和触屏验证连续运动中的追加推力及方向。
 - 首图按材质合并静态几何，减少重复绘制；较慢设备使用缓存光照和自适应分辨率。高分屏最高使用 2× 像素密度，支持软阴影与 2048 阴影贴图，缓存材质提升到 256×256；暂时卡顿后会逐步恢复分辨率，避免一直模糊。物理保持固定步长，物体仍在运动时不会被固定时限强制停住；离开屏幕时暂停计算。
@@ -48,8 +48,8 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 - 第一个案例明确比较“发现异常后是否追查”：Astra 改变计划，检验红球重新运动的延迟，并进一步推动蓝球；Gemini 继续竖直抛射与碰撞测试，未检验重新运动的原因。页面按观察、后续实验、结果三步显示可读文字，拖动进度时同步切换；两列来自同一设置下的独立运行。案例画面按窗口高度限制在 210–280 px，保留完整画面；模型名与双列观察对应视频的两半；1280×512 视频只展示原始实验近景、返回观察中的静止/运动状态，以及推动/抛射后的真实模拟计时；Gemini 的贴墙重新运动标为 Log，并说明位移几乎不可见。说明和结论放在视频外，案例默认 2× 以留出阅读时间。`scripts/prepare_case_question.py` 复用已有渲染帧合成标注，逐帧状态和计时在 `data/case-question-cues.json`；完整渲染入口会自动调用它。
 - 案例播放器位于 04 的右栏，随栏宽缩放；手机上下排列，切换、画面、控制栏和阶段说明放在同一框内。全屏包含画面与同一条控制栏，手机端也可用原生视频全屏。
 - 案例视频使用首图相同的 Blender Cycles 材质与灯光重新渲染：珐琅红/蓝球、瓷砖地面、蓝灰金属和青绿色托盘，64 samples 并去噪。近景以剖视方式隐藏遮挡实验的玻璃墙与边框。保留原始 MuJoCo 状态中的位置、尺寸、红/蓝身份和仪器结构；分屏两侧独立调整影片时间，原始回合与模拟时间保存在来源记录中。颜色案例依次展示首次交换、再次交换、红球与红球碰撞；仪器案例依次展示滑出平盘、红球留在深盘、蓝球稳定称重。章节间切到后续试验，不模拟装置变形或构建过程。来源、视频及首图材质源码哈希在 `data/case-films.json`，逐帧原始状态哈希和时间映射在 `data/case-rendering.json`。生成入口为 `scripts/prepare_case_studio.py`，复用 `scripts/prepare_case_films.py` 的案例选段与字幕；`scripts/blender_case_films.py` 负责渲染。播放器为 `assets/case-films.js` / `assets/case-films.css`。
-- Scene Evolution 与 15 Worlds 共用 `assets/scene-layout.css`，桌面目录、视频和规则图解等高，平板与手机使用单一下拉选择器。选择栏最上方展示原场景 15 和 14，下面用来源编号、演化方式和新场景名称说明去向；本节不再展示原场景发现率或演化方案评测面板。Demo 使用共享的播放控制、MathML 和模型时钟，原始 Video data 曲线与视频同步；Interactive 隐藏解释面板。`verify_evolution_model.py` 核对规律时点、媒体独立性、原始曲线和各尺寸对齐。
-- 演化区保留清晰的“Scene 15 → 生成 / 细化”和“Scenes 15 + 14 → 组合”关系。Design notes & sources 只显示简短的对照实验建议和来源说明，长引文、完整规律及原始设计通过两个资料链接查看；评测数值与原始探索记录保持原样。
+- Scene Evolution 与 15 Worlds 共用 `assets/scene-layout.css`，桌面目录、视频和规则图解等高，手机使用单一下拉选择器。原场景 15 和 14 位于选择栏顶部；三个演化选项各自显示发现次数（GPT-6-Astra，3 次运行），作为演化后难度的简明信息，手机显示当前所选场景的发现次数。Demo 保留规则图解、版本化视频与同步原始数据；Interactive 隐藏解释面板。
+- 演化区保留“Scene 15 → 生成 / 细化”和“Scenes 15 + 14 → 组合”的来源关系。原场景 15 和 14 标注 Passed，指选取的来源运行均通过规律正确性与证据支持评测；场景 15 的中途错误判断已在最终通过前纠正。原场景旁解释这一经历和延迟复制规律；去掉 Why this design 和 Full design & rule 入口，沿用基础场景的演示、规则图解与交互方式。
 - 三段演化 Demo 使用 15 个基础场景的正面斜俯视方向、Blender Cycles 材质及 1600×800 / 60 fps 近景，地板覆盖全部画面。播放器按区域铺满，检查球体、轨迹和力箭头都留在可见区域；竖屏全屏时保留完整构图。`scripts/refresh_evolution_media.py` 从 `data/shared-room.json` 读取公共视角，先核对冻结的原生状态、动作和时间映射，再发布视频、封面与版本索引；物理记录和评测数值不变。
 - Demo 近景隐藏玻璃、框架和装饰底座，避免边沿形成遮挡视线的竖杠；三个演化视频及场景 09 的视频、封面已同步导出。`refresh_demo_camera.py` 的后续近景导出也采用此设置，物理碰撞边界、记录中的轨迹和计时保持原样。
 - 演化视频与封面通过 `data/evolution-media.js` 使用内容哈希版本地址，避免浏览器继续播放更新前的遮挡版本。两个导出入口都会自动重建该索引；仅替换媒体文件时可运行 `python scripts/prepare_evolution_media_index.py` 同步版本。
@@ -216,4 +216,10 @@ python scripts/package_physics_demos.py --ffmpeg /path/to/ffmpeg
 
 以上命令在 `project_page/` 中运行，脚本会自行定位仓库根目录。准备数据需要当前 `acl-build/0.pdf`，结果表沿 `ACL/main.tex` 的 `input/include` 关系读取，兼容当前拆分的 `ACL/secs/`。所有生成输出保存在本目录；场景回放使用项目已有的只读加载器。动态素材由固定时间的浏览器画面编码，不发起模型请求。
 
-匿名版本不含作者姓名、机构、邮箱或个人链接。论文下载副本的作者元信息为 Anonymous Authors，数据下载不含本地路径或 API 请求设置。字体授权见 `assets/fonts/*LICENSE.txt`。
+作者姓名、单位和个人链接仅保存在 `index.html` 的 `AUTHORS_BEGIN` / `AUTHORS_END` 作者区内；页面其余位置、PDF 和数据下载保持匿名。第三方库、字体的版权声明及文献引用照常保留。使用 `bash scripts/build_pages.sh --anonymous /tmp/longchang-anonymous` 可生成移除整个具名作者区的匿名发布副本，不改动当前页面。
+
+## 匿名检查与引用占位
+
+`python -B scripts/verify_anonymity.py --ocr --report /tmp/project-page-anonymity-audit.json` 检查整个目录及 ZIP/GZ 内部、PDF 正文和元数据、图片/视频/字体元数据；OCR 覆盖静态图片及动画/视频的首、中、末帧。身份词从作者区自动读取，检查脚本不保存真实姓名。检查报告保存在发布目录之外。
+
+页头提供 BibTeX 入口，页面底部用代码框和复制按钮展示 `#bibtex-entry`。引用模板包含论文标题与 Anonymous Authors，年份和网址字段留空，供之后补充；匿名版本的引用不应填入具名作者。

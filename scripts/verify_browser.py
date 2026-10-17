@@ -36,6 +36,8 @@ def main():
         assert not page.locator('.controlled-details').evaluate('e=>e.open')
         assert page.locator('#evolution [data-metric], #evo-result, #evo-source-results').count()==0
         assert page.locator('.evo-sources [data-evo-source]').count()==2
+        assert page.locator('#evo-picker .evo-choice-discovery').count()==3
+        assert page.locator('.hero-actions a[href="#bibtex"]').count()==1
         assert not page.locator('#controlled-comparisons').evaluate('(e)=>!!e.closest("details")')
         assert not page.locator('#evo-picker').evaluate('(e)=>!!e.closest("details")')
         assert page.locator('[data-behavior="L"]').inner_text()=='39.3'

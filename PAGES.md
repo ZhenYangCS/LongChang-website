@@ -16,6 +16,9 @@
 
 ```bash
 bash scripts/build_pages.sh /path/to/empty-output
+
+# 匿名评审副本：仅将独立作者区替换为 Anonymous Authors
+bash scripts/build_pages.sh --anonymous /tmp/longchang-anonymous
 ```
 
 输出目录可直接交给任何支持静态文件和视频 Range 请求的网页托管服务。所有运行时路径均为相对路径，支持 GitHub 仓库子路径。WASM 使用单线程版本，不需要额外的跨源隔离响应头。

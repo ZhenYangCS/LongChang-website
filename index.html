@@ -64,20 +64,27 @@
     <section class="hero container publication-hero" aria-labelledby="hero-title" aria-describedby="paper-title">
       <div class="hero-copy">
         <h1 id="hero-title"><svg class="hero-logo longchang-logo" viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="mark-glass" x2="1" y2="1"><stop stop-color="#f6fcfa"/><stop offset="1" stop-color="#dceceb"/></linearGradient><radialGradient id="mark-red" cx="30%" cy="25%" r="75%"><stop stop-color="#ffd3ba"/><stop offset=".42" stop-color="#d97861"/><stop offset="1" stop-color="#a53f36"/></radialGradient><radialGradient id="mark-blue" cx="30%" cy="25%" r="75%"><stop stop-color="#cce4f9"/><stop offset=".42" stop-color="#6d9fc6"/><stop offset="1" stop-color="#365d85"/></radialGradient></defs><path d="M20 3 36 12v17L20 38 4 29V12Z" fill="url(#mark-glass)" stroke="#315e68" stroke-width="1.3"/><path d="m4 12 16 9 16-9M20 21v17" fill="none" stroke="#527c80" stroke-width="1.1"/><g class="logo-eye"><circle cx="13" cy="24" r="4.4" fill="url(#mark-red)"/><g class="logo-gaze"><ellipse cx="13.3" cy="24" rx=".85" ry="2.25" fill="#66322e" opacity=".85"/></g><circle cx="11.6" cy="22.5" r="1" fill="#fff" opacity=".8"/></g><g class="logo-eye"><circle cx="27" cy="24" r="4.4" fill="url(#mark-blue)"/><g class="logo-gaze"><ellipse cx="26.7" cy="24" rx=".85" ry="2.25" fill="#263f5b" opacity=".85"/></g><circle cx="25.6" cy="22.5" r="1" fill="#fff" opacity=".8"/></g></svg><span class="title-accent">Long</span>Chang</h1>
+        <p class="hero-name-origin">Named for Wang Yangming’s Longchang awakening (<span lang="zh-Hans">龙场悟道</span>, 1508).</p>
         <p id="paper-title" class="paper-title">Can LLMs Uncover Hidden Physical Laws through Free Exploration?</p>
-        <div class="hero-authors">Anonymous Authors</div>
+        <!-- AUTHORS_BEGIN: replace this block for an anonymous version. -->
+        <div class="hero-authors" id="author-block" aria-label="Authors and affiliations">
+          <p class="hero-author-list">
+            <span><a data-author-name href="https://zhenyangcs.github.io/">Zhen Yang</a><sup>1</sup></span>
+            <span><a data-author-name href="https://encounter1997.github.io/">Wen Wang</a><sup>3</sup></span>
+            <span><a data-author-name href="https://xander23333.github.io/">Xander Xu</a><sup>2*</sup></span>
+            <span><a data-author-name href="https://www.yingcong.me/">Ying-Cong Chen</a><sup>1,4*</sup></span>
+          </p>
+          <div class="hero-author-details">
+            <p class="hero-affiliations"><span><sup>1</sup><span data-author-affiliation>HKUST(GZ)</span></span> · <span><sup>2</sup><span data-author-affiliation>Alibaba Group</span></span> · <span><sup>3</sup><span data-author-affiliation>ZJU</span></span> · <span><sup>4</sup><span data-author-affiliation>HKUST</span></span></p>
+            <p class="hero-correspondence"><sup>*</sup>Co-corresponding authors</p>
+          </div>
+        </div>
+        <!-- AUTHORS_END -->
         <div class="hero-actions">
           <a class="button" href="downloads/paper.pdf" target="_blank" rel="noopener"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 2.5h7l3 3V17.5H5zM12 2.5v4h3M8 10h4M8 13h4"/></svg>Paper</a>
           <a class="button" href="downloads/longchang-source.zip" download><svg viewBox="0 0 20 20" aria-hidden="true"><path d="m6 6-4 4 4 4m8-8 4 4-4 4M11.5 4l-3 12"/></svg>Code</a>
-          <a class="button" href="#worlds"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2" y="3.5" width="16" height="13" rx="2"/><path d="m8 7 5 3-5 3z"/></svg>Demo</a>
+          <a class="button" href="#bibtex"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3H5a2 2 0 0 0-2 2v3l-1 2 1 2v3a2 2 0 0 0 2 2h2M13 3h2a2 2 0 0 1 2 2v3l1 2-1 2v3a2 2 0 0 1-2 2h-2"/></svg>BibTeX</a>
         </div>
-        <figure class="hero-epigraph" aria-label="The inspiration behind LongChang">
-          <blockquote>
-            <p class="hero-epigraph-quote" lang="zh-Hans">知行合一</p>
-            <p class="hero-epigraph-translation">The unity of knowing and doing</p>
-          </blockquote>
-          <figcaption>Named for Wang Yangming’s Longchang awakening (1508).</figcaption>
-        </figure>
       </div>
       <figure class="motion-hero" aria-label="Animated overview of four altered physical laws" hidden>
         <div class="motion-overline"><span><i></i> THE PHYSICS OF DISCOVERY</span><span id="hero-scene-index">SCENE 07</span></div>
@@ -92,7 +99,7 @@
         <p>Scientific discovery often begins with an unexpected observation that prompts a new research question. In a world with altered physical laws, can large language models (LLMs) notice unexpected behavior, such as heavier objects falling more slowly, and discover the law through experiments without being told what to investigate?</p>
         <p>To evaluate this ability, we introduce LongChang, an automated framework that creates simulated worlds with altered physics, where one or more laws differ from ordinary physics. The evaluated LLMs act as explorers, manipulating objects and building tools to investigate their own questions without research tasks or hints about these laws.</p>
         <p>Separate LLM agents generate and review scenes, review tool designs, and evaluate reports for correctness and experimental support using the altered physical laws and exploration records. These records guide scene evolution for further exploration, allowing the full cycle to run without human intervention.</p>
-        <p>Among 12 LLMs, GPT-6-Astra achieves a discovery rate of <strong>16.7%</strong>, while the other 11 score <strong>0%</strong>. The exploration records reveal uninvestigated anomalies and only partial identification of the altered physical laws.</p>
+        <p>Among 12 LLMs, GPT-6-Astra achieves a discovery rate of 16.7%, while the other 11 score 0%. The exploration records reveal uninvestigated anomalies and only partial identification of the altered physical laws.</p>
       </section>
       <figure class="paper-hero-art" id="interactive-figure" aria-describedby="room-hint">
         <div class="hero-room-view">
@@ -289,22 +296,23 @@
     <section id="evolution" class="evolution-section evolution-compact chapter" aria-labelledby="evolution-title">
       <div class="container section">
         <div class="section-heading chapter-heading"><h2 id="evolution-title">Scene Evolution</h2></div>
-        <section class="evo-premise" aria-label="Starting point for scene evolution">
-          <p class="evo-premise-intro">Astra mistook a pause in Scene 15’s force for its absence. That corrected mistake inspires <strong>three independent branches.</strong></p>
-        </section>
         <div class="scene-workspace evo-workspace" data-view="physics">
           <aside class="scene-index" aria-label="Choose an evolved world">
             <section class="evo-sources" aria-labelledby="evo-sources-title">
               <h4 id="evo-sources-title">Original scenes</h4>
-              <ul><li><a href="#worlds" data-evo-source="15"><span class="evo-source-number">15</span><span>Northward force</span></a></li><li><a href="#worlds" data-evo-source="14"><span class="evo-source-number">14</span><span>Velocity copy</span></a></li></ul>
+              <ul>
+                <li><a href="#worlds" data-evo-source="15"><span class="evo-source-number">15</span><span>Northward force</span><small class="evo-source-status" title="The selected source run passed both law correctness and evidence support.">Passed</small></a><p class="evo-source-note">Astra’s source run passed after correcting a temporary “no force” inference. This successful run motivates three independent designs.</p><a class="evo-source-record" href="data/evolution/reference-trace.json" target="_blank" rel="noopener" title="Scene 15 · Astra · run 2 · turns 30–31">Original exploration notes ↗</a></li>
+                <li><a href="#worlds" data-evo-source="14"><span class="evo-source-number">14</span><span>Velocity copy</span><small class="evo-source-status" title="The selected source run passed both law correctness and evidence support.">Passed</small></a><p class="evo-source-note">Green copies red’s launch velocity 12 s later.</p></li>
+              </ul>
             </section>
-            <p class="evo-picker-label">Choose an evolved scene</p>
+            <p class="evo-picker-label">Choose an evolved scene<span class="evo-evaluation-label">Discovery · GPT-6-Astra · 3 runs each</span></p>
             <label class="sr-only" for="evo-mobile-select">Choose an evolved scene</label><select id="evo-mobile-select"><option value="generate">Generation · 15 → Repulsion with a pause</option><option value="mutate">Refinement · 15 → Northward force with a spatial condition</option><option value="compose">Composition · 15 + 14 → Northward force + velocity copy</option></select>
             <div id="evo-picker" class="scene-picker" role="tablist" aria-label="Evolved scenes" aria-orientation="vertical">
               <button id="evo-tab-generate" role="tab" type="button" data-evolution="generate" aria-selected="true" aria-controls="evo-detail"><span class="evo-choice-route"><span class="evo-choice-origin" aria-label="Scene 15">15</span><span class="scene-choice-name">Generate →</span></span><span class="evo-choice-result">Repulsion with a pause</span></button>
               <button id="evo-tab-mutate" role="tab" type="button" data-evolution="mutate" aria-selected="false" aria-controls="evo-detail" tabindex="-1"><span class="evo-choice-route"><span class="evo-choice-origin" aria-label="Scene 15">15</span><span class="scene-choice-name">Refine →</span></span><span class="evo-choice-result">Northward force + spatial condition</span></button>
               <button id="evo-tab-compose" role="tab" type="button" data-evolution="compose" aria-selected="false" aria-controls="evo-detail" tabindex="-1"><span class="evo-choice-route"><span class="evo-choice-origin" aria-label="Scenes 15 and 14">15 + 14</span><span class="scene-choice-name">Combine →</span></span><span class="evo-choice-result">Northward force + velocity copy</span></button>
             </div>
+            <p id="evo-mobile-discovery" aria-live="polite"></p>
           </aside>
           <div id="evo-detail" class="world-detail atlas-detail" role="tabpanel" aria-labelledby="evo-tab-generate" data-view="physics">
             <div class="atlas-topline"><div class="atlas-view-switch" role="group" aria-label="Evolution view"><button type="button" data-evo-view="demo" aria-pressed="true" aria-controls="evo-demo-view" title="Watch the demo and explore its rule"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m10 8 6 4-6 4Z" fill="currentColor" stroke="none"/></svg><span class="scene-mode-copy"><span>Demo</span><small>Watch</small></span></button><button type="button" data-evo-view="experiment" aria-pressed="false" aria-controls="evo-experiment-view" title="Push and drag objects in the simulation"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 3 15 10-7 1-3 7Z"/><path d="m14 16 4 5"/></svg><span class="scene-mode-copy"><span>Interactive</span><small>Try it</small></span></button></div></div>
@@ -336,15 +344,24 @@
 
           </section>
         </div>
-        <div class="evo-context"><details class="evo-design"><summary>Design notes &amp; sources <span aria-hidden="true">+</span></summary>
-          <div class="evo-notes"><div><h4>What to compare</h4><p id="evo-rationale">One push versus repeated pushes: does repulsion return after 10 s?</p></div><div><h4>Where it started</h4><p>Scene 15 · Astra, run 2, turns 30–31. A mistaken inference was corrected after waiting longer.</p></div></div>
-          <div class="evo-source-links"><a id="evo-design-link" href="data/evolution/generate-design.json" target="_blank" rel="noopener">Full design &amp; rule ↗</a><a href="data/evolution/reference-trace.json" target="_blank" rel="noopener">Original exploration notes ↗</a></div>
-        </details></div>
 
 
       </div>
     </section>
 
+    <section id="bibtex" class="citation container" aria-labelledby="bibtex-title">
+      <h2 id="bibtex-title">BibTeX</h2>
+      <div class="bibtex-wrap">
+        <button id="bibtex-copy" class="bibtex-copy" type="button" aria-label="Copy BibTeX">copy</button>
+        <pre id="bibtex-entry"><code>@misc{longchang,
+  title = {Can LLMs Uncover Hidden Physical Laws through Free Exploration?},
+  author = {Anonymous Authors},
+  year = {},
+  url = {}
+}</code></pre>
+      </div>
+      <p id="bibtex-status" class="sr-only" role="status"></p>
+    </section>
   </main>
   <footer><svg class="footer-logo longchang-logo" width="40" height="40" viewBox="0 0 40 40" role="img" aria-label="LongChang"><defs><linearGradient id="footer-mark-glass" x2="1" y2="1"><stop stop-color="#f6fcfa"/><stop offset="1" stop-color="#dceceb"/></linearGradient><radialGradient id="footer-mark-red" cx="30%" cy="25%" r="75%"><stop stop-color="#ffd3ba"/><stop offset=".42" stop-color="#d97861"/><stop offset="1" stop-color="#a53f36"/></radialGradient><radialGradient id="footer-mark-blue" cx="30%" cy="25%" r="75%"><stop stop-color="#cce4f9"/><stop offset=".42" stop-color="#6d9fc6"/><stop offset="1" stop-color="#365d85"/></radialGradient></defs><path d="M20 3 36 12v17L20 38 4 29V12Z" fill="url(#footer-mark-glass)" stroke="#315e68" stroke-width="1.3"/><path d="m4 12 16 9 16-9M20 21v17" fill="none" stroke="#527c80" stroke-width="1.1"/><g class="logo-eye"><circle cx="13" cy="24" r="4.4" fill="url(#footer-mark-red)"/><g class="logo-gaze"><ellipse cx="13.3" cy="24" rx=".85" ry="2.25" fill="#66322e" opacity=".85"/></g><circle cx="11.6" cy="22.5" r="1" fill="#fff" opacity=".8"/></g><g class="logo-eye"><circle cx="27" cy="24" r="4.4" fill="url(#footer-mark-blue)"/><g class="logo-gaze"><ellipse cx="26.7" cy="24" rx=".85" ry="2.25" fill="#263f5b" opacity=".85"/></g><circle cx="25.6" cy="22.5" r="1" fill="#fff" opacity=".8"/></g></svg></footer>
   <dialog id="result-evidence-dialog" class="result-evidence-dialog" aria-labelledby="evidence-title">

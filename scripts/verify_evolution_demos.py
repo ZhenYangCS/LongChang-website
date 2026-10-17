@@ -135,14 +135,13 @@ def main():
             page.locator(f'#evo-tab-{key}').click()
             page.wait_for_function('(key)=>{const v=document.querySelector("#evo-demo-video");return new URL(v.currentSrc||location.href).pathname.endsWith(`evolution-${key}.mp4`) && !v.paused && v.currentTime>.1}', arg=key)
             assert page.evaluate('!LongChangEvolution.current()')
-        assert page.locator('.evo-source-links a[href="data/evolution/reference-trace.json"]').count() == 1
+        assert page.locator('.evo-sources a[href="data/evolution/reference-trace.json"]').count() == 1
         assert page.locator('#evolution-results, .evolution-evaluation').count() == 0
         assert page.locator('#evolution [data-metric], #evo-result, #evo-source-results').count() == 0
         assert page.locator('.evo-sources [data-evo-source]').evaluate_all('nodes=>nodes.map(e=>e.dataset.evoSource)') == ['15','14']
-        page.locator('.evo-design summary').click()
-        expect(page.locator('#evo-rationale')).to_be_visible()
-        assert len(page.locator('#evo-rationale').inner_text().split()) <= 25
-        page.locator('.evo-design summary').click()
+        assert page.locator('.evo-design,#evo-rationale').count() == 0
+        assert page.locator('#evo-picker .evo-choice-discovery').count() == 3
+        assert page.locator('#evo-design-link').count() == 0
         # The same native Experiment component opens a fresh world.
         page.locator('[data-evo-view=experiment]').click()
         page.wait_for_function('!!LongChangEvolution.current()')
