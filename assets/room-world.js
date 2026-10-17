@@ -108,7 +108,7 @@ export async function createRoom(stage,status,options={}) {
     const p=data.xpos,q=data.xquat;
     for(const mesh of movable){const b=mesh.userData.body;mesh.position.fromArray(p,b*3);mesh.quaternion.set(q[b*4+1],q[b*4+2],q[b*4+3],q[b*4]);mesh.updateMatrix();if(live&&mesh.userData.colorSource!==null){const material=materials[geomColor(mesh.userData.colorSource)+'_enamel'];mesh.material=bakedMaterials.get(material)||material;}}
     if(softShadows)updateContactShadows();
-    renderer.render(scene,camera);rememberPickPositions();updateMarker();renderMs=performance.now()-drawStart;options.onFrame?.(data.time);
+    updatePushArrow();renderer.render(scene,camera);rememberPickPositions();updateMarker();renderMs=performance.now()-drawStart;options.onFrame?.(data.time);
   }
   let softShadows=false;
   const contactShadows=[];
@@ -178,7 +178,7 @@ export async function createRoom(stage,status,options={}) {
   const projectedTargets=()=>pickGeoms.map(({geom})=>new T.Vector3().fromArray(data.geom_xpos,geom*3).project(camera));
   function rememberPickPositions(){
     const now=performance.now();
-    while(pickHistory.length&&now-pickHistory[0].time>120)pickHistory.shift();
+    while(pickHistory.length&&now-pickHistory[0].time>250)pickHistory.shift();
     if(!pickHistory.length||now-pickHistory.at(-1).time>=8)pickHistory.push({time:now,points:projectedTargets()});
   }
   function pick(e,recent=false){
@@ -194,9 +194,9 @@ export async function createRoom(stage,status,options={}) {
       if(distance<reach&&score<nearest){nearest=score;hit={object:movable.find(m=>m.userData.body===body),point:new T.Vector3().fromArray(data.geom_xpos,geom*3)};}
     });
     consider(projectedTargets(),0);
-    // At 4x a small ball can leave the clicked pixels between frames. Honour
-    // the last 120 ms of displayed positions, without rewinding the physics.
-    if(recent){const now=performance.now();for(const snapshot of pickHistory){const age=now-snapshot.time;if(age<=120)consider(snapshot.points,age);}}
+    // Allow a short reaction interval when pushing a fast ball. Current hits
+    // still win, and the simulation keeps advancing throughout the gesture.
+    if(recent){const now=performance.now(),windowMs=mode==='push'?250:120;for(const snapshot of pickHistory){const age=now-snapshot.time;if(age<=windowMs)consider(snapshot.points,age);}}
     return hit;
   }
   function tick(now){
@@ -248,6 +248,16 @@ export async function createRoom(stage,status,options={}) {
   const recordPush=(name,impulse)=>{lastPush={body:name,impulse:Array.from(impulse),time:data.time,sequence:++pushSequence};};
   function push(body,impulse,point){const bid=typeof body==='number'?body:bodyIds[body];if(live){const name=Object.keys(bodyIds).find(n=>bodyIds[n]===bid);if(simulation.info().held===name){status('Release the object to push it.');return;}simulation.launch(name,impulse);recordPush(name,impulse);options.onInteraction?.();wake();draw();return;}forces.push({body:bid,force:impulse.map(v=>v/.12),point:point||new T.Vector3().fromArray(data.xpos,bid*3),end:data.time+.12});recordPush(Object.keys(bodyIds).find(n=>bodyIds[n]===bid),impulse);wake();}
   const labels={red_ball:'Red ball',blue_ball:'Blue ball',test_block:'Block',pendulum_arm:'Pendulum',balance_arm:'Balance'};
+  function pushPoint(){
+    const b=drag.body,q=data.xquat,rotation=new T.Quaternion(q[b*4+1],q[b*4+2],q[b*4+3],q[b*4]);
+    return drag.localOffset.clone().applyQuaternion(rotation).add(new T.Vector3().fromArray(data.xpos,b*3));
+  }
+  function updatePushArrow(){
+    if(drag?.kind!=='push')return;
+    const d=drag.pushDelta,length=d.length();arrow.position.copy(pushPoint());
+    if(length>.01){arrow.setDirection(d.clone().normalize());arrow.setLength(Math.min(length,2.5),.22,.13);}
+    arrow.visible=length>.04;
+  }
   function releaseDrag(){const pointer=drag?.pointer;drag=null;simulation?.releaseGrip();arrow.visible=false;markHit(null);marker.classList.remove('is-held');canvas.style.cursor=mode==='view'?'grab':'default';if(pointer!==undefined&&canvas.hasPointerCapture(pointer))canvas.releasePointerCapture(pointer);}
   function beginInteraction(e,{capture=true}={}){
     pointers.add(e.pointerId);if(pointers.size>1){releaseDrag();return;}if(e.button!==0||mode==='view')return;
@@ -256,6 +266,12 @@ export async function createRoom(stage,status,options={}) {
     const plane=new T.Plane().setFromNormalAndCoplanarPoint(mode==='drag'?camera.getWorldDirection(new T.Vector3()):new T.Vector3(0,0,1),hit.point);
     const q=data.xquat,rotation=new T.Quaternion(q[body*4+1],q[body*4+2],q[body*4+3],q[body*4]);
     drag={kind:mode,pointer:e.pointerId,body,point:hit.point.clone(),target:hit.point.clone(),plane,centerOffset:hit.point.clone().sub(new T.Vector3().fromArray(data.xpos,body*3)),localOffset:hit.point.clone().sub(new T.Vector3().fromArray(data.xpos,body*3)).applyQuaternion(rotation.invert()),startX:e.clientX,startY:e.clientY};
+    if(mode==='push'){
+      // A recent-position hit may already be behind the ball. Measure the
+      // gesture from the pointer's starting ray, not the ball's new position.
+      drag.aimOrigin=ray.ray.intersectPlane(plane,new T.Vector3())||hit.point.clone();
+      drag.pushDelta=new T.Vector3();
+    }
     if(mode==='drag'&&model.body_dofnum[body]===6){
       const center=new T.Vector3().fromArray(data.xpos,body*3),screen=center.clone().project(camera),higher=center.clone().add(new T.Vector3(0,0,1)).project(camera),height=canvas.getBoundingClientRect().height;
       drag.lift={center,right:new T.Vector3(1,0,0).applyQuaternion(camera.quaternion),pixelsPerUnit:height/(camera.top-camera.bottom)*camera.zoom,pixelsPerZ:Math.max(1,Math.abs(higher.y-screen.y)*height/2)};
@@ -285,7 +301,7 @@ export async function createRoom(stage,status,options={}) {
     // Clamping that aim point could reverse or erase a near-wall push.
     if(!live&&drag.kind==='drag'){p.x=T.MathUtils.clamp(p.x,-3.7,3.7);p.y=T.MathUtils.clamp(p.y,-3.7,3.7);p.z=T.MathUtils.clamp(p.z,.15,5.4);}drag.target=p;
     if(live&&drag.kind==='drag'){const target=p.clone().sub(drag.centerOffset),clamped=simulation.clampGripTarget(selected,target.toArray(),ceiling);simulation.setGrip(selected,clamped);}
-    if(drag.kind==='push'){const d=p.clone().sub(drag.point);d.z=0;arrow.position.copy(drag.point);if(d.length()>.01){arrow.setDirection(d.clone().normalize());arrow.setLength(Math.min(d.length(),2.5),.22,.13);}arrow.visible=d.length()>.04;draw();}
+    if(drag.kind==='push'){drag.pushDelta.copy(p).sub(drag.aimOrigin);drag.pushDelta.z=0;draw();}
   }
   canvas.addEventListener('pointerdown',beginInteraction);
   canvas.addEventListener('pointermove',moveInteraction);
@@ -294,7 +310,7 @@ export async function createRoom(stage,status,options={}) {
     pointers.delete(e.pointerId);if(!drag||drag.pointer!==e.pointerId)return;
     // A quick flick can end beyond the last delivered pointermove.
     moveInteraction(e);
-    if(drag.kind==='push'){const d=drag.target.clone().sub(drag.point);d.z=0;if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)<5)d.set(0,.7,0);d.multiplyScalar(3).clampLength(0,8);push(drag.body,d.toArray(),drag.point);}
+    if(drag.kind==='push'){const d=drag.pushDelta.clone();if(Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY)<5)d.set(0,.7,0);d.multiplyScalar(3).clampLength(0,8);push(drag.body,d.toArray(),pushPoint());}
     releaseDrag();setMode(mode);draw();
   }
   function applyPushGesture(start,end){

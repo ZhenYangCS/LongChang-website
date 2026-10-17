@@ -1,5 +1,6 @@
 """Check the Demo explanation, law boundaries, independence and aligned layout."""
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -12,7 +13,11 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--url',default='http://127.0.0.1:8765');args=parser.parse_args()
     manifest=json.loads((SITE/'data/evolution-demos.json').read_text())
     signals=json.loads((SITE/'data/evolution-signals.json').read_text())
+    media=json.loads((SITE/'data/evolution-media.js').read_text().split('=',1)[1].rstrip(';\n'))
     for demo in manifest['demos']:
+        for kind in ['video','poster']:
+            version=hashlib.sha256((SITE/demo[kind]).read_bytes()).hexdigest()[:12]
+            assert media[demo['id']][kind]==f'{demo[kind]}?v={version}'
         body='object_1' if demo['id']=='mutate' else 'red_ball'
         expected=[[round(s['time'],4),round(math.hypot(*s['objects'][body]['applied_force'][:2]),5)] for s in demo['samples']]
         assert signals[demo['id']]['samples']==expected
@@ -40,6 +45,8 @@ def main():
             page.wait_for_function('document.querySelector("#evo-demo-video").readyState>=2')
             video.evaluate('v=>v.pause()')
             before=video.evaluate('v=>({src:v.currentSrc,time:v.currentTime,paused:v.paused})')
+            assert before['src'].endswith(media[key]['video'])
+            assert video.get_attribute('poster')==media[key]['poster']
             assert page.locator('#evo-model-formula math').count()>=1
             for value in options:
                 page.locator(f'#evo-model-settings input[type=radio][value="{value}"]').check()

@@ -6,6 +6,7 @@ from pathlib import Path
 
 from render_physics_demos import ROOT, SITE, World, load_scene, arrange
 from prepare_evolution_demos import RUN, PLANS
+from render_clear_scenes import interactive_camera
 from tools import FORCE_LIMIT, MOVE_SPEED, GRIP_K, REACH_HEIGHT
 
 
@@ -31,10 +32,8 @@ def main():
                  scope='Original notes, actions and returned observations; simulation frames omitted.',
                  **{k: session[k] for k in ['episode_id', 'scene', 'model', 'budget', 'turns', 'report']})
     (folder / 'reference-trace.json').write_text(json.dumps(trace, ensure_ascii=False, indent=2) + '\n')
-    # Same orientation as The 15 Worlds, framed around the prepared experiments.
-    forward = [-.47963209687927216, .6851887098275317, -.5481509678620253]
-    target = [2.85, 3, .15]
-    camera = dict(position=[v - 30 * f for v, f in zip(target, forward)], forward=forward, span=4.8)
+    # Share the complete-room view, including its scale, with the 15 Worlds.
+    camera = interactive_camera()
     for key in ['generate', 'mutate', 'compose']:
         path = RUN / 'generation' / key / 'scene.json'
         definition = json.loads(path.read_text())['scenes'][0]

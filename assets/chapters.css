@@ -1,5 +1,8 @@
 
-#main > .chapter { border-top:1px solid #d4dfd8; scroll-margin-top:0; }
+#main > .chapter { position:relative; border-top:0; scroll-margin-top:24px; }
+#main > .chapter::before { content:''; position:absolute; top:0; left:50%; width:calc(100% - 64px); max-width:1040px; height:1px; transform:translateX(-50%); background:linear-gradient(90deg,transparent,#becfc2) left center / calc(50% - 14px) 1px no-repeat,linear-gradient(90deg,#becfc2,transparent) right center / calc(50% - 14px) 1px no-repeat; pointer-events:none; }
+#main > .chapter::after { content:''; position:absolute; top:-3px; left:50%; width:6px; height:6px; border:1px solid #9db6a4; transform:translateX(-50%) rotate(45deg); pointer-events:none; }
+#main > :is(#worlds,#framework,#results,#controlled,#evolution).chapter { border-block:0; background:var(--paper); }
 #main > .chapter.section,#main > .chapter > .section { padding-block:64px; }
 #main .chapter-heading {
   display:block;
@@ -23,16 +26,6 @@
 }
 #main .chapter-heading > button { margin-top:18px; font-size:14px; }
 #main > #worlds.chapter { padding-block:40px 64px; }
-#main > #framework.chapter {
-  position:relative;
-  border-top:1px solid #cadbd3;
-  background:linear-gradient(180deg,#e8f0eb 0%,#f0f5f1 100%);
-}
-#main > #framework.chapter::before {
-  content:''; position:absolute; top:-2px; left:50%;
-  width:48px; height:3px; border-radius:2px;
-  transform:translateX(-50%); background:#648a76;
-}
 #main > #framework.chapter > .section { padding-top:56px; }
 #worlds .chapter-heading { margin-bottom:24px; }
 #main > #controlled.chapter { padding-block:24px; }
@@ -74,4 +67,13 @@
   #main > #controlled.chapter { padding-block:24px; }
   #main .chapter-heading h2 { font-size:28px; }
   #main .chapter-heading .section-number { font-size:13px; margin-right:8px; }
+}
+
+/* Equal breathing room around each chapter's ornament and heading. */
+#main > :is(#worlds,#controlled).chapter.section,
+#main > :is(#framework,#results,#evolution).chapter > .section { padding-block:40px; }
+@media(max-width:800px) {
+  #main > :is(#worlds,#controlled).chapter.section,
+  #main > :is(#framework,#results,#evolution).chapter > .section { padding-block:32px; }
+  #main > .chapter::before { width:calc(100% - 40px); }
 }

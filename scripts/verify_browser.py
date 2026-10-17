@@ -34,8 +34,8 @@ def main():
         assert page.locator('.controlled-finding').count()==3
         assert page.locator('.controlled-table td').count()==30
         assert not page.locator('.controlled-details').evaluate('e=>e.open')
-        assert page.locator('#evo-picker .evo-choice-scores').count()==3
-        assert page.locator('#evo-source-results tbody tr').count()==2
+        assert page.locator('#evolution [data-metric], #evo-result, #evo-source-results').count()==0
+        assert page.locator('.evo-sources [data-evo-source]').count()==2
         assert not page.locator('#controlled-comparisons').evaluate('(e)=>!!e.closest("details")')
         assert not page.locator('#evo-picker').evaluate('(e)=>!!e.closest("details")')
         assert page.locator('[data-behavior="L"]').inner_text()=='39.3'

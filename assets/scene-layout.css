@@ -14,10 +14,12 @@
 :is(#worlds,#evolution) .scene-index,
 :is(#scene-detail,#evo-detail,#demo-explanation,#evo-explanation) { min-height:0; height:100%; }
 #evolution .scene-picker { grid-template-columns:1fr; grid-template-rows:repeat(3,minmax(0,1fr)); gap:4px; padding:4px; }
-#evolution .scene-picker button { position:relative; display:flex; flex-direction:column; justify-content:center; gap:6px; padding:18px 6px 8px; }
-#evolution .scene-choice-number { position:absolute; top:6px; left:6px; }
-#evolution .scene-choice-name { min-height:0; font:400 12px/1.4 var(--sans); }
-#evolution .scene-picker .scene-choice-symbol { width:116px; max-width:100%; height:30px; }
+#evolution .scene-picker button { position:relative; display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:4px; padding:10px 12px; text-align:left; }
+#evolution .scene-choice-name { min-height:0; color:#547460; font:600 10px/1.4 var(--sans); text-transform:uppercase; letter-spacing:.05em; }
+#evolution .evo-choice-route { display:flex; align-items:center; gap:8px; }
+#evolution .evo-choice-origin,#evolution .evo-source-number { display:inline-block; min-width:23px; padding:1px 5px; border:1px solid #d1e0d5; border-radius:4px; background:#f1f6f2; color:#526f5d; font:500 11px/1.35 var(--sans); text-align:center; white-space:nowrap; }
+#evolution .evo-choice-result { color:#315a42; font:500 14px/1.4 var(--sans); }
+#evo-detail .evo-lineage { margin:0 0 6px; color:#5d7868; font:500 11px/1.4 var(--sans); text-wrap:balance; }
 #evo-mobile-select { display:none; }
 #worlds #scene-detail .atlas-copy h3,#evo-detail .atlas-copy h3 { font-size:22px; }
 #evo-detail #evo-law { margin:8px 0 0; font-size:14px; line-height:1.55; }
@@ -25,21 +27,13 @@
 #evo-demo-view #evo-demo-chart { height:106px; }
 #evo-explanation .demo-model { gap:7px 6px; }
 
-/* Each scene choice carries its own evaluation; the source baseline stays nearby. */
-#evolution .evo-evaluation-meta { flex-shrink:0; margin:0; padding:10px 8px 6px; color:var(--muted); font:400 10.5px/1.5 var(--sans); text-align:center; }
-#evolution .evo-choice-scores { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:4px; width:100%; margin:5px 0 0; padding:8px 0 0; border-top:1px solid #d7e4da; }
-#evolution .evo-choice-scores > span { display:flex; flex-direction:column; align-items:center; gap:3px; }
-#evolution .evo-score-label { color:#607969; font:400 10px/1.4 var(--sans); white-space:nowrap; }
-#evolution .evo-choice-scores strong { color:#315f47; font:500 17px/1.3 var(--sans); font-variant-numeric:tabular-nums; }
-#evolution #evo-mobile-scores { display:none; }
-#evolution .evo-baseline { flex-shrink:0; margin:4px 8px 0; padding:8px 0; border-top:1px solid #d7e4da; }
-.evo-baseline summary { color:var(--muted); font:500 11px/1.5 var(--sans); cursor:pointer; }
-#evo-source-results { width:100%; margin-top:6px; table-layout:fixed; }
-#evo-source-results th,#evo-source-results td { padding:4px 1px; border-color:#dce6dd; text-align:center; font:400 11px/1.35 var(--sans); font-variant-numeric:tabular-nums; white-space:nowrap; }
-#evo-source-results thead { background:none; }
-#evo-source-results thead th { color:var(--muted); font-size:9px; }
-#evo-source-results th:first-child { width:18%; }
-#evo-source-results tbody tr:last-child > * { border:0; }
+/* Source scenes lead directly to the three evolution choices. */
+#evolution .evo-picker-label { flex-shrink:0; margin:0; padding:12px 14px 6px; color:#617b69; font:500 11px/1.5 var(--sans); }
+#evolution .evo-sources { flex-shrink:0; margin:0 12px; padding:12px 0; border-bottom:1px solid #d7e4da; }
+.evo-sources h4 { margin:0; color:#496b57; font:500 11px/1.5 var(--sans); }
+.evo-sources ul { display:grid; gap:8px; margin:9px 0 0; padding:0; list-style:none; }
+.evo-sources a { display:flex; align-items:center; gap:8px; color:#315f47; font:400 12px/1.5 var(--sans); }
+.evo-sources a > span:last-child { text-decoration:underline; text-decoration-color:#a9c1b1; text-underline-offset:2px; }
 #evolution .evo-context { display:block; margin:8px 0 0; padding:5px 0; border:0; border-radius:0; background:none; }
 
 @media(min-width:801px) and (max-width:1099px) {
@@ -67,9 +61,6 @@
   #evolution .evo-context { padding-block:5px; }
 }
 @media(max-width:1099px) {
-  #evolution .evo-evaluation-meta { padding:0 0 6px; text-align:left; }
-  #evolution #evo-mobile-select { border-radius:7px 7px 0 0; }
-  #evolution #evo-mobile-scores { display:grid; margin:0; padding:7px 12px; border:1px solid #d4dfd8; border-top:0; border-radius:0 0 7px 7px; background:#fbfdf9; }
-  #evolution .evo-baseline { margin:0; padding:6px 0 0; border:0; }
-  #evolution .evo-choice-scores strong { font-size:15px; }
+  #evolution .evo-picker-label { display:none; }
+  #evolution .evo-sources { margin:0 0 10px; padding:0 0 10px; }
 }

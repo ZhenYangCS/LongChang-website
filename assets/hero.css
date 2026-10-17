@@ -1,7 +1,7 @@
 /* Centered paper masthead based on the supplied StreamMA reference. */
 html { scroll-padding-top:24px; }
 .hero.publication-hero { display:flex; flex-direction:column; align-items:center; gap:0; width:100%; max-width:none; min-height:0; padding:0 0 40px; }
-.publication-hero .hero-copy { width:100%; max-width:none; padding:72px 24px 40px; text-align:center; font-family:'Inter',var(--sans); background:linear-gradient(180deg,#fbfdfc 0%,#f1f7f4 100%); border-bottom:1px solid #e5e7eb; }
+.publication-hero .hero-copy { width:100%; max-width:none; padding:72px 24px 40px; text-align:center; font-family:'Inter',var(--sans); background:var(--paper); border-bottom:1px solid #e5e7eb; }
 .publication-hero #hero-title { margin:0 0 6.4px; font:800 57.6px/1.6 'Inter',var(--sans); letter-spacing:-.02em; color:#1f2937; }
 .publication-hero .title-accent { color:#176c4d; }
 .publication-hero #hero-title .hero-logo { display:inline-block; width:48px; height:48px; margin-right:8.8px; border-radius:8.8px; vertical-align:-8.8px; filter:drop-shadow(0 2px 3px #0f3c2626); overflow:visible; }
@@ -15,6 +15,12 @@ html { scroll-padding-top:24px; }
 .publication-hero .hero-actions .button { display:inline-flex; align-items:center; justify-content:center; height:40px; padding:8.8px 17.6px; gap:7.2px; border:0; border-radius:999px; background:#1f2937; color:#fff; font:600 16px/1.5 'Inter',var(--sans); box-shadow:none; transition:background .15s; }
 .publication-hero .hero-actions .button:hover { background:#176c4d; transform:none; }
 .publication-hero .hero-actions svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.publication-hero .hero-epigraph { max-width:690px; margin:24px auto 0; }
+.hero-epigraph::before { content:''; display:block; width:36px; height:1px; margin:0 auto 15px; background:#a9bbae; }
+.hero-epigraph blockquote { display:grid; justify-items:center; gap:2px; margin:0; padding:0; border:0; }
+.hero-epigraph .hero-epigraph-quote { margin:0; color:#365a46; font:400 24px/1.6 'Yangming Serif','Songti SC','STSong','SimSun',serif; letter-spacing:.28em; text-indent:.28em; }
+.hero-epigraph .hero-epigraph-translation { margin:0; color:#59715f; font:italic 400 15px/1.5 'Noto Serif',var(--serif); white-space:nowrap; }
+.hero-epigraph figcaption { margin-top:6px; color:#748278; font:400 11px/1.5 'Inter',var(--sans); text-wrap:balance; }
 .publication-hero .paper-hero-art { width:calc(100% - 48px); max-width:720px; align-self:center; min-height:0; margin:24px auto 0; padding:0; }
 .publication-hero .room-stage { width:100%; max-width:clamp(320px,44svh,420px); }
 .publication-hero .paper-hero-art .room-caption { display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:6px; text-align:center; }
@@ -32,6 +38,9 @@ html { scroll-padding-top:24px; }
 @media(max-width:768px) {
  .publication-hero #hero-title { font-size:41.6px; }
  .publication-hero .paper-title { font-size:19.2px; }
+ .publication-hero .hero-epigraph { margin-top:22px; }
+ .hero-epigraph .hero-epigraph-quote { font-size:22px; }
+ .hero-epigraph .hero-epigraph-translation { font-size:13px; }
  .publication-hero #hero-title .hero-logo { width:35.2px; height:35.2px; vertical-align:-6.4px; margin-right:6.4px; border-radius:6.4px; }
  .publication-hero .room-stage { max-width:360px; }
  .publication-hero .hero-overview { grid-template-columns:1fr; gap:24px; margin-top:24px; }
@@ -43,3 +52,6 @@ html { scroll-padding-top:24px; }
  .publication-hero .hero-summary p { font-size:15px; line-height:1.7; }
 }
 @media(prefers-reduced-motion:reduce) { .longchang-logo .logo-eye { animation:none; } .longchang-logo .logo-gaze { transition:none; } }
+@media(max-width:360px) {
+ .hero-epigraph figcaption { margin-inline:-16px; font-size:10.5px; }
+}

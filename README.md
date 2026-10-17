@@ -19,9 +19,12 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 ## 内容
 
 - 章节按“15 个场景 → Framework → 主结果 → Discovery in Practice（控制实验与案例）→ 场景演化”排列，成功探索从结果中的场景格子打开。页面以场景演化收尾，取消单独的 Materials 章节及导航入口；论文与 Code 位于首屏，补充素材保存在项目文件中。
-- 页头按提供的 StreamMA 参考实现：取消顶部导航与重复的项目名，只显示左侧玻璃房图标、居中的 LongChang、斜体论文标题、匿名署名及统一深色 Paper / Code / Demo 按钮。使用本地 Inter 与 Noto Serif 字体；桌面项目名 57.6 px、手机 41.6 px，字体与间距按参考页取值。图标内两颗彩色球同步眨动，减少动态效果时静止。样式在 `assets/hero.css`，图标是内联 SVG。五个章节使用独立的大标题，见 `assets/chapters.css`。Explore the Worlds 与 Framework 之间保留充分留白，以通栏细线、中央短线和浅绿色章节底色分隔。
+- 页头按提供的 StreamMA 参考实现：取消顶部导航与重复的项目名，显示左侧玻璃房图标、居中的 LongChang、斜体论文标题、匿名署名及统一深色 Paper / Code / Demo 按钮。使用本地 Inter 与 Noto Serif 字体；桌面项目名 57.6 px、手机 41.6 px，字体与间距按参考页取值。图标内两颗彩色球同步眨动，减少动态效果时静止。样式在 `assets/hero.css`，图标是内联 SVG。五个章节使用独立的大标题，见 `assets/chapters.css`。Explore the Worlds 与 Framework 之间保留充分留白，以通栏细线、中央短线和浅绿色章节底色分隔。
+- 五个章节与页头统一使用页面的浅色底色（`--paper`），分隔沿用两侧渐淡的细线与中央空心菱形；桌面章节上下留白 40 px，手机 32 px，分隔装饰不参与点击或滚动布局。
+- Paper / Code / Demo 下方的题记保持三行：知行合一、The unity of knowing and doing、Named for Wang Yangming’s Longchang awakening (1508)，最后一行直接说明项目命名源于龙场悟道。中文使用本地 Noto Serif SC 四字子集，OFL 授权见 `assets/fonts/NotoSerifSC-LICENSE.txt`。
 - 居中论文标题下方采用左侧 Abstract、右侧 Figure 1 玻璃房的布局；直接使用论文摘要主体约 170 词，分四段呈现研究动机、探索框架、自动审核与场景演化、评测结果，省略重复的材料链接句。桌面右侧图示区与摘要等高，玻璃房按可用宽高保持原比例放大，取消 420 px 和视口高度上限；手机先显示摘要再显示玻璃房。首图交互入口保持在图下。
 - 首屏先显示 Figure 1 原图。点击 Push / Drag / Rotate 后加载本地 MuJoCo WASM，用原始 `workspace.xml` 实时计算推动、拖放、碰撞、摆锤和天平运动；Three.js 绘制玻璃、金属、珐琅与阴影。支持转视角、缩放、键盘推动和重置。
+- 首页、15 个基础场景和三个演化场景共用 `assets/room-world.js` 的运动中 Push：优先匹配当前位置，Push 额外接受最近 250 ms 的已显示位置，Drag 保持 120 ms；推力按鼠标或触点的相对位移计算，箭头和施力点随选中的物体移动。操作不暂停、回退或重置物理，场景 14 的延迟复制和场景 15 的干预计时仍由原有规律处理。`verify_moving_push.py` 用真实鼠标和触屏验证连续运动中的追加推力及方向。
 - 首图按材质合并静态几何，减少重复绘制；较慢设备使用缓存光照和自适应分辨率。高分屏最高使用 2× 像素密度，支持软阴影与 2048 阴影贴图，缓存材质提升到 256×256；暂时卡顿后会逐步恢复分辨率，避免一直模糊。物理保持固定步长，物体仍在运动时不会被固定时限强制停住；离开屏幕时暂停计算。
 - 左侧为五行三列的 Table 1 场景目录，保留原编号、原名和论文 TikZ 机制图；右侧只展示场景名、一句通俗说明和演示。选择卡片为五行三列，左栏最多 300 px，列间距 8 px，整体与右侧视频面板等高，五行自适应均分高度，卡片内文字与图标保持紧凑，并适配笔记本屏幕，方向键可在网格中移动。手机使用下拉目录。移除重复的 WORLD / TABLE 1 标题及自动轮播入口；顶部合集下载与重复的前后切换箭头已移除；完整规则、模型说明和演示数据曲线统一整合在 Demo 视频右侧（手机下方），取消独立的 Rule & data 入口和场景视频、数据下载按钮；Demo 与 Interactive 默认 4×，均可切换 0.5×、1×、2×、4×。
 - **场景命名以 ACL 论文为唯一来源**：`scripts/paper_scenes.py` 从当前总览表读取 01–15 的正式名称，从附录读取对应规律与作用范围；网页、案例、演示标题和重新导出的字幕共用这份数据。
@@ -45,8 +48,11 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 - 第一个案例明确比较“发现异常后是否追查”：Astra 改变计划，检验红球重新运动的延迟，并进一步推动蓝球；Gemini 继续竖直抛射与碰撞测试，未检验重新运动的原因。页面按观察、后续实验、结果三步显示可读文字，拖动进度时同步切换；两列来自同一设置下的独立运行。案例画面按窗口高度限制在 210–280 px，保留完整画面；模型名与双列观察对应视频的两半；1280×512 视频只展示原始实验近景、返回观察中的静止/运动状态，以及推动/抛射后的真实模拟计时；Gemini 的贴墙重新运动标为 Log，并说明位移几乎不可见。说明和结论放在视频外，案例默认 2× 以留出阅读时间。`scripts/prepare_case_question.py` 复用已有渲染帧合成标注，逐帧状态和计时在 `data/case-question-cues.json`；完整渲染入口会自动调用它。
 - 案例播放器位于 04 的右栏，随栏宽缩放；手机上下排列，切换、画面、控制栏和阶段说明放在同一框内。全屏包含画面与同一条控制栏，手机端也可用原生视频全屏。
 - 案例视频使用首图相同的 Blender Cycles 材质与灯光重新渲染：珐琅红/蓝球、瓷砖地面、蓝灰金属和青绿色托盘，64 samples 并去噪。近景以剖视方式隐藏遮挡实验的玻璃墙与边框。保留原始 MuJoCo 状态中的位置、尺寸、红/蓝身份和仪器结构；分屏两侧独立调整影片时间，原始回合与模拟时间保存在来源记录中。颜色案例依次展示首次交换、再次交换、红球与红球碰撞；仪器案例依次展示滑出平盘、红球留在深盘、蓝球稳定称重。章节间切到后续试验，不模拟装置变形或构建过程。来源、视频及首图材质源码哈希在 `data/case-films.json`，逐帧原始状态哈希和时间映射在 `data/case-rendering.json`。生成入口为 `scripts/prepare_case_studio.py`，复用 `scripts/prepare_case_films.py` 的案例选段与字幕；`scripts/blender_case_films.py` 负责渲染。播放器为 `assets/case-films.js` / `assets/case-films.css`。
-- Scene Evolution 与 15 Worlds 共用 `assets/scene-layout.css`：桌面三栏的宽度、高度、标题和模式切换对齐，平板与手机都使用场景下拉框；三张演化卡片使用与场景目录一致的机制线图，并直接显示各自的 Discovery / Correct law / Support；原场景基线收在同栏底部，手机显示当前选择的分数与可展开基线。Demo 右侧使用一致的 Rule illustration：可选推动计划、蓝球位置或第二次推动时机，独立播放、重置、拖动时间并查看公式与动态图解；Scene rule 放在参数和图解上方；原始 Demo 力曲线移到左侧视频下方，竖线与时间读数随视频同步。assets/evolution-model.js 只定义三种演化模型，复用 LongChangMotion 的绘图、LongChangMath 的公式、scene-player.js 的模型时钟及 demo-model.css 的面板样式；01 也使用同一个模型时钟。模型参数不改动视频、实录数据或 Interactive。桌面选择栏、视频、解释面板严格等高，平板保留视频与解释并排，手机纵排；Interactive 隐藏解释面板。章节开头按因果关系说明演化前提：推球测试关闭了待发现的作用力，Astra 误把暂停当成无持续力，等待后的重新运动纠正了判断；再明确三种设计各自改变力的形式、增加空间条件或叠加延迟复制，同时保留 10 秒暂停。原始引文和独立基线说明仍在 Source & full rule 中。选中场景的简介明确写出相对原规律的改动；移除独立评测表及标题。规则示意仅保留物体、受力、参数与状态文字，去掉顶部开关曲线及红色计时游标；Video data 的实录曲线与时间游标保留。data/evolution-signals.json 从原始演示状态导出，可由 prepare_evolution_interactive.py 重建；verify_evolution_model.py 核对规律时点、媒体独立性、原始曲线和各尺寸对齐。
-- 三段演化 Demo 使用与 15 个基础场景相同的 Blender Cycles 材质、低斜角视角、1600×800 / 60 fps 近景及轨迹/力箭头，移除旧画面内的标题、SCRIPTED DEMO 与 counts 字幕。数据与模拟秒在画面外显示，默认 4×。`scripts/refresh_evolution_media.py` 先按冻结程序重放并逐项核对原生状态、动作和时间映射，再生成并发布全部视频与 poster；物理记录和评测数值不变。
+- Scene Evolution 与 15 Worlds 共用 `assets/scene-layout.css`，桌面目录、视频和规则图解等高，平板与手机使用单一下拉选择器。选择栏最上方展示原场景 15 和 14，下面用来源编号、演化方式和新场景名称说明去向；本节不再展示原场景发现率或演化方案评测面板。Demo 使用共享的播放控制、MathML 和模型时钟，原始 Video data 曲线与视频同步；Interactive 隐藏解释面板。`verify_evolution_model.py` 核对规律时点、媒体独立性、原始曲线和各尺寸对齐。
+- 演化区保留清晰的“Scene 15 → 生成 / 细化”和“Scenes 15 + 14 → 组合”关系。Design notes & sources 只显示简短的对照实验建议和来源说明，长引文、完整规律及原始设计通过两个资料链接查看；评测数值与原始探索记录保持原样。
+- 三段演化 Demo 使用 15 个基础场景的正面斜俯视方向、Blender Cycles 材质及 1600×800 / 60 fps 近景，地板覆盖全部画面。播放器按区域铺满，检查球体、轨迹和力箭头都留在可见区域；竖屏全屏时保留完整构图。`scripts/refresh_evolution_media.py` 从 `data/shared-room.json` 读取公共视角，先核对冻结的原生状态、动作和时间映射，再发布视频、封面与版本索引；物理记录和评测数值不变。
+- Demo 近景隐藏玻璃、框架和装饰底座，避免边沿形成遮挡视线的竖杠；三个演化视频及场景 09 的视频、封面已同步导出。`refresh_demo_camera.py` 的后续近景导出也采用此设置，物理碰撞边界、记录中的轨迹和计时保持原样。
+- 演化视频与封面通过 `data/evolution-media.js` 使用内容哈希版本地址，避免浏览器继续播放更新前的遮挡版本。两个导出入口都会自动重建该索引；仅替换媒体文件时可运行 `python scripts/prepare_evolution_media_index.py` 同步版本。
 - 匿名论文、540 条结果记录、原始 prompt、案例笔记，以及三张结果图的 SVG/PNG 下载。
 
 - 场景 13 的 Demo 图解使用正面红蓝球和可点击的 1 / 2 / 3 步骤，清楚显示前两次无额外跳跃、第三次双球向上跳；持续接触与撞墙作为对照。图解标题为 Count the touches，说明用简短英文，保留向上速度 4 和原始两球的计数范围。步骤按钮与图解播放只控制示意模型，不改动左侧原始影片、进度或测量数据。
@@ -114,6 +120,7 @@ python scripts/verify_live_rules.py --prepare --audit
 python scripts/verify_live_rules.py --audit
 python scripts/verify_live_interaction.py
 python scripts/verify_push_responsiveness.py
+python scripts/verify_moving_push.py
 python scripts/export_table1_symbols.py
 
 # 原始场景模型 → 浏览器实时物理

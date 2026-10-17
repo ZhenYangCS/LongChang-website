@@ -14,6 +14,7 @@ from PIL import Image, ImageDraw
 
 from render_physics_demos import ROOT, SITE, World, load_scene, arrange, launch, Renderer
 from prepare_case_films import font
+from prepare_evolution_media_index import write_index
 
 RUN=ROOT/'runs/acl-weakness-evolution-20261006-122456-2aa1c1'
 CAMERA=dict(lookat=[2.85,3.05,.15],distance=8,azimuth=100,elevation=-60,
@@ -192,6 +193,7 @@ def main():
             kind='Scripted demonstrations of accepted evolved-scene programs; not model exploration results.',
             method='Native integration with recorded preparation/actions. Constant time scaling per clip; nearest native state, no pose interpolation. Trails connect recorded positions.',
             demos=output),separators=(',',':'))+'\n')
+        write_index(output)
 
 
 if __name__=='__main__':main()

@@ -3,27 +3,25 @@
   const root = document.querySelector('#evolution');
   if (!root) return;
   const $ = selector => root.querySelector(selector);
+  const media = window.EVOLUTION_MEDIA;
   const descriptions = {
     generate: {
-      name: 'Change the force',
-      law: 'Replace red’s northward force with mutual repulsion, retaining the 10 s pause.',
-      rationale: 'Generation targets the same mistake with a different force: pushing either ball temporarily suppresses their mutual repulsion, so an immediate test can miss the effect.',
-      full: 'Each ball accelerates horizontally away from the other at 1.5 bricks/s². At zero horizontal separation, the extra force is zero. Any nonzero push or throw restarts a shared 10-second pause; hand movement and zero impulses do not.',
-      quote: 'Frozen design: “Replace solitary drift with paired repulsion that pauses after intervention, making an apparently ordinary separation test temporarily disable the tendency.”',
+      name: 'Repulsion with a pause',
+      lineage: 'Generated from Scene 15 · Northward force',
+      law: 'Replace red’s northward force with mutual red–blue repulsion; keep the 10 s pause after a push or throw.',
+      rationale: 'Compare one push with repeated pushes. Each push restarts the 10 s pause.',
     },
     mutate: {
-      name: 'Add a condition',
-      law: 'Add a condition: red’s force stays off while blue is inside the gray square.',
-      rationale: 'Refinement adds a spatial condition. Waiting through the 10 s pause no longer guarantees recovery; blue must also leave the gray square before red’s force returns.',
-      full: 'Red accelerates north at 1.5 bricks/s² only when the latest nonzero push or throw was at least 10 seconds ago AND blue is outside x ∈ [2.5, 3.5], y ∈ [2.5, 3.5]. The square includes its boundary and the test ignores height. Dragging by hand does not restart the pause.',
-      quote: 'Frozen design: “Gate the original shy drift by blue’s position, so harmless-looking relocation can prolong negative observations without increasing the suppression interval.”',
+      name: 'Northward force with a spatial condition',
+      lineage: 'Refined from Scene 15 · Northward force',
+      law: 'Keep the 10 s pause, and also block red’s northward force while blue is inside the gray square.',
+      rationale: 'After 10 s without a push, move blue inside and outside the square. Red’s force follows blue’s position.',
     },
     compose: {
-      name: 'Combine two rules',
-      law: 'Combine the paused force with Scene 14: green copies red’s launch velocity 12 s later.',
-      rationale: 'Composition preserves the paused northward force and adds Scene 14’s delayed velocity copy. Pushing blue delays red’s force recovery while green’s scheduled copy still occurs.',
-      full: 'Red accelerates north at 1.5 bricks/s² outside the 10-second pause after any nonzero push or throw. Every red launch independently queues its full resulting 3D velocity for green, 12 seconds later. Later launches do not cancel copies; a copy does not restart the pause. Coincident copies use the latest originating launch.',
-      quote: 'Frozen design: “Use separated paths so blue’s intervention delays red’s drift while green still copies red’s earlier southward motion.” Scene 14 supplies the second law; the shared error still comes from Scene 15, turns 30–31.',
+      name: 'Northward force + velocity copy',
+      lineage: 'Combined from Scene 15 · Northward force + Scene 14 · Velocity copy',
+      law: 'Red keeps its paused northward force; green also copies red’s launch velocity 12 s later.',
+      rationale: 'Push blue after launching red. The drift pauses again; green’s scheduled velocity copy still occurs.',
     },
   };
   const video = $('#evo-demo-video'), tabs = [...document.querySelectorAll('[data-evolution]')];
@@ -62,7 +60,7 @@
     if (demoKey === key) return;
     clearTimeout(demoTimer); video.pause(); demoKey = key; demoFailed = false;
     $('#evo-demo-error').hidden = true; $('#evo-demo-retry').hidden = true;
-    video.preload = 'auto'; video.src = `assets/videos/evolution-${key}.mp4`; video.load();
+    video.preload = 'auto'; video.src = media[key].video; video.load();
     const selected = key;
     demoTimer = setTimeout(() => { if (demoKey === selected && video.readyState < 2) fail(); }, 20000);
   }
@@ -83,9 +81,9 @@
   function content() {
     const d = descriptions[key];
     model.setScene(key, d);
-    for (const [id, field] of [['name','name'],['law','law'],['rationale','rationale'],['full-rule','full'],['design-quote','quote']]) setText(`#evo-${id}`, d[field]);
+    for (const field of ['name','lineage','law','rationale']) setText(`#evo-${field}`, d[field]);
     $('#evo-design-link').href = `data/evolution/${key}-design.json`;
-    video.poster = `assets/images/evolution-${key}.webp`;
+    video.poster = media[key].poster;
     video.setAttribute('aria-label', `Scripted demonstration: ${d.name}`);
     $('#evo-detail').setAttribute('aria-labelledby', `evo-tab-${key}`);
     $('#evo-mobile-select').value = key;
@@ -123,6 +121,10 @@
     });
   }
   for (const button of document.querySelectorAll('[data-evo-view]')) button.addEventListener('click', () => setView(button.dataset.evoView));
+  root.addEventListener('click', event => {
+    const source = event.target.closest('[data-evo-source]');
+    if (source) window.showWorld(source.dataset.evoSource);
+  });
   $('#evo-mobile-select').addEventListener('change', event => choose(event.target.value));
   $('#evo-demo-retry').addEventListener('click', () => { demoKey = null; demoWanted = true; sync(); });
   video.addEventListener('loadeddata', () => { clearTimeout(demoTimer); demo.update(); });

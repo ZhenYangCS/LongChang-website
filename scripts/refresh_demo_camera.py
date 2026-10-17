@@ -37,7 +37,8 @@ def render(entry, ffmpeg, sample=False):
         folder = CACHE/key/mode
         current = copy.deepcopy(job)
         current.update(camera=room_camera() if mode == 'room' else camera, width=1440 if mode == 'room' else 1600,
-                       height=960 if mode == 'room' else 800, output=str(folder), samples=128)
+                       height=960 if mode == 'room' else 800, output=str(folder), samples=128,
+                       hide_room_enclosure=mode == 'detail')
         detail.write(folder/'job.json', current)
         background = detail.flat(detail.asset(current, folder))
         if sample:

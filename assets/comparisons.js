@@ -35,25 +35,4 @@
     return `<table class="controlled-table"><caption>${group.setup}</caption><thead><tr><th scope="col">Metric</th>${group.labels.map(label => `<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${orderedFields.map(({key, label}) => `<tr><th scope="row">${label}</th>${conditions.map(row => `<td data-condition="${esc(row.name)}" data-metric="${key}">${row[key].toFixed(1)}${key === 'L' ? '' : '%'}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
   }).join('');
 
-  const baseline = document.querySelector('#evo-source-results');
-  if (baseline) {
-    const metrics=[{key:'D',label:'Discovery'},{key:'C',label:'Correct law'},{key:'S',label:'Support'}];
-    const scores=row=>metrics.map(({key,label})=>`<span><span class="evo-score-label">${label}</span><strong data-condition="${esc(row.name)}" data-metric="${key}">${Number(row[key].toFixed(1))}%</strong></span>`).join('');
-    const keys=['generate','mutate','compose'];
-    for (const [index,key] of keys.entries()) {
-      const panel=document.createElement('span');
-      panel.className='evo-choice-scores';
-      panel.innerHTML=scores(data.evolution[index+2]);
-      document.querySelector(`#evo-tab-${key}`).append(panel);
-    }
-    const mobile=document.querySelector('#evo-mobile-scores');
-    const syncScores=key=>{mobile.innerHTML=scores(data.evolution[keys.indexOf(key)+2]);};
-    syncScores('generate');
-    document.addEventListener('longchang:evolution-scene',event=>syncScores(event.detail.id));
-    baseline.innerHTML=`<caption class="sr-only">Independent source-scene baseline; D: discovery, C: law correctness, S: evidence support</caption><thead><tr><th scope="col">Scene</th>${metrics.map(({label})=>`<th scope="col">${label}</th>`).join('')}</tr></thead><tbody>${data.evolution.slice(0,2).map((row,i)=>`<tr><th scope="row">${i?'14':'15'}</th>${metrics.map(({key})=>`<td data-condition="${esc(row.name)}" data-metric="${key}">${Number(row[key].toFixed(1))}%</td>`).join('')}</tr>`).join('')}</tbody>`;
-    const wide=matchMedia('(min-width:1100px)');
-    const disclosure=baseline.closest('details');
-    const syncBaseline=()=>{disclosure.open=wide.matches;};
-    syncBaseline();wide.addEventListener('change',syncBaseline);
-  }
 })();

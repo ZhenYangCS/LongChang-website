@@ -23,8 +23,8 @@ def project(camera,width,height,p):
     d=np.asarray(p)-camera['position'];span=camera['span']
     return np.array([(0.5+d@camera['right']/(span*width/height))*width,(0.5-d@camera['up']/span)*height])
 
-def focus_crop(job):
-    points=[];base=room_camera()
+def focus_crop(job,base_camera=None):
+    points=[];base=base_camera if base_camera is not None else room_camera()
     for frame in job['frames']:
         for name,obj in frame['objects'].items():
             p=np.array(obj['position']);r=job['radii'][name]

@@ -16,11 +16,12 @@ from PIL import Image, ImageDraw
 
 import build_detail_views as detail
 from prepare_evolution_demos import capture, audit
+from prepare_evolution_media_index import write_index
 from render_clear_scenes import ROOM_BOUNDS
 
 SITE = Path(__file__).resolve().parents[1]
 ROOT = SITE.parent
-CACHE = Path('/tmp/longchang-evolution-shared-style')
+CACHE = Path('/tmp/longchang-evolution-front-style')
 COLORS = {'red_ball': '#c56859', 'object_1': '#c56859',
           'blue_ball': '#547fa7', 'object_2': '#547fa7', 'green_ball': '#549b74'}
 
@@ -48,17 +49,20 @@ def prepare(entry):
         frames.append(dict(time=native[index]['time'], objects=native[index]['objects'],
                            holding=native[index]['holding'], native_index=index))
     job = dict(id=entry['id'], width=1600, height=800, samples=128, threads=8,
-               display_bounds=ROOM_BOUNDS, enclosed=True, focus_fixtures=True,
+               display_bounds=ROOM_BOUNDS, enclosed=True, focus_fixtures=True, hide_room_enclosure=True,
                fixtures=[e for e in config['entities'] if e['kind'] == 'fixture'],
                radii={e['name']:e['size'][0] for e in config['entities'] if e['kind'] == 'body'},
-               frames=frames, minimum_focus_width=340)
-    crop, camera = detail.focus_crop(job)
+               frames=frames, minimum_focus_width=300)
+    shared_camera = json.loads((SITE/'data/shared-room.json').read_text())['camera']
+    crop, camera = detail.focus_crop(job,base_camera=shared_camera)
     job.update(camera=camera, output=str(CACHE / entry['id']))
     detail.write(CACHE / entry['id'] / 'job.json', job)
     result = copy.deepcopy(entry)
-    result.update(camera=camera, size=[1600,800], render_revision='shared-oblique-v1',
-                  render=dict(engine='Blender Cycles', camera='15 Worlds fixed oblique view',
+    result.update(camera=camera, size=[1600,800], render_revision='shared-front-v1',
+                  render=dict(engine='Blender Cycles', camera='15 Worlds front view',
                               renderer='scripts/build_detail_views.py', display_bounds=ROOM_BOUNDS,
+                              room_frame_visible=False, glass_visible=False, floor_fills_frame=True,
+                              camera_reference='data/shared-room.json',
                               native_samples_sha256=hashlib.sha256(json.dumps(public,sort_keys=True).encode()).hexdigest()))
     return job, result
 
@@ -102,7 +106,10 @@ def marked_frame(job, background, sprites, index):
 def render(prepared, ffmpeg, preview):
     job, entry = prepared
     folder = CACHE / entry['id']
-    background = detail.flat(detail.asset(job, folder))
+    background_path = detail.asset(job, folder)
+    with Image.open(background_path) as source_background:
+        assert source_background.getextrema()[3] == (255,255), 'Floor must cover the complete Demo frame.'
+    background = detail.flat(background_path)
     sprites = {name:Image.open(CACHE/'sprites'/f'{name}.png').convert('RGBA')
                for name in ['red','blue','green','gray']}
     if preview:
@@ -142,7 +149,7 @@ def main():
     manifest = json.loads(path.read_text())
     # Native callbacks are process-global: capture each scene sequentially.
     prepared = [prepare(entry) for entry in manifest['demos']]
-    existing = Path('/tmp/longchang-low-oblique-view/sprites')
+    existing = Path('/tmp/longchang-front-view/sprites')
     if all((existing/f'{name}.png').exists() for name in ['red','blue','green','gray']):
         (CACHE/'sprites').mkdir(parents=True,exist_ok=True)
         for name in ['red','blue','green','gray']:
@@ -164,6 +171,7 @@ def main():
             temporary.replace(dest)
     manifest['demos'] = entries
     detail.write(path,manifest)
+    write_index(entries)
     print('Published all three demos. Native records, timings and source hashes are unchanged.',flush=True)
 
 

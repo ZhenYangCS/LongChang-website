@@ -133,19 +133,15 @@ def main():
         assert page.locator('[data-component=scene-live]').count() == 2
         for key in ['mutate','compose','generate']:
             page.locator(f'#evo-tab-{key}').click()
-            page.wait_for_function('(key)=>{const v=document.querySelector("#evo-demo-video");return v.currentSrc.endsWith(`evolution-${key}.mp4`) && !v.paused && v.currentTime>.1}', arg=key)
+            page.wait_for_function('(key)=>{const v=document.querySelector("#evo-demo-video");return new URL(v.currentSrc||location.href).pathname.endsWith(`evolution-${key}.mp4`) && !v.paused && v.currentTime>.1}', arg=key)
             assert page.evaluate('!LongChangEvolution.current()')
-        for quote, selector in [(trace['weakness']['evidence'][0]['quote'], '#evo-trace-error'), (trace['weakness']['contradiction'][0]['quote'], '#evo-trace-correction')]:
-            assert page.locator(selector).text_content().strip('“”') == quote
+        assert page.locator('.evo-source-links a[href="data/evolution/reference-trace.json"]').count() == 1
         assert page.locator('#evolution-results, .evolution-evaluation').count() == 0
-        assert page.locator('#evo-picker .evo-choice-scores [data-metric]').count() == 9
-        assert page.locator('#evo-source-results tbody td').count() == 6
-        assert page.evaluate("""() => {
-          const cells=[...document.querySelectorAll('#evo-picker [data-metric], #evo-source-results td')];
-          return cells.every(cell=>parseFloat(cell.textContent)===LONGCHANG.evolution.find(row=>row.name===cell.dataset.condition)[cell.dataset.metric]);
-        }""")
+        assert page.locator('#evolution [data-metric], #evo-result, #evo-source-results').count() == 0
+        assert page.locator('.evo-sources [data-evo-source]').evaluate_all('nodes=>nodes.map(e=>e.dataset.evoSource)') == ['15','14']
         page.locator('.evo-design summary').click()
-        expect(page.locator('#evo-trace-error')).to_be_visible()
+        expect(page.locator('#evo-rationale')).to_be_visible()
+        assert len(page.locator('#evo-rationale').inner_text().split()) <= 25
         page.locator('.evo-design summary').click()
         # The same native Experiment component opens a fresh world.
         page.locator('[data-evo-view=experiment]').click()
@@ -261,11 +257,11 @@ def main():
         phone.wait_for_function('LongChangEvolution.current()?.getState().scene==="generate"')
         assert phone.locator('#evo-stage canvas.room-canvas').count()==1
         # Demo failures can be retried independently of the live world.
-        phone.route('**/evolution-compose.mp4',lambda route:route.abort())
+        phone.route('**/evolution-compose.mp4*',lambda route:route.abort())
         phone.locator('[data-evo-view=demo]').tap(); phone.locator('#evo-mobile-select').select_option('compose')
         phone.locator('#evo-visual').scroll_into_view_if_needed()
         expect(phone.locator('#evo-demo-error')).to_be_visible()
-        phone.unroute('**/evolution-compose.mp4')
+        phone.unroute('**/evolution-compose.mp4*')
         phone.locator('#evo-demo-retry').tap()
         phone.wait_for_function('document.querySelector("#evo-demo-video").currentTime>.1')
         phone.locator('#evolution').screenshot(path='/tmp/evolution-demo-mobile.png')

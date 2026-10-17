@@ -9,6 +9,10 @@ from blender_oracle import setup,studio
 def main():
     job=json.loads(Path(sys.argv[1]).read_text());folder=Path(job['output']);folder.mkdir(parents=True,exist_ok=True)
     scene,balls,mats=setup(job)
+    if job.get('hide_room_enclosure'):
+        for obj in scene.objects:
+            if obj.name.startswith(('Optical glass','Glass vertical edge','Glass top edge','Display plinth')):
+                obj.hide_render=True
     bpy.context.view_layer.update()
     signature={}
     for obj in scene.objects:
@@ -17,6 +21,8 @@ def main():
             if obj.type=='MESH':item.update(bounds=[list(c) for c in obj.bound_box],materials=[m.name for m in obj.data.materials])
             if obj.type=='CAMERA':item.update(ortho_scale=obj.data.ortho_scale)
             if obj.type=='LIGHT':item.update(energy=obj.data.energy,color=list(obj.data.color),size=obj.data.size,size_y=obj.data.size_y)
+            if job.get('hide_room_enclosure') and obj.name.startswith(('Optical glass','Glass vertical edge','Glass top edge','Display plinth')):
+                item['hidden_in_demo']=obj.hide_render
             signature[obj.name]=item
     (folder/'room-signature.json').write_text(json.dumps(signature,sort_keys=True))
     mats['gray_enamel'].node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value=studio.linear((.38,.47,.51))
@@ -36,7 +42,9 @@ def main():
     else:
         for sphere in balls.values():sphere.hide_render=True
         path=folder/'background.png'
-        key=hashlib.sha256(json.dumps([job['camera'],job['display_bounds'],job['fixtures'],job['width'],job['height'],job.get('enclosed',False),'focus-v2'],sort_keys=True).encode()).hexdigest()
+        cache_key=[job['camera'],job['display_bounds'],job['fixtures'],job['width'],job['height'],job.get('enclosed',False),'focus-v2']
+        if job.get('hide_room_enclosure'):cache_key.append('hidden-enclosure-v2')
+        key=hashlib.sha256(json.dumps(cache_key,sort_keys=True).encode()).hexdigest()
         stamp=folder/'background-key.txt'
         if not path.exists() or not stamp.exists() or stamp.read_text()!=key:
             # Identical rooms share one Cycles render across scenes.
