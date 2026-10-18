@@ -1,128 +1,247 @@
-"""Exercise real pointer, wheel and touch paths, without changing the movie clock."""
+"""Check real wheel/pinch input in Try it and preserve fixed Demo cameras."""
 import argparse
 from playwright.sync_api import sync_playwright
 
 
-def box(page,selector):
-    return page.locator(selector).bounding_box()
+def span_script(api):
+    return f'''(() => {{
+      const a = {api}.project([0, 0, 1]), b = {api}.project([1, 0, 1]);
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    }})()'''
 
 
-def scale(page):
-    return float(page.locator('#atlas-physics-view .physics-video-frame').get_attribute('data-zoom'))
+def center(page, stage):
+    page.locator(stage).scroll_into_view_if_needed()
+    box = page.locator(stage).bounding_box()
+    return box['x'] + box['width'] / 2, box['y'] + box['height'] / 2
 
 
-def drag(page,x,y,dx,dy):
-    page.mouse.move(x,y);page.mouse.down();page.mouse.move(x+dx,y+dy,steps=8);page.mouse.up()
+def wheel(page, api, stage, delta=-80, modifier=None):
+    x, y = center(page, stage)
+    page.mouse.move(x, y)
+    span = span_script(api)
+    before, scroll = page.evaluate(span), page.evaluate('scrollY')
+    state = page.evaluate(f'{api}.getState()')
+    if modifier:
+        page.keyboard.down(modifier)
+    try:
+        page.mouse.wheel(0, delta)
+        comparison = '>' if delta < 0 else '<'
+        page.wait_for_function(f'(before) => {span} {comparison} before', arg=before)
+    finally:
+        if modifier:
+            page.keyboard.up(modifier)
+    assert abs(page.evaluate('scrollY') - scroll) < 1, 'Zoom must not scroll the page'
+    assert page.evaluate(f'{api}.getState()') == state, 'Camera zoom must not change physics'
+    assert page.evaluate(f'!{api}.isRunning()'), 'Zoom must not start physics'
+
+
+def controls(page, api, stage, mode):
+    x, y = center(page, stage)
+    span = span_script(api)
+    toggle = page.locator(stage + ' [data-room-wheel]')
+    assert toggle.get_attribute('aria-checked') == 'false'
+    before, scroll = page.evaluate(span), page.evaluate('scrollY')
+    page.mouse.move(x, y)
+    page.mouse.wheel(0, -120)
+    page.wait_for_function('(y) => scrollY < y - 40', arg=scroll)
+    assert abs(page.evaluate(span) - before) < .01, (mode, 'Wheel zoom Off must allow page scrolling')
+    modifier = 'Control'
+    wheel(page, api, stage, modifier=modifier)
+    wheel(page, api, stage, delta=80, modifier=modifier)
+    state = page.evaluate(f'{api}.getState()')
+    toggle.press('Enter')
+    assert toggle.get_attribute('aria-checked') == 'true'
+    assert toggle.inner_text() == 'Wheel zoom\nOn'
+    assert page.evaluate(f'{api}.getState()') == state
+    wheel(page, api, stage)
+    wheel(page, api, stage, delta=80)
+    toggle.press('Space')
+    assert toggle.get_attribute('aria-checked') == 'false'
+    fit = page.locator(stage + ' [data-room-zoom=fit]')
+    fit.click()
+    before = page.evaluate(span)
+    position = page.evaluate(f'{api}.project([0, 0, 1])')
+    state = page.evaluate(f'{api}.getState()')
+    page.locator(stage + ' [data-room-zoom=in]').press('Enter')
+    assert abs(page.evaluate(span) / before - 1.25) < .001
+    focus = page.evaluate(f'''() => {{
+      const positions = Object.values({api}.getState().positions);
+      return {api}.project([0, 1, 2].map(k => positions.reduce((s, p) => s + p[k], 0) / positions.length));
+    }}''')
+    box = page.locator(stage).bounding_box()
+    assert abs(focus['x'] - box['x'] - box['width'] / 2) < 1
+    assert abs(focus['y'] - box['y'] - box['height'] / 2) < 1
+    page.locator(stage + ' [data-room-zoom=out]').click()
+    assert abs(page.evaluate(span) - before) < .01
+    # Cursor-based zoom shifts the target as well as changing the scale.
+    wheel(page, api, stage, modifier=modifier)
+    fit.click()
+    assert abs(page.evaluate(span) - before) < .01
+    restored = page.evaluate(f'{api}.project([0, 0, 1])')
+    assert all(abs(restored[k] - position[k]) < .01 for k in ['x', 'y'])
+    assert page.evaluate(f'{api}.getState()') == state, 'Fit must not reset physics'
+    assert page.locator(stage + ' .room-view-tools').count() == 1
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--url',default='http://127.0.0.1:8765');args=parser.parse_args()
-    errors=[]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--url', default='http://127.0.0.1:8765')
+    args = parser.parse_args()
+    url = args.url.rstrip('/') + '/'
+    errors, bad = [], []
     with sync_playwright() as p:
-        browser=p.chromium.launch(headless=True,args=['--no-sandbox','--enable-unsafe-swiftshader'])
-        page=browser.new_page(viewport={'width':1366,'height':768});page.on('pageerror',lambda e:errors.append(str(e)))
-        page.goto(args.url+'/#worlds');page.wait_for_load_state('networkidle')
-        assert scale(page)>1 and page.locator('#atlas-physics-view .physics-video-frame').get_attribute('data-framing')=='detail'
-        while scale(page)>2.5:page.locator('#scene-zoom-out').click()
-        assert not page.locator('#physics-video').get_attribute('src'),'Zooming a poster should not download a movie'
-        frame=box(page,'#atlas-physics-view .physics-video-frame');page.mouse.move(frame['x']+frame['width']/2,frame['y']+frame['height']/2)
-        zoom_before=scale(page);scroll_before=page.evaluate('scrollY')
-        page.mouse.wheel(0,160);page.wait_for_function('(y)=>scrollY>y+40',arg=scroll_before)
-        assert scale(page)==zoom_before,'Page scrolling must not zoom the scene'
-        page.evaluate('document.querySelector("#worlds").scrollIntoView({behavior:"instant",block:"start"})')
-        frame=box(page,'#atlas-physics-view .physics-video-frame');x=frame['x']+frame['width']/2+15;y=frame['y']+frame['height']/2+8
-        page.locator('#scene-zoom-in').click();page.locator('#scene-zoom-in').click()
-        before=box(page,'#atlas-physics-view .physics-media');point=((x-before['x'])/before['width'],(y-before['y'])/before['height'])
-        page.mouse.move(x,y);page.keyboard.down('Control');page.mouse.wheel(0,-100);page.wait_for_timeout(120);page.keyboard.up('Control')
-        after=box(page,'#atlas-physics-view .physics-media');new_point=((x-after['x'])/after['width'],(y-after['y'])/after['height'])
-        assert max(abs(a-b) for a,b in zip(point,new_point))<.002,(point,new_point)
-        zoom_before=scale(page);scroll_before=page.evaluate('scrollY')
-        page.keyboard.down('Meta');page.mouse.wheel(0,-60);page.wait_for_timeout(120);page.keyboard.up('Meta')
-        assert scale(page)>zoom_before and abs(page.evaluate('scrollY')-scroll_before)<1
-        after=box(page,'#atlas-physics-view .physics-media')
-        before=after;drag(page,x,y,-70,-25);after=box(page,'#atlas-physics-view .physics-media')
-        assert abs(after['x']-before['x']+70)<1 and abs(after['y']-before['y']+25)<1
-        # Both opposite corners of the original room remain reachable.
-        drag(page,x,y,3000,3000);after=box(page,'#atlas-physics-view .physics-media')
-        assert abs(after['x']-frame['x'])<1 and abs(after['y']-frame['y'])<1
-        drag(page,x,y,-3000,-3000);after=box(page,'#atlas-physics-view .physics-media')
-        assert abs(after['x']+after['width']-frame['x']-frame['width'])<1
-        assert abs(after['y']+after['height']-frame['y']-frame['height'])<1
-        page.mouse.dblclick(x,y);assert scale(page)==1
-        print('PASS: zoom stays under the cursor; dragging reaches every room corner; double-click restores the whole room.',flush=True)
+        browser = p.chromium.launch(args=['--no-sandbox', '--enable-unsafe-swiftshader'])
+        page = browser.new_page(viewport={'width':1366, 'height':900}, reduced_motion='reduce')
+        page.on('pageerror', lambda error: errors.append(str(error)))
+        page.on('response', lambda response: bad.append((response.status, response.url)) if response.status >= 400 else None)
+        page.goto(url + '#worlds')
+        assert page.locator('#physics-view,.scene-zoom-tools').count() == 0
+        page.locator('[data-atlas-view=motion]').click()
+        for number in range(1, 16):
+            scene = f'{number:02}'
+            page.evaluate('(id) => showWorld(id)', scene)
+            page.wait_for_function('(id) => window.SceneRoom?.getState().scene === id', arg=scene, timeout=60000)
+            for mode in ['drag', 'push', 'view']:
+                page.locator(f'[data-scene-mode={mode}]').click()
+                controls(page, 'SceneRoom', '#scene-live-stage', mode)
+            assert 'scroll to zoom' in page.locator('#scene-live-hint').inner_text()
+        print('PASS: all 15 scenes support the Wheel zoom switch, page scrolling when Off, and zoom/Fit buttons in every tool mode; physics stays paused.', flush=True)
 
-        page.locator('#physics-play').click();page.wait_for_function('!document.querySelector("#physics-video").paused')
-        page.locator('#physics-play').click();page.locator('#physics-speed').select_option('2')
-        page.locator('#physics-progress').evaluate('e=>{e.value=550;e.dispatchEvent(new Event("input"));}')
-        page.wait_for_function('!document.querySelector("#physics-video").seeking')
-        state=page.locator('#physics-video').evaluate('v=>({time:v.currentTime,src:v.currentSrc})')
-        page.locator('#physics-view').click();page.locator('#scene-zoom-in').click()
-        page.locator('#physics-fullscreen').click();page.wait_for_function('!!document.fullscreenElement')
-        assert page.locator('#physics-play').is_visible() and page.locator('#physics-speed').is_visible()
-        page.locator('#scene-zoom-out').click()
-        frame=box(page,'#atlas-physics-view .physics-video-frame');page.mouse.move(frame['x']+frame['width']/2,frame['y']+frame['height']/2)
-        zoom_before=scale(page);page.mouse.wheel(0,-80);page.wait_for_timeout(120)
-        assert scale(page)>zoom_before and page.locator('#scene-zoom-hint').text_content().startswith('Scroll')
-        current=page.locator('#physics-video').evaluate('v=>({time:v.currentTime,src:v.currentSrc,paused:v.paused,rate:v.playbackRate})')
-        assert current['paused'] and current['rate']==2 and current['src']==state['src'] and abs(current['time']-state['time'])<.02
-        page.locator('#physics-play').click();page.wait_for_timeout(250)
-        assert page.locator('#physics-video').evaluate('v=>v.currentTime')>state['time']+.2
-        page.locator('#physics-fullscreen').click();page.wait_for_function('!document.fullscreenElement')
-        page.locator('#atlas-physics-view .physics-video-frame').focus();page.keyboard.press('0');assert scale(page)==1
-        page.locator('#physics-view').click();page.locator('#atlas-physics-view .physics-video-frame').focus();page.keyboard.press('+');assert scale(page)>2
-        page.locator('#scene-tab-10').click();assert scale(page)>1
-        page.locator('#physics-play').click()
-        print('PASS: zoom preserves source, time, pause state and playback rate; fullscreen controls, keyboard and scene reset work.',flush=True)
+        for modifier in ['Control', 'Meta']:
+            wheel(page, 'SceneRoom', '#scene-live-stage', modifier=modifier)
+        page.locator('#scene-live-fullscreen').click()
+        page.wait_for_function('!!document.fullscreenElement')
+        page.locator('[data-scene-mode=drag]').click()
+        assert page.locator('#scene-live-stage [data-room-wheel]').is_disabled()
+        assert page.locator('#scene-live-stage [data-room-wheel]').get_attribute('aria-checked') == 'true'
+        wheel(page, 'SceneRoom', '#scene-live-stage')
+        page.locator('#scene-live-fullscreen').click()
+        page.wait_for_function('!document.fullscreenElement')
+        assert page.locator('#scene-live-stage [data-room-wheel]').is_enabled()
+        assert page.locator('#scene-live-stage [data-room-wheel]').get_attribute('aria-checked') == 'false'
+        page.mouse.move(2, 400)
+        old_scroll = page.evaluate('scrollY')
+        page.mouse.wheel(0, 180)
+        page.wait_for_function('(y) => scrollY > y + 40', arg=old_scroll)
 
-        # Native rooms use the same page/fullscreen distinction in every mode.
-        for api,activate,stage,ready in [
-            ('RoomDemo','[data-room-mode=drag]','#room-stage','!!window.RoomDemo'),
-            ('SceneRoom','[data-atlas-view=motion]','#scene-live-stage','!!window.SceneRoom')]:
-            page.locator(activate).click();page.wait_for_function(ready,timeout=60000)
-            page.evaluate(f'{api}.pause()');page.locator(stage).scroll_into_view_if_needed()
-            span=f'(()=>{{const a={api}.project([0,0,0]),b={api}.project([1,0,0]);return Math.hypot(a.x-b.x,a.y-b.y);}})()'
-            frame=box(page,stage);page.mouse.move(frame['x']+frame['width']/2,frame['y']+frame['height']/2)
-            zoom_before=page.evaluate(span);scroll_before=page.evaluate('scrollY')
-            page.mouse.wheel(0,150);page.wait_for_function('(y)=>scrollY>y+40',arg=scroll_before)
-            assert abs(page.evaluate(span)-zoom_before)<.01,(api,'ordinary scrolling changed zoom')
-            for modifier in ['Control','Meta']:
-                page.locator(stage).scroll_into_view_if_needed();frame=box(page,stage);page.mouse.move(frame['x']+frame['width']/2,frame['y']+frame['height']/2)
-                zoom_before=page.evaluate(span);scroll_before=page.evaluate('scrollY')
-                page.keyboard.down(modifier);page.mouse.wheel(0,-70);page.wait_for_timeout(150);page.keyboard.up(modifier)
-                assert page.evaluate(span)>zoom_before,(api,modifier)
-                assert abs(page.evaluate('scrollY')-scroll_before)<1,(api,'modified wheel scrolled the page')
-        page.locator('[data-scene-mode=view]').click();page.locator('#scene-live-fullscreen').click();page.wait_for_function('!!document.fullscreenElement')
-        frame=box(page,'#scene-live-stage');page.mouse.move(frame['x']+frame['width']/2,frame['y']+frame['height']/2)
-        zoom_before=page.evaluate(span);page.mouse.wheel(0,-70);page.wait_for_timeout(150)
-        assert page.evaluate(span)>zoom_before
-        assert 'Ctrl' not in page.locator('#scene-live-hint').text_content()
-        page.locator('#scene-live-fullscreen').click();page.wait_for_function('!document.fullscreenElement')
-        assert 'Ctrl' in page.locator('#scene-live-hint').text_content()
-        print('PASS: ordinary wheels scroll the page; Ctrl/Command zoom both recorded and native rooms; fullscreen allows direct wheel zoom.',flush=True)
+        evo = 'LongChangEvolution.current()'
+        page.locator('[data-evo-view=experiment]').click()
+        for key in ['generate', 'mutate', 'compose']:
+            page.locator(f'#evo-tab-{key}').click()
+            page.wait_for_function(f'(key) => {evo}?.getState().scene === key', arg=key, timeout=60000)
+            for mode in ['drag', 'push', 'view']:
+                page.locator(f'[data-evo-mode={mode}]').click()
+                controls(page, evo, '#evo-stage', mode)
+            assert 'scroll to zoom' in page.locator('#evo-hint').inner_text()
+        for modifier in ['Control', 'Meta']:
+            wheel(page, evo, '#evo-stage', modifier=modifier)
+        page.locator('#evo-fullscreen').click()
+        page.wait_for_function('!!document.fullscreenElement')
+        page.locator('[data-evo-mode=push]').click()
+        wheel(page, evo, '#evo-stage')
+        page.locator('#evo-fullscreen').click()
+        page.wait_for_function('!document.fullscreenElement')
+        print('PASS: all three evolved scenes, Ctrl/Command gestures, fullscreen, and scrolling outside the canvas.', flush=True)
 
-        phone=browser.new_page(viewport={'width':390,'height':844},is_mobile=True,has_touch=True)
-        phone.on('pageerror',lambda e:errors.append(str(e)));phone.goto(args.url+'/#worlds');phone.wait_for_function('Number(document.querySelector("#atlas-physics-view .physics-video-frame").dataset.zoom)>1')
-        while scale(phone)>2.1:phone.locator('#scene-zoom-out').tap()
-        before_pinch=scale(phone)
-        phone.locator('#atlas-physics-view .physics-video-frame').scroll_into_view_if_needed();frame=box(phone,'#atlas-physics-view .physics-video-frame')
-        x=frame['x']+frame['width']/2;y=frame['y']+frame['height']/2
-        cdp=phone.context.new_cdp_session(phone)
-        def touch(kind,points):cdp.send('Input.dispatchTouchEvent',{'type':kind,'touchPoints':points})
-        def pair(d):return [{'id':1,'x':x-d,'y':y},{'id':2,'x':x+d,'y':y}]
-        touch('touchStart',pair(25))
-        for d in [30,35,40,45,50]:touch('touchMove',pair(d))
-        touch('touchEnd',[]);assert abs(scale(phone)/before_pinch-2)<.1,scale(phone)
-        before=box(phone,'#atlas-physics-view .physics-media');touch('touchStart',[{'id':1,'x':x,'y':y}])
-        for d in [10,20,30,40]:touch('touchMove',[{'id':1,'x':x-d,'y':y+10}])
-        touch('touchCancel',[]);after=box(phone,'#atlas-physics-view .physics-media')
-        assert after['x']<before['x']-35
-        assert not phone.locator('#atlas-physics-view .physics-video-frame').evaluate('e=>e.classList.contains("is-panning")')
-        phone.locator('#scene-zoom-reset').tap();assert scale(phone)==1
-        assert phone.locator('#atlas-physics-view .physics-video-frame').evaluate('e=>getComputedStyle(e).touchAction')!='none'
-        assert phone.evaluate('document.documentElement.scrollWidth')==390
+        # Already-loaded rooms share the choice; new scenes and reloads retain it.
+        scene_switch = page.locator('#scene-live-stage [data-room-wheel]')
+        evo_switch = page.locator('#evo-stage [data-room-wheel]')
+        scene_switch.click()
+        assert evo_switch.get_attribute('aria-checked') == 'true'
+        assert page.evaluate('localStorage.getItem("longchang-wheel-zoom")') == 'true'
+        page.locator('#evo-tab-generate').click()
+        page.wait_for_function(f'{evo}?.getState().scene === "generate"', timeout=60000)
+        assert evo_switch.get_attribute('aria-checked') == 'true'
+        wheel(page, evo, '#evo-stage')
+        page.reload()
+        page.locator('[data-atlas-view=motion]').click()
+        page.wait_for_function('!!window.SceneRoom', timeout=60000)
+        assert scene_switch.get_attribute('aria-checked') == 'true'
+        wheel(page, 'SceneRoom', '#scene-live-stage')
+        page.locator('[data-evo-view=experiment]').click()
+        page.wait_for_function(f'!!{evo}', timeout=60000)
+        assert evo_switch.get_attribute('aria-checked') == 'true'
+        evo_switch.click()
+        assert scene_switch.get_attribute('aria-checked') == 'false'
+        page.reload()
+        page.locator('[data-atlas-view=motion]').click()
+        page.wait_for_function('!!window.SceneRoom', timeout=60000)
+        assert scene_switch.get_attribute('aria-checked') == 'false'
+        print('PASS: wheel preference synchronizes both sections and survives scene changes and reloads in either state.', flush=True)
+
+        for tab, stage, video in [
+            ('[data-atlas-view=physics]', '#worlds .physics-video-frame', '#physics-video'),
+            ('[data-evo-view=demo]', '#evo-demo-view', '#evo-demo-video'),
+        ]:
+            page.locator(tab).click()
+            x, y = center(page, stage)
+            page.locator(video).evaluate('v => v.pause()')
+            before = page.locator(video).evaluate('v => ({src:v.currentSrc,time:v.currentTime,rate:v.playbackRate})')
+            page.mouse.move(x, y)
+            old_scroll = page.evaluate('scrollY')
+            page.mouse.wheel(0, -100)
+            page.wait_for_function('(y) => scrollY < y - 20', arg=old_scroll)
+            assert page.locator(video).evaluate('v => ({src:v.currentSrc,time:v.currentTime,rate:v.playbackRate})') == before
+
+        page.locator('[data-room-mode=view]').click()
+        page.wait_for_function('!!window.RoomDemo', timeout=60000)
+        page.evaluate('RoomDemo.pause()')
+        x, y = center(page, '#room-stage')
+        before = page.evaluate(span_script('RoomDemo'))
+        page.mouse.move(x, y)
+        old_scroll = page.evaluate('scrollY')
+        page.mouse.wheel(0, 180)
+        page.wait_for_function('(y) => scrollY > y + 40', arg=old_scroll)
+        assert abs(page.evaluate(span_script('RoomDemo')) - before) < .01
+        wheel(page, 'RoomDemo', '#room-stage', modifier='Control')
+        print('PASS: fixed Demo cameras and the introductory figure scrolling behavior.', flush=True)
+
+        phone = browser.new_page(viewport={'width':390, 'height':844}, is_mobile=True, has_touch=True, reduced_motion='reduce')
+        phone.on('pageerror', lambda error: errors.append(str(error)))
+        phone.goto(url + '#worlds')
+        cdp = phone.context.new_cdp_session(phone)
+        for api, tab, stage, hint in [
+            ('SceneRoom', '[data-atlas-view=motion]', '#scene-live-stage', '#scene-live-hint'),
+            (evo, '[data-evo-view=experiment]', '#evo-stage', '#evo-hint'),
+        ]:
+            phone.locator(tab).tap()
+            phone.wait_for_function(f'!!window.{api}', timeout=60000)
+            x, y = center(phone, stage)
+            assert 'pinch to zoom' in phone.locator(hint).inner_text()
+            before = phone.evaluate(span_script(api))
+            state = phone.evaluate(f'{api}.getState()')
+            def pair(distance):
+                return [{'id':1, 'x':x-distance, 'y':y}, {'id':2, 'x':x+distance, 'y':y}]
+            cdp.send('Input.dispatchTouchEvent', {'type':'touchStart', 'touchPoints':pair(25)})
+            for distance in [30, 35, 40, 45, 50]:
+                cdp.send('Input.dispatchTouchEvent', {'type':'touchMove', 'touchPoints':pair(distance)})
+            cdp.send('Input.dispatchTouchEvent', {'type':'touchEnd', 'touchPoints':[]})
+            assert phone.evaluate(span_script(api)) > before * 1.5
+            assert phone.evaluate(f'{api}.getState()') == state
+            assert phone.locator(stage + ' canvas').get_attribute('title') == 'Pinch to zoom'
+            phone.locator(stage + ' [data-room-zoom=fit]').tap()
+            assert abs(phone.evaluate(span_script(api)) - before) < .01
+            assert phone.evaluate(f'{api}.getState()') == state
+            for button in phone.locator(stage + ' .room-view-tools button').all():
+                box = button.bounding_box()
+                assert box['width'] >= 44 and box['height'] >= 44
+            assert phone.evaluate('document.documentElement.scrollWidth <= innerWidth')
+        # Restricted storage still permits changing the preference for this visit.
+        restricted = browser.new_page(viewport={'width':1366, 'height':900})
+        restricted.on('pageerror', lambda error: errors.append(str(error)))
+        restricted.add_init_script('Object.defineProperty(window,"localStorage",{get(){throw new Error("Storage blocked");}})')
+        restricted.goto(url + '#worlds')
+        restricted.locator('[data-atlas-view=motion]').click()
+        restricted.wait_for_function('!!window.SceneRoom', timeout=60000)
+        restricted.locator('#scene-live-stage [data-room-wheel]').click()
+        assert restricted.locator('#scene-live-stage [data-room-wheel]').get_attribute('aria-checked') == 'true'
+        wheel(restricted, 'SceneRoom', '#scene-live-stage')
         browser.close()
-    assert not errors,errors
-    print('PASS: real two-finger pinch, single-finger pan, touch cancellation and mobile reset; no JavaScript errors.')
+    assert not errors, errors
+    assert not bad, bad
+    print('PASS: real mobile pinch in both Try it sections; no JavaScript errors or failed resources.')
 
 
-if __name__=='__main__':main()
+if __name__ == '__main__':
+    main()

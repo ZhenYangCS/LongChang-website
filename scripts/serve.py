@@ -77,8 +77,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--bind', default='0.0.0.0')
+    parser.add_argument('--directory', type=Path, default=Path(__file__).resolve().parents[1],
+                        help='Static root; use the parent of a packaged site to test a repository subpath')
     args = parser.parse_args()
-    handler = partial(PreviewHandler, directory=str(Path(__file__).resolve().parents[1]))
+    handler = partial(PreviewHandler, directory=str(args.directory.resolve()))
     server = ThreadingHTTPServer((args.bind, args.port), handler)
     print(f'LongChang preview listening on {args.bind}:{args.port}', flush=True)
     server.serve_forever()

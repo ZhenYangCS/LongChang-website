@@ -5,6 +5,14 @@ import {OrbitControls} from './vendor/three/OrbitControls.js';
 import {mergeGeometries} from './vendor/three/BufferGeometryUtils.js';
 import {getMujoco} from './mujoco-runtime.js';
 
+const wheelZoomKey='longchang-wheel-zoom',wheelZoomUpdates=new Set();
+let wheelZoomEnabled=false;
+try{wheelZoomEnabled=localStorage.getItem(wheelZoomKey)==='true';}catch(_){/* Storage may be unavailable. */}
+function setWheelZoom(enabled){
+  wheelZoomEnabled=enabled;
+  try{localStorage.setItem(wheelZoomKey,String(enabled));}catch(_){/* Keep the preference for this visit. */}
+  for(const update of wheelZoomUpdates)update();
+}
 
 export async function createRoom(stage,status,options={}) {
   const simulation=options.simulation||null,live=Boolean(simulation);let mj,model,data,disposed=false;
@@ -22,11 +30,10 @@ export async function createRoom(stage,status,options={}) {
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.15;
   const canvas=renderer.domElement;canvas.className='room-canvas';canvas.tabIndex=0;
-  canvas.setAttribute('aria-label','Push or drag objects; hold Ctrl or Command while scrolling to zoom. Use arrow keys to push the selected object.');
-  // Leave ordinary wheel events to the page. OrbitControls receives deliberate
-  // modifier gestures, trackpad pinches and wheel input inside fullscreen only.
+  // The visitor chooses whether ordinary wheel input belongs to Try it.
+  // Modifier gestures and fullscreen continue to offer direct zoom.
   canvas.addEventListener('wheel',event=>{
-    if(!event.ctrlKey&&!event.metaKey&&!document.fullscreenElement?.contains(canvas))event.stopImmediatePropagation();
+    if(!(live&&wheelZoomEnabled)&&!event.ctrlKey&&!event.metaKey&&!document.fullscreenElement?.contains(canvas))event.stopImmediatePropagation();
   },{capture:true,passive:true});
   const scene=new T.Scene(),env=new RoomEnvironment(),pmrem=new T.PMREMGenerator(renderer);
   scene.environment=pmrem.fromScene(env,.04).texture;scene.environmentIntensity=.65;env.dispose();pmrem.dispose();
@@ -155,9 +162,41 @@ export async function createRoom(stage,status,options={}) {
       shadow.position.set(p.x+.24*height,p.y+.3*height,.009);const size=(radius*2.5+height*.38);shadow.scale.set(size,size,1);shadow.material.opacity=.8*Math.exp(-height*.9);
     }
   }
-  const orbit=new OrbitControls(camera,canvas);orbit.target.copy(lookTarget);orbit.update();orbit.saveState();orbit.enablePan=false;orbit.minZoom=.7;orbit.maxZoom=live?5:2;orbit.enableDamping=false;orbit.enabled=false;if(live)orbit.maxPolarAngle=Math.PI/2-.05;orbit.addEventListener('change',()=>{pickHistory.length=0;draw();});
+  const orbit=new OrbitControls(camera,canvas);orbit.target.copy(lookTarget);orbit.update();orbit.saveState();orbit.enablePan=false;orbit.minZoom=.7;orbit.maxZoom=live?5:2;orbit.enableDamping=false;orbit.enabled=false;if(live)orbit.maxPolarAngle=Math.PI/2-.05;orbit.addEventListener('change',()=>{pickHistory.length=0;updateViewTools();draw();});
   const ray=new T.Raycaster(),pointer=new T.Vector2();let mode='push',drag=null,forces=[],frame=0,last=0,until=0,visible=true,active=false,selected=bodyIds.red_ball?'red_ball':Object.keys(bodyIds)[0];
   orbit.zoomToCursor=live;
+  const viewTools=live?document.createElement('div'):null;
+  if(viewTools){
+    viewTools.className='room-view-tools';viewTools.setAttribute('role','group');viewTools.setAttribute('aria-label','Camera controls');
+    viewTools.innerHTML='<button type="button" class="room-wheel-toggle" data-room-wheel role="switch" aria-checked="false" aria-label="Mouse wheel zoom"><span>Wheel zoom</span><span class="room-wheel-state" aria-hidden="true">Off</span></button><button type="button" data-room-zoom="out" aria-label="Zoom out" title="Zoom out">−</button><button type="button" data-room-zoom="in" aria-label="Zoom in" title="Zoom in">+</button><button type="button" data-room-zoom="fit" aria-label="Restore the whole room view" title="Restore the whole room view">Fit</button>';
+    viewTools.addEventListener('click',event=>{
+      if(event.target.closest('[data-room-wheel]')){if(!disposed)setWheelZoom(!wheelZoomEnabled);return;}
+      const action=event.target.closest('[data-room-zoom]')?.dataset.roomZoom;
+      if(!action||disposed)return;
+      if(action==='fit')orbit.reset();
+      else{
+        // The live objects are usually near the floor, below the room center.
+        // Aim button zoom at them instead of enlarging the empty upper room.
+        if(action==='in'){
+          const bodies=Object.values(bodyIds),focus=new T.Vector3();
+          for(const body of bodies)focus.add(new T.Vector3().fromArray(data.xpos,body*3));
+          if(bodies.length){focus.divideScalar(bodies.length);camera.position.add(focus.clone().sub(orbit.target));orbit.target.copy(focus);}
+        }
+        camera.zoom=T.MathUtils.clamp(camera.zoom*(action==='in'?1.25:.8),orbit.minZoom,orbit.maxZoom);camera.updateProjectionMatrix();orbit.update();
+      }
+      updateViewTools();draw();
+    });
+    stage.append(viewTools);updateViewTools();
+  }
+  function updateViewTools(){
+    if(!viewTools)return;
+    const fullscreen=Boolean(document.fullscreenElement?.contains(canvas)),toggle=viewTools.querySelector('[data-room-wheel]'),enabled=wheelZoomEnabled||fullscreen;
+    toggle.setAttribute('aria-checked',String(enabled));toggle.disabled=fullscreen;
+    toggle.querySelector('.room-wheel-state').textContent=enabled?'On':'Off';
+    toggle.title=fullscreen?'Wheel zoom is always on in fullscreen':enabled?'Mouse wheel zooms the scene. Turn off to scroll the page.':'Mouse wheel scrolls the page. Turn on to zoom the scene.';
+    viewTools.querySelector('[data-room-zoom=out]').disabled=camera.zoom<=orbit.minZoom;
+    viewTools.querySelector('[data-room-zoom=in]').disabled=camera.zoom>=orbit.maxZoom;
+  }
   const pointers=new Set();
   const marker=document.createElement('span');marker.className='room-grab-marker';marker.setAttribute('aria-hidden','true');marker.hidden=true;stage.append(marker);let hovered=null,hoverPointer=null,hoverFrame=0;
   function markHit(hit){
@@ -329,9 +368,10 @@ export async function createRoom(stage,status,options={}) {
   function setMode(value){
     if(value!==mode)releaseDrag();mode=value;
     orbit.enabled=true;orbit.enableRotate=value==='view';orbit.enablePan=live&&value==='view';canvas.style.cursor=value==='view'?'grab':'default';
-    const touch=matchMedia('(pointer:coarse)').matches,zoom=touch?'pinch to zoom':document.fullscreenElement?.contains(canvas)?'scroll to zoom':'Ctrl/⌘ + scroll to zoom';
-    canvas.title=touch?'Pinch to zoom':document.fullscreenElement?.contains(canvas)?'Scroll to zoom':'Ctrl/⌘ + scroll to zoom';
-    const instructions={push:'Drag, then release to push.',drag:'Drag up to lift; release to drop.',view:`Drag to rotate · ${zoom}`};
+    const touch=matchMedia('(pointer:coarse)').matches,zoom=touch?'pinch to zoom':(live&&wheelZoomEnabled)||document.fullscreenElement?.contains(canvas)?'scroll to zoom':'Ctrl/⌘ + scroll to zoom';
+    canvas.title=zoom[0].toUpperCase()+zoom.slice(1);
+    canvas.setAttribute('aria-label',`Push or drag objects; ${zoom}. Use arrow keys to push the selected object.`);
+    const instructions={push:`Drag, then release to push · ${zoom}`,drag:`Drag up to lift; release to drop · ${zoom}`,view:`Drag to rotate · ${zoom}`};
     status(live?instructions[value]:value==='view'?`Drag to rotate · ${zoom}`:value==='drag'?(touch?'Drag up to lift · release to drop':'Drag up to lift · Shift-drag to slide'):'Drag to push · tap to nudge');
   }
   function resize(){
@@ -342,12 +382,14 @@ export async function createRoom(stage,status,options={}) {
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(stage);
   const visibilityObserver=new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;if(!visible){cancelAnimationFrame(frame);frame=0;}else if(active)wake(0);});visibilityObserver.observe(stage);
   const visibility=()=>{if(document.hidden){cancelAnimationFrame(frame);frame=0;pointers.clear();releaseDrag();}else if(active)wake(0);};document.addEventListener('visibilitychange',visibility);
-  const fullscreen=()=>setMode(mode);document.addEventListener('fullscreenchange',fullscreen);
+  const refreshWheelZoom=()=>{updateViewTools();setMode(mode);};
+  if(live)wheelZoomUpdates.add(refreshWheelZoom);
+  document.addEventListener('fullscreenchange',refreshWheelZoom);
   canvas.addEventListener('webglcontextlost',e=>{if(disposed)return;e.preventDefault();status('Graphics paused. Reload to retry.');cancelAnimationFrame(frame);});
   if(softwareRenderer){renderer.setPixelRatio(Math.min(devicePixelRatio,1));useContactShadows();}
   function pause(){active=false;cancelAnimationFrame(frame);frame=0;releaseDrag();}
   function destroy(){
-    pause();disposed=true;resizeObserver.disconnect();visibilityObserver.disconnect();document.removeEventListener('visibilitychange',visibility);document.removeEventListener('fullscreenchange',fullscreen);document.removeEventListener('pointerup',clearPointer);document.removeEventListener('pointercancel',clearPointer);window.removeEventListener('blur',blur);orbit.dispose();marker.remove();
+    pause();disposed=true;resizeObserver.disconnect();visibilityObserver.disconnect();document.removeEventListener('visibilitychange',visibility);document.removeEventListener('fullscreenchange',refreshWheelZoom);wheelZoomUpdates.delete(refreshWheelZoom);document.removeEventListener('pointerup',clearPointer);document.removeEventListener('pointercancel',clearPointer);window.removeEventListener('blur',blur);orbit.dispose();marker.remove();viewTools?.remove();
     const geometries=new Set(),mats=new Set(Object.values(materials)),textures=new Set([texture,scene.environment]);
     scene.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)mats.add(o.material);});for(const m of bakedMaterials.values())mats.add(m);
     for(const m of mats){for(const v of Object.values(m))if(v?.isTexture)textures.add(v);m.dispose();}for(const g of geometries)g.dispose();for(const t of textures)t?.dispose();
