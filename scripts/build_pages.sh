@@ -16,6 +16,7 @@ fi
 for asset in index.html assets data downloads .nojekyll; do
   cp -a -- "$site_root/$asset" "$pages_output/"
 done
+bash "$site_root/scripts/bundle_pages.sh" "$pages_output"
 if [[ "$anonymous" == true ]]; then
   awk '
     /<!-- AUTHORS_BEGIN:/ {

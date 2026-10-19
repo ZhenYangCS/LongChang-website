@@ -43,11 +43,16 @@
       return active && rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < innerHeight && !document.hidden && !document.querySelector('dialog[open]');
     };
     const status = text => { $('hint').textContent = text; stage.dataset.loadLabel = text; };
-    function labels(time = world?.getState().time || 0) {
-      $('clock').textContent = `${time.toFixed(1)} s`;
-      $('play').textContent = world?.isRunning() ? 'II' : '▶';
-      $('play').setAttribute('aria-label', world?.isRunning() ? 'Pause live physics' : 'Run live physics');
-      $('play').setAttribute('aria-pressed', String(Boolean(world?.isRunning())));
+    let lastClock = null, lastRunning = null;
+    function labels(time = world?.getTime?.() ?? world?.getState().time ?? 0) {
+      const clock = `${time.toFixed(1)} s`, running = Boolean(world?.isRunning());
+      if (clock !== lastClock) { $('clock').textContent = clock; lastClock = clock; }
+      if (running !== lastRunning) {
+        $('play').textContent = running ? 'II' : '▶';
+        $('play').setAttribute('aria-label', running ? 'Pause live physics' : 'Run live physics');
+        $('play').setAttribute('aria-pressed', String(running));
+        lastRunning = running;
+      }
     }
     function sync() {
       if (!allowed()) clearPending();

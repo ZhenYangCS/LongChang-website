@@ -27,7 +27,6 @@
   let visibleBounds={left:0,top:0,right:1440,bottom:960};
   let controls=[];
   const cutouts=new Map();
-  const cache=new Map();
   const dot=(a,b)=>a.reduce((sum,value,i)=>sum+value*b[i],0);
   const length=v=>Math.hypot(...v);
   const add=(a,b)=>a.map((value,i)=>value+b[i]);
@@ -115,18 +114,11 @@
     request=new AbortController();
     const task=(async()=>{
       try {
-        if (!cameraPromise) cameraPromise=fetch('data/shared-room.json').then(response=>{
-          if (!response.ok) throw Error('Camera unavailable');return response.json();
-        }).then(room=>room.camera).catch(error=>{cameraPromise=null;throw error;});
-        let data=cache.get(selected.id);
-        if (!data) {
-          const response=await fetch(selected.details,{signal:request.signal});
-          if (!response.ok) throw Error('Trajectory unavailable');data=await response.json();
-          if (token!==generation) return;
-          cache.set(selected.id,data);
-          while(cache.size>3) cache.delete(cache.keys().next().value);
-        }
-        const viewCamera=await cameraPromise;
+        if (!cameraPromise) cameraPromise=window.LongChangResources.json('data/shared-room.json')
+          .then(room=>room.camera).catch(error=>{cameraPromise=null;throw error;});
+        const [data,viewCamera]=await Promise.all([
+          window.LongChangResources.json(selected.details,{signal:request.signal}), cameraPromise,
+        ]);
         if (token!==generation) return;
         prepare(data,viewCamera);
       } catch (error) {

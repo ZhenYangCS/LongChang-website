@@ -3,7 +3,7 @@
   'use strict';
   const $=s=>document.querySelector(s),items=window.SCENE_INDEX||[];if(!items.length)return;
   const video=$('#physics-video'),image=$('#studio-poster'),playButton=$('#physics-play'),speed=$('#physics-speed');
-  let demo=null,wants=false,shown=false,source=false,version=0,timer=0,details=null,detailAbort=null,posterVisible=false,posterLoading=false,pending=null,progressFrame=0;
+  let demo=null,wants=false,shown=false,source=false,version=0,timer=0,details=null,detailAbort=null,detailRequest=null,posterVisible=false,posterLoading=false,pending=null,progressFrame=0;
   const measurements=$('#oracle-measurements'),law=$('#scene-law'),chart=$('#oracle-chart');
   let chartGeometry=null;
   measurements.classList.add('video-data');
@@ -112,7 +112,7 @@
   function select(id){
     const next=items.find(d=>d.id===id);if(!next)return;
     if(demo?.id===id)return;
-    stop();version++;demo=next;details=null;chartGeometry=null;chart.replaceChildren();chart.dataset.drawn='';chartTime.textContent='';detailAbort?.abort();source=false;pending=null;posterLoading=false;
+    stop();version++;demo=next;details=null;chartGeometry=null;chart.replaceChildren();chart.dataset.drawn='';chartTime.textContent='';detailAbort?.abort();detailRequest=null;source=false;pending=null;posterLoading=false;
     $('#physics-values').replaceChildren();$('#physics-sample-label').textContent='';
     measurementHeading.hidden=measurementNote.hidden=true;$('#oracle-chart-wrap').hidden=true;
     if(video.hasAttribute('src')){video.removeAttribute('src');video.load();}
@@ -194,10 +194,17 @@
     cursor.querySelector('title').textContent=`Video simulation time: ${t.toFixed(2)} s`;
     const label=`t = ${t.toFixed(2)} s`;if(chartTime.textContent!==label)chartTime.textContent=label;
   }
-  async function loadMeasurements(){
-    if(!demo||details)return;const id=demo.id;detailAbort?.abort();detailAbort=new AbortController();
-    try{const response=await fetch(demo.details,{signal:detailAbort.signal});if(!response.ok)throw Error();const data=await response.json();if(id!==demo.id)return;details=data;$('#oracle-chart').dataset.drawn='';$('#oracle-chart-wrap').hidden=false;plot();}
-    catch(e){if(e.name!=='AbortError'){ $('#oracle-chart-wrap').hidden=false;$('#oracle-signal').textContent='Video data unavailable.'; }}
+  function loadMeasurements(){
+    if(!demo||details)return;
+    if(detailRequest)return detailRequest;
+    const controller=new AbortController(),id=demo.id;detailAbort=controller;
+    detailRequest=window.LongChangResources.json(demo.details,{signal:controller.signal}).then(data=>{
+      if(controller.signal.aborted||id!==demo.id)return;
+      details=data;$('#oracle-chart').dataset.drawn='';$('#oracle-chart-wrap').hidden=false;plot();
+    }).catch(e=>{
+      if(!controller.signal.aborted&&id===demo.id){$('#oracle-chart-wrap').hidden=false;$('#oracle-signal').textContent='Video data unavailable.';}
+    }).finally(()=>{if(detailAbort===controller)detailRequest=null;});
+    return detailRequest;
   }
   window.LongChangScenePlayer.playback({
     host: $('#atlas-physics-view'), prefix: 'physics', video,
