@@ -12,9 +12,9 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 
 当前预览服务独立运行在 `longchang-page` tmux 会话，可用 `tmux attach -t longchang-page` 查看。同一房间的 15 段动画在 `longchang-shared` 中导出，日志为 `/tmp/longchang-shared-build.log`，不会随终端命令结束而停止。
 
-整个 `project_page/` 目录可部署到任意静态托管服务，也支持站点子目录。无需前端编译、API key 或实时模拟后端。GitHub Actions 用 Bash 复制已经生成的静态文件，并合并普通样式与脚本以减少请求。字体、图片、视频和数据均为本地文件。代码按钮提供匿名源码 ZIP，包含框架、场景、依赖与入门说明。
+整个 `project_page/` 目录可部署到任意静态托管服务，也支持站点子目录。无需前端编译、API key 或实时模拟后端。GitHub Actions 用 Bash 复制已经生成的静态文件，并合并普通样式与脚本以减少请求。字体、图片、视频和数据均为本地文件。Code 按钮链接到公开 GitHub 仓库：`https://github.com/EnVision-Research/LongChang`。
 
-论文中的匿名仓库链接在制作时返回 HTTP 401，因此页面先使用可直接下载的源码包。仓库开放后，可以把 `index.html` 首屏的 Code 入口替换为正式匿名链接。
+Paper 暂时也链接到 LongChang GitHub 仓库，待 arXiv 地址确定后，再更新 `index.html` 首屏及 `<noscript>` 中的 Paper 链接。Paper 与 Code 均在新标签页打开网页，不触发文件下载。
 
 ## 内容
 
@@ -216,10 +216,10 @@ python scripts/package_physics_demos.py --ffmpeg /path/to/ffmpeg
 
 以上命令在 `project_page/` 中运行，脚本会自行定位仓库根目录。准备数据需要当前 `acl-build/0.pdf`，结果表沿 `ACL/main.tex` 的 `input/include` 关系读取，兼容当前拆分的 `ACL/secs/`。所有生成输出保存在本目录；场景回放使用项目已有的只读加载器。动态素材由固定时间的浏览器画面编码，不发起模型请求。
 
-作者姓名、单位和个人链接仅保存在 `index.html` 的 `AUTHORS_BEGIN` / `AUTHORS_END` 作者区内；页面其余位置、PDF 和数据下载保持匿名。第三方库、字体的版权声明及文献引用照常保留。使用 `bash scripts/build_pages.sh --anonymous /tmp/longchang-anonymous` 可生成移除整个具名作者区的匿名发布副本，不改动当前页面。
+作者姓名、单位和个人链接保存在 `index.html` 的 `AUTHORS_BEGIN` / `AUTHORS_END` 作者区内；BibTeX 也包含具名作者。PDF 和数据下载保持匿名。第三方库、字体的版权声明及文献引用照常保留。`bash scripts/build_pages.sh --anonymous /tmp/longchang-anonymous` 仅替换页头作者区，不修改 BibTeX 或当前页面。
 
-## 匿名检查与引用占位
+## 匿名检查与引用格式
 
 `python -B scripts/verify_anonymity.py --ocr --report /tmp/project-page-anonymity-audit.json` 检查整个目录及 ZIP/GZ 内部、PDF 正文和元数据、图片/视频/字体元数据；OCR 覆盖静态图片及动画/视频的首、中、末帧。身份词从作者区自动读取，检查脚本不保存真实姓名。检查报告保存在发布目录之外。
 
-页头提供 BibTeX 入口，页面底部用代码框和复制按钮展示 `#bibtex-entry`。引用模板包含论文标题与 Anonymous Authors，年份和网址字段留空，供之后补充；匿名版本的引用不应填入具名作者。
+页头提供 BibTeX 入口，页面底部用代码框和复制按钮展示 `#bibtex-entry`。引用与仓库根目录 `README.md` 保持一致，采用 [StreamMA](https://zhenyangcs.github.io/StreamMA-website/) 的 `@article` 格式，包含论文标题、完整作者、`journal` 和年份；未知 arXiv 编号写为 `xxx`，即 `journal={arXiv preprint arXiv:xxx}`。

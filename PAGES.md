@@ -39,8 +39,8 @@ Chromium 限速模拟结果（1366×768，未上线的本地预览）：
 
 ## 上线前待定内容
 
-- `index.html` 的 BibTeX 仍为匿名占位，`year` 和 `url` 留空；正式发表信息确定后再填写，并决定引用和 PDF 是否继续匿名。
-- `Code` 当前提供可下载的源码 ZIP；若要链接公开代码仓库，待仓库地址确定后替换。
+- `index.html` 与仓库根目录 `README.md` 的 BibTeX 使用相同的 `@article` 格式、完整作者与 2026 年份；arXiv 编号暂写 `xxx`，正式编号确定后同步替换。
+- `Code` 已链接到 `https://github.com/EnVision-Research/LongChang`；`Paper` 暂用同一地址，待 arXiv 地址确定后更新首屏及 `<noscript>` 中的 Paper 链接。
 - 分享卡的 `og:image` 当前使用相对路径。最终域名确定后改为绝对 HTTPS 地址，并补充 `og:url` 和 canonical，便于社交平台识别正式网址。
 - 素材体积仍有增长空间，但发布包已约 670 MiB。以后重新导出视频或添加下载包时，应再次执行打包检查。
 
