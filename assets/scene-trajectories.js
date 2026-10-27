@@ -109,7 +109,7 @@
   }
   async function load() {
 
-    if (!shown || !entry || recording || pending || !video.hasAttribute('src')) return;
+    if (!shown || !entry || recording || pending || !video.hasAttribute('src') || (video.paused && !poster.hidden)) return;
     const token=generation,selected=entry;
     request=new AbortController();
     const task=(async()=>{

@@ -30,7 +30,7 @@
   }
   const model = window.LongChangEvolutionModel.create({host:$('#evo-explanation'), video});
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let key = 'generate', view = 'demo', demoWanted = !reduced.matches, demoKey = null, demoFailed = false, demoTimer, revision = 0, seekTime = null;
+  let key = 'generate', view = 'demo', demoWanted = !reduced.matches, demoKey = null, demoFailed = false, demoPreparing = false, demoTimer, revision = 0, seekTime = null;
   const setText = (id, text) => { const node = $(id); if (node.textContent !== text) node.textContent = text; };
   const allowed = () => {
     const rect = $('#evo-visual').getBoundingClientRect();
@@ -56,17 +56,27 @@
     },
   });
   function fail() {
-    clearTimeout(demoTimer); demoFailed = true; video.pause();
+    clearTimeout(demoTimer);
+    if (demoPreparing) {
+      demoPreparing = false; demoKey = null;
+      video.removeAttribute('src'); video.preload = 'none'; video.load();
+      return;
+    }
+    demoFailed = true; video.pause();
     $('#evo-demo-error').hidden = false; $('#evo-demo-retry').hidden = false;
   }
-  function loadDemo() {
-    if (demoKey === key) return;
+  function loadDemo(background = false) {
+    if (demoKey === key) { if (!background) demoPreparing = false; return; }
     clearTimeout(demoTimer); video.pause(); demoKey = key; demoFailed = false;
+    demoPreparing = background;
     $('#evo-demo-error').hidden = true; $('#evo-demo-retry').hidden = true;
     video.preload = 'auto'; video.src = media[key].video; video.load();
     const selected = key;
     demoTimer = setTimeout(() => { if (demoKey === selected && video.readyState < 2) fail(); }, 20000);
   }
+  const prepareNearby = window.LongChangResources.prepareOnApproach($('#evo-demo-view'), () => {
+    if (view === 'demo') loadDemo(true);
+  });
   function sync() {
     const ticket = ++revision;
     if (view === 'demo' && allowed()) {
@@ -101,7 +111,7 @@
     $('#evo-demo-view').hidden = view !== 'demo'; $('#evo-experiment-view').hidden = view !== 'experiment';
     model.setActive(view === 'demo');
     $('#evo-explanation').hidden = view !== 'demo';
-    live.setActive(view === 'experiment'); sync();
+    live.setActive(view === 'experiment'); sync(); prepareNearby();
     document.dispatchEvent(new CustomEvent('longchang:evolution-view', {detail:{view}}));
   }
   function choose(selected) {
@@ -109,7 +119,7 @@
     clearTimeout(demoTimer); video.pause(); revision++; demoKey = null; demoFailed = false; seekTime = null; demoWanted = !reduced.matches;
     video.removeAttribute('src'); video.load(); key = selected;
     $('#evo-demo-error').hidden = true; $('#evo-demo-retry').hidden = true;
-    content(); live.select(); sync();
+    content(); live.select(); sync(); prepareNearby();
     document.dispatchEvent(new CustomEvent('longchang:evolution-scene', {detail:{id:key}}));
   }
   for (const tab of tabs) {

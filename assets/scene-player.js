@@ -87,6 +87,10 @@
       clearPending(); version++; loading = null; world?.destroy(); world = null; worldId = null; wanted = autoPlay;
       if (published) onWorld(null); published = false; stage.setAttribute('aria-busy', 'false'); labels(0);
     }
+    const prepareNearby = window.LongChangResources.prepareOnApproach(fullscreen, () => Promise.all([
+      window.LongChangResources.interaction(),
+      window.LongChangResources.json(getScene().url),
+    ]));
     async function open() {
       const item = getScene();
       if (world && worldId === item.id) return world;
@@ -96,9 +100,11 @@
       loading = (async () => {
         let simulation = null;
         try {
-          const [{createRoom}, response] = await Promise.all([import('./room-world.js'), fetch(item.url, {signal:AbortSignal.timeout(20000)})]);
-          if (!response.ok) throw Error('Scene unavailable');
-          const config = await response.json(); if (token !== version) return null;
+          const [{createRoom}, config] = await Promise.all([
+            window.LongChangResources.interaction(text => { if (token === version) status(text); }),
+            window.LongChangResources.json(item.url),
+          ]);
+          if (token !== version) return null;
           simulation = await loadSimulation(config, text => { if (token === version) status(text); });
           if (token !== version) { simulation.destroy(); return null; }
           const next = await createRoom(stage, text => { if (token === version) status(text); }, {simulation, speed:Number($('speed').value), onInteraction:() => { if (token === version && active) wanted = true; }, onFrame:time => { if (token === version) { labels(time); onFrame(time, simulation); } }});
@@ -165,7 +171,7 @@
     for (const dialog of document.querySelectorAll('dialog')) new MutationObserver(sync).observe(dialog, {attributes:true, attributeFilter:['open']});
     return {stage, bar, open, prepare:open, current:() => world, sync,
       setActive(value) { active = value; bar.hidden = !active; if (active) { publish(); open(); } else clearPending(); sync(); },
-      select() { if (getScene().id !== worldId) { destroy(); if (active) open(); } },
+      select() { if (getScene().id !== worldId) { destroy(); if (active) open(); else prepareNearby(); } },
       destroy,
     };
   }

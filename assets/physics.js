@@ -3,7 +3,7 @@
   'use strict';
   const $=s=>document.querySelector(s),items=window.SCENE_INDEX||[];if(!items.length)return;
   const video=$('#physics-video'),image=$('#studio-poster'),playButton=$('#physics-play'),speed=$('#physics-speed');
-  let demo=null,wants=false,shown=false,source=false,version=0,timer=0,details=null,detailAbort=null,detailRequest=null,posterVisible=false,posterLoading=false,pending=null,progressFrame=0;
+  let demo=null,wants=false,shown=false,source=false,preparing=false,version=0,timer=0,details=null,detailAbort=null,detailRequest=null,posterVisible=false,posterLoading=false,pending=null,progressFrame=0;
   const measurements=$('#oracle-measurements'),law=$('#scene-law'),chart=$('#oracle-chart');
   let chartGeometry=null;
   measurements.classList.add('video-data');
@@ -61,8 +61,15 @@
   const media=()=>demo.room_background&&demo.detail_video?{url:demo.detail_video,hash:demo.detail_video_sha256,poster:demo.detail_poster,preview:demo.detail_preview}:{url:demo.video,hash:demo.video_sha256,poster:demo.studio_poster,preview:demo.preview};
   function poster(){image.src=media().preview||media().poster;image.hidden=false;posterLoading=false;sharpenPoster();}
   function armTimeout(){clearTimeout(timer);timer=setTimeout(()=>{if(pending||(wants&&video.readyState<2))fail();},20000);}
+  function prepareSource(){
+    if(source||!demo)return;
+    source=true;preparing=true;const m=media();video.preload='auto';video.src=m.url+'?v='+m.hash.slice(0,12);video.load();
+  }
+  const prepareNearby=window.LongChangResources.prepareOnApproach(frame,()=>{if(shown)prepareSource();});
   function loadSource(time=0){
-    pending={time};source=true;const m=media();video.src=m.url+'?v='+m.hash.slice(0,12);video.load();loading(true);armTimeout();
+    pending={time};prepareSource();preparing=false;loading(true);armTimeout();
+    if(video.readyState>=1&&Math.abs(video.currentTime-time)>.06)video.currentTime=time;
+    ready();
   }
   function ready(){
     if(!source||video.readyState<2||video.seeking)return;
@@ -88,7 +95,7 @@
   function stop(){wants=false;video.pause();cancelProgress();clearTimeout(timer);loading(false);progress();}
   function fail(){pending=null;stop();video.removeAttribute('src');video.load();source=false;image.hidden=false;overlay.hidden=false;overlay.textContent='↻ Retry';$('#physics-error').textContent='Video unavailable. Tap Retry.';$('#physics-error').hidden=false;}
   function start(){
-    wants=true;$('#physics-error').hidden=true;
+    wants=true;preparing=false;$('#physics-error').hidden=true;
     if(!source){loadSource();return;}
     loading(video.readyState<2);armTimeout();
     if(video.readyState<2||pending)return;
@@ -112,7 +119,7 @@
   function select(id){
     const next=items.find(d=>d.id===id);if(!next)return;
     if(demo?.id===id)return;
-    stop();version++;demo=next;details=null;chartGeometry=null;chart.replaceChildren();chart.dataset.drawn='';chartTime.textContent='';detailAbort?.abort();detailRequest=null;source=false;pending=null;posterLoading=false;
+    stop();version++;demo=next;details=null;chartGeometry=null;chart.replaceChildren();chart.dataset.drawn='';chartTime.textContent='';detailAbort?.abort();detailRequest=null;source=false;preparing=false;pending=null;posterLoading=false;video.preload='none';
     $('#physics-values').replaceChildren();$('#physics-sample-label').textContent='';
     measurementHeading.hidden=measurementNote.hidden=true;$('#oracle-chart-wrap').hidden=true;
     if(video.hasAttribute('src')){video.removeAttribute('src');video.load();}
@@ -123,6 +130,7 @@
     video.setAttribute('aria-label',`${demo.name}: demonstration of the hidden rule`);
     readoutVisibility();progress();
     if(shown&&measurementsVisible)loadMeasurements();
+    prepareNearby();
   }
   function measuredRows(entry,sample){
     const labels={
@@ -214,7 +222,7 @@
       reset: () => { stop();if(source){pending=null;video.currentTime=0;}poster();overlay.hidden=false;progress(); },
       seek: fraction => {
         const destination=fraction*demo.duration;stop();
-        if(!source)loadSource(destination);else{pending={time:destination};video.currentTime=destination;}
+        loadSource(destination);
         overlay.hidden=true;progress();
       },
     },
@@ -225,12 +233,16 @@
   video.addEventListener('playing',()=>{clearTimeout(timer);if(!pending)image.hidden=true;overlay.hidden=true;loading(false);progress();cancelProgress();animateProgress();});
   video.addEventListener('waiting',()=>{if(wants){loading(true);armTimeout();}});
   video.addEventListener('pause',()=>{cancelProgress();progress();});video.addEventListener('timeupdate',progress);video.addEventListener('seeked',()=>{if(pending)ready();else progress();});
-  video.addEventListener('error',()=>{if(source)fail();});
+  video.addEventListener('error',()=>{
+    if(!source)return;
+    if(preparing){source=false;preparing=false;video.removeAttribute('src');video.preload='none';video.load();}
+    else fail();
+  });
   video.addEventListener('ended',()=>{wants=false;overlay.hidden=false;overlay.textContent='↺ Replay';progress();});
   document.addEventListener('fullscreenchange',()=>{
     video.controls=false;
   });
-  document.addEventListener('longchang:atlas-view',e=>{shown=e.detail.view==='physics';syncView(e.detail.view);if(shown)select(e.detail.id);else{stop();}});
+  document.addEventListener('longchang:atlas-view',e=>{shown=e.detail.view==='physics';syncView(e.detail.view);if(shown){select(e.detail.id);prepareNearby();}else{stop();}});
   document.addEventListener('longchang:scene',e=>select(e.detail.id));
   new IntersectionObserver(e=>{if(!e[0].isIntersecting&&source)stop();},{threshold:0}).observe($('#atlas-physics-view'));
   new IntersectionObserver(entries=>{measurementsVisible=entries[0].isIntersecting;if(measurementsVisible&&shown){loadMeasurements();if(details)plot();}},{rootMargin:'100px'}).observe(measurements);

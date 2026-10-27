@@ -12,7 +12,7 @@
     if(world){world.setMode(mode);return world;}
     if(loading)return loading;
     stage.setAttribute('aria-busy','true');status('Loading interaction…');
-    loading=import('./room-world.js').then(m=>m.createRoom(stage,status)).then(value=>{
+    loading=window.LongChangResources.interaction(status).then(m=>m.createRoom(stage,status)).then(value=>{
       world=value;window.RoomDemo=world;world.setMode(mode);still.hidden=true;stage.classList.add('is-live');
       // A completed push is an intended impulse. A released drag is cancelled.
       const r=stage.getBoundingClientRect(),available=!document.hidden&&r.bottom>0&&r.top<innerHeight&&!document.querySelector('dialog[open]');
@@ -25,6 +25,7 @@
   document.querySelectorAll('[data-room-mode]').forEach(b=>b.addEventListener('click',()=>{clearPending();start(b.dataset.roomMode);}));
   document.querySelector('#interactive-figure').addEventListener('pointerenter',()=>{if(!world)start();},{passive:true});
   document.querySelector('#interactive-figure').addEventListener('focusin',()=>{if(!world)start();});
+  window.LongChangResources.prepareOnApproach(stage,()=>window.LongChangResources.interaction());
   stage.addEventListener('pointerdown',e=>{
     if(!e.isPrimary){clearPending();return;}if(world||e.button!==0)return;
     e.preventDefault();pending={kind:mode,start:sample(e),latest:sample(e),released:false};stage.setPointerCapture(e.pointerId);start();

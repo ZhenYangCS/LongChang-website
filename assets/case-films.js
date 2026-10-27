@@ -22,6 +22,7 @@
     const storySteps = [...film.querySelectorAll('[data-case-stage]')];
     let playRequested = false;
     let loadFailed = false;
+    let preparing = false;
     let loadingMetadata = false;
     let pendingSeek = null;
     let scrubbing = false;
@@ -89,6 +90,7 @@
 
     function play() {
       if (!active()) return;
+      preparing = false;
       players.forEach(player => { if (player.video !== video) player.pause(); });
       playRequested = true;
       if (video.error) video.load();
@@ -104,6 +106,7 @@
     }
 
     function seek(fraction) {
+      preparing = false;
       pendingSeek = fraction;
       if (video.readyState >= 1) {
         video.currentTime = fraction * duration();
@@ -182,7 +185,15 @@
     });
     video.addEventListener('timeupdate', update);
     video.addEventListener('ended', update);
-    video.addEventListener('error', failed);
+    video.addEventListener('error', () => {
+      if (preparing) { preparing = false; video.preload = 'none'; }
+      else failed();
+    });
+    window.LongChangResources.prepareOnApproach(video, () => {
+      if (active() && video.preload === 'none' && !loadFailed) {
+        preparing = true; video.preload = 'auto'; video.load();
+      }
+    });
     update();
     return {video, pause, select() { pause(); pendingSeek = 0; if (video.readyState >= 1) seek(0); play(); }};
   });

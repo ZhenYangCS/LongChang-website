@@ -1,5 +1,3 @@
-import loadMujoco from './vendor/mujoco/mujoco.js';
-
 let runtime = null, progress = '';
 const listeners = new Set();
 function report(message) {
@@ -7,7 +5,7 @@ function report(message) {
   progress = message;
   for (const listener of listeners) listener(message);
 }
-async function load() {
+async function compile() {
   report('Loading interaction…');
   const response = await fetch(new URL('./vendor/mujoco/mujoco.wasm', import.meta.url), {signal:AbortSignal.timeout(30000)});
   if (!response.ok) throw Error('Physics download failed');
@@ -22,9 +20,15 @@ async function load() {
   // Compile while downloading. The browser handles compilation asynchronously;
   // no second copy of the entire binary or isolation headers are required.
   const binary = new Response(stream, {headers:{'Content-Type':'application/wasm'}});
-  const module = typeof WebAssembly.compileStreaming === 'function'
+  return typeof WebAssembly.compileStreaming === 'function'
     ? await WebAssembly.compileStreaming(binary)
     : await WebAssembly.compile(await binary.arrayBuffer());
+}
+async function load() {
+  // Start the binary alongside the JS bindings, without a module waterfall.
+  const [{default:loadMujoco}, module] = await Promise.all([
+    import('./vendor/mujoco/mujoco.js'), compile(),
+  ]);
   return new Promise((resolve, reject) => {
     loadMujoco({instantiateWasm(imports, receive) {
       // Browsers restrict synchronous instantiation of large modules.

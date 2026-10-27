@@ -49,5 +49,31 @@
       entry.promise.then(value => finish(resolve, value), error => finish(reject, error));
     });
   }
-  window.LongChangResources = Object.freeze({json});
+  async function interaction(status = () => {}) {
+    // The renderer's dependency tree must not hold up the physics download.
+    const [room] = await Promise.all([
+      import('./room-world.js'),
+      import('./mujoco-runtime.js').then(module => module.getMujoco(status)),
+    ]);
+    return room;
+  }
+  function prepareOnApproach(element, prepare) {
+    // Touch screens have no hover lead time. Wait for the page to finish first,
+    // then prepare only nearby content; explicit actions bypass these checks.
+    if (!matchMedia('(pointer:coarse)').matches || !window.IntersectionObserver) return () => {};
+    let near = false, timer = 0;
+    const allowed = () => near && document.readyState === 'complete' && !document.hidden
+      && !document.querySelector('dialog[open]') && !navigator.connection?.saveData;
+    function schedule() {
+      clearTimeout(timer);
+      if (allowed()) timer = setTimeout(() => {
+        if (allowed()) Promise.resolve().then(prepare).catch(() => {});
+      }, 250);
+    }
+    new IntersectionObserver(entries => { near = entries[0].isIntersecting; schedule(); }, {rootMargin:'300px'}).observe(element);
+    window.addEventListener('load', schedule, {once:true});
+    document.addEventListener('visibilitychange', schedule);
+    return schedule;
+  }
+  window.LongChangResources = Object.freeze({json, interaction, prepareOnApproach});
 })();
