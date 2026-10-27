@@ -16,7 +16,7 @@ import bpy
 from mathutils import Vector, Matrix
 
 ROOT=Path(__file__).resolve().parents[2]
-spec=importlib.util.spec_from_file_location('figure1_studio',ROOT/'ACL/materials/teaser/blender_scene.py')
+spec=importlib.util.spec_from_file_location('figure1_studio',ROOT/'ACL/non_submission/materials/teaser/blender_scene.py')
 studio=importlib.util.module_from_spec(spec);spec.loader.exec_module(studio)
 
 

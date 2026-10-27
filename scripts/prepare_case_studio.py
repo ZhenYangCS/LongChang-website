@@ -142,8 +142,8 @@ def main():
         if not args.preview:
             proc.stdin.close();assert proc.wait()==0;temp.replace(dest)
             entry.update(video_sha256=digest(dest),poster_sha256=digest(poster),render=dict(revision=REVISION,
-                engine='Blender Cycles',samples=args.samples,reference='ACL/materials/teaser/blender_scene.py',
-                reference_sha256=digest(ROOT/'ACL/materials/teaser/blender_scene.py'),
+                engine='Blender Cycles',samples=args.samples,reference='ACL/non_submission/materials/teaser/blender_scene.py',
+                reference_sha256=digest(ROOT/'ACL/non_submission/materials/teaser/blender_scene.py'),
                 method='Exact archived geometry and poses; Figure 1 enamel, porcelain and metal materials, studio area lighting and AgX. Static backgrounds with rendered moving regions; no physics stepping or pose interpolation.'))
             print('Published:',dest.name,flush=True)
     if not args.preview:

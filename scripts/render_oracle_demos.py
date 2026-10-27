@@ -506,7 +506,7 @@ def prepare(number,cache,samples,threads,fps):
     entry.update(video=f'assets/videos/oracle/scene-{number}.mp4',poster=f'assets/images/oracle-{number}.webp',
                  record=str(record_path.relative_to(SITE)),fps=fps,time_map=mapping,chapters=chapters,plot=plot,
                  timeline=[{k:v for k,v in f.items() if k in ['time','objects','gravity','oracle','annotation']} for f in film],
-                 render=dict(engine='Blender Cycles',samples=samples,reference='ACL/materials/teaser/blender_scene.py',
+                 render=dict(engine='Blender Cycles',samples=samples,reference='ACL/non_submission/materials/teaser/blender_scene.py',
                  geometry='Native object poses and sizes; cropped porcelain plinth and glass enclosure are display-only.'))
     entry['preview_time']={'01':3,'02':3,'03':6,'04':8.8,'05':3.5,'06':6,'07':8,'08':2,'09':12,'10':10,'11':6.2,'12':7.2,'13':9.45,'14':10,'15':13}[number]
     atomic_json(folder/'entry.json',entry)

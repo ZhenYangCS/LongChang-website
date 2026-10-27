@@ -19,7 +19,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--url', default='http://127.0.0.1:8765')
     args = parser.parse_args()
-    source_path = ROOT/'ACL/materials/results/sources/gpt_6_1_sol_episodes.csv'
+    source_path = ROOT/'ACL/non_submission/materials/results/sources/gpt_6_1_sol_episodes.csv'
     with source_path.open() as stream:
         source = {row['episode_id']:row for row in csv.DictReader(stream)}
     manifest = json.loads((DATA/'manifest.json').read_text())

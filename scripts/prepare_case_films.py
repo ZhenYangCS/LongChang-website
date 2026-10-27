@@ -50,8 +50,8 @@ def text_lines(draw, text, xy, width, size=24, fill=INK, bold=False):
 
 
 def plans():
-    evidence = json.loads((ROOT/'ACL/materials/cases/sources/evidence.json').read_text())
-    apparatus = json.loads((ROOT/'ACL/materials/cases/sources/tool_case.json').read_text())
+    evidence = json.loads((ROOT/'ACL/non_submission/materials/cases/sources/evidence.json').read_text())
+    apparatus = json.loads((ROOT/'ACL/non_submission/materials/cases/sources/tool_case.json').read_text())
     sources = {}
     for name, key in [('astra', 'question'), ('gemini', 'checklist'), ('color', 'partial')]:
         src = evidence['provenance'][key]

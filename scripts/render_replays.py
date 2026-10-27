@@ -14,7 +14,7 @@ import sys
 os.environ.setdefault("MUJOCO_GL", "egl")
 SITE = Path(__file__).resolve().parents[1]
 ROOT = SITE.parent
-sys.path[:0] = [str(ROOT / "longchang"), str(ROOT / "ACL/materials/_shared")]
+sys.path[:0] = [str(ROOT / "longchang"), str(ROOT / "ACL/non_submission/materials/_shared")]
 import mujoco
 import numpy as np
 from PIL import Image
@@ -90,7 +90,7 @@ def main():
         'gemini': base / '15_launch_suppressed_drift/gemini-3.7-flash/r1/T0/replay.bin',
     }
     records = {k: load_replay(v) for k, v in paths.items()}
-    ev = json.loads((ROOT / 'ACL/materials/cases/sources/evidence.json').read_text())
+    ev = json.loads((ROOT / 'ACL/non_submission/materials/cases/sources/evidence.json').read_text())
     blue_camera = ev['replay_views']['q_blue_test']['camera']
     blue_camera['distance'] = 3.0
     clips = [

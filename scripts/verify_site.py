@@ -50,7 +50,7 @@ def main():
     assert [d['id'] for d in discoveries]==['07','06','14','15']
     assert [d['repeat'] for d in discoveries]==[3,1,2,3]
     discovery_sources=json.loads((SITE/'data/discovery-provenance.json').read_text())
-    with (ROOT/'ACL/materials/results/sources/gpt_6_1_sol_episodes.csv').open() as f:
+    with (ROOT/'ACL/non_submission/materials/results/sources/gpt_6_1_sol_episodes.csv').open() as f:
         evaluated={r['episode_id']:r for r in csv.DictReader(f)}
     for d,source in zip(discoveries,discovery_sources):
         row=evaluated[d['episode_id']]

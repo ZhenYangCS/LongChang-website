@@ -19,7 +19,7 @@ def main():
     assert len(entries)==15 and all(e.get('time_map') for e in entries)
     hashes={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [
         ROOT/'longchang/world.py',ROOT/'longchang/scenes.py',ROOT/'longchang/tools.py',
-        ROOT/'ACL/materials/teaser/blender_scene.py']}
+        ROOT/'ACL/non_submission/materials/teaser/blender_scene.py']}
     for entry in entries:
         id=entry['id'];assert entry['name']==names[id]
         if not entry.get('studio_poster'):

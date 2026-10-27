@@ -11,7 +11,7 @@ from pathlib import Path
 SITE = Path(__file__).resolve().parents[1]
 ROOT = SITE.parent
 BASE = ROOT/'runs/main-15-20260930-022640-2180080'
-SOURCE = ROOT/'ACL/materials/results/sources/gpt_6_1_sol_episodes.csv'
+SOURCE = ROOT/'ACL/non_submission/materials/results/sources/gpt_6_1_sol_episodes.csv'
 TURN_FIELDS = ('turn', 'note', 'act', 'outcome', 'observation', 'result_observation', 'raw')
 
 

@@ -99,7 +99,7 @@ def main():
     parser=argparse.ArgumentParser();parser.add_argument('--ffmpeg',required=True);parser.add_argument('--force',action='store_true')
     args=parser.parse_args()
     names,_=paper_scene_names()
-    with (ROOT/'ACL/materials/results/sources/gpt_6_1_sol_episodes.csv').open() as f: evaluations=list(csv.DictReader(f))
+    with (ROOT/'ACL/non_submission/materials/results/sources/gpt_6_1_sol_episodes.csv').open() as f: evaluations=list(csv.DictReader(f))
     public=[];provenance=[];records_export=[]
     for case in CASES:
         directory=BASE/case['scene']/'gpt-6-astra'/f"r{case['repeat']}"/'T0'

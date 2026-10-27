@@ -225,7 +225,7 @@
         "revision": "figure1-studio-v2",
         "engine": "Blender Cycles",
         "samples": 64,
-        "reference": "ACL/materials/teaser/blender_scene.py",
+        "reference": "ACL/non_submission/materials/teaser/blender_scene.py",
         "reference_sha256": "bee6692648e3c9fbcafcba9093a48f6eff62f09d674317121d404fc85d2e2f8c",
         "method": "Exact archived geometry and poses; Figure 1 enamel, porcelain and metal materials, studio area lighting and AgX. Static backgrounds with rendered moving regions; no physics stepping or pose interpolation.",
         "annotation": "Motion state from returned observations; seconds since the original push/throw; ring highlights the recorded red-ball position. Tiny wall motion is not enlarged."
@@ -353,7 +353,7 @@
         "revision": "figure1-studio-v2",
         "engine": "Blender Cycles",
         "samples": 64,
-        "reference": "ACL/materials/teaser/blender_scene.py",
+        "reference": "ACL/non_submission/materials/teaser/blender_scene.py",
         "reference_sha256": "bee6692648e3c9fbcafcba9093a48f6eff62f09d674317121d404fc85d2e2f8c",
         "method": "Exact archived geometry and poses; Figure 1 enamel, porcelain and metal materials, studio area lighting and AgX. Static backgrounds with rendered moving regions; no physics stepping or pose interpolation."
       }
@@ -465,7 +465,7 @@
         "revision": "figure1-studio-v2",
         "engine": "Blender Cycles",
         "samples": 64,
-        "reference": "ACL/materials/teaser/blender_scene.py",
+        "reference": "ACL/non_submission/materials/teaser/blender_scene.py",
         "reference_sha256": "bee6692648e3c9fbcafcba9093a48f6eff62f09d674317121d404fc85d2e2f8c",
         "method": "Exact archived geometry and poses; Figure 1 enamel, porcelain and metal materials, studio area lighting and AgX. Static backgrounds with rendered moving regions; no physics stepping or pose interpolation."
       }

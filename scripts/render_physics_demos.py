@@ -18,7 +18,7 @@ import time
 os.environ.setdefault('MUJOCO_GL', 'egl')
 SITE = Path(__file__).resolve().parents[1]
 ROOT = SITE.parent
-sys.path[:0] = [str(ROOT / 'longchang'), str(ROOT / 'ACL/materials/_shared')]
+sys.path[:0] = [str(ROOT / 'longchang'), str(ROOT / 'ACL/non_submission/materials/_shared')]
 import mujoco
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont

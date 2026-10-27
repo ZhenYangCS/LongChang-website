@@ -7,7 +7,7 @@ import mujoco
 
 ROOT=Path(__file__).resolve().parents[2]
 CACHE=Path('/tmp/longchang-room-interaction');CACHE.mkdir(exist_ok=True)
-SOURCE=ROOT/'ACL/materials/teaser/sources/workspace.xml'
+SOURCE=ROOT/'ACL/non_submission/materials/teaser/sources/workspace.xml'
 
 
 def main():

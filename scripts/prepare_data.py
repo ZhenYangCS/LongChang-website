@@ -18,7 +18,7 @@ from paper_scenes import paper_scene_names, paper_scene_laws
 
 SITE = Path(__file__).resolve().parents[1]
 ROOT = SITE.parent
-RESULTS = ROOT / "ACL/materials/results"
+RESULTS = ROOT / "ACL/non_submission/materials/results"
 
 
 def read_json(path):
@@ -81,14 +81,14 @@ def table_rows(filename):
 
 
 def main():
-    picture("ACL/figs/teaser/longchang_world.png", "glass-world", 1250, True)
+    picture("ACL/non_submission/figs/teaser/longchang_world.png", "glass-world", 1250, True)
     images = ["q_seq_before", "q_seq_motion", "q_seq_red_rest", "q_seq_red_restart",
               "q_seq_blue_rest", "q_seq_blue_restart", "v_seq_1_before", "v_seq_1_contact",
               "v_seq_3_before", "v_seq_3_contact", "weighing_flat_initial", "weighing_flat",
               "weighing_rimmed", "c_context_slide", "c_context_throw_red", "c_seq_finish"]
     for name in images:
-        picture(f"ACL/figs/cases/studio_frames/{name}.png", name, 1200)
-    picture("ACL/figs/apparatus/studio_apparatus.png", "pendulum", 1000)
+        picture(f"ACL/non_submission/figs/cases/studio_frames/{name}.png", name, 1200)
+    picture("ACL/non_submission/figs/apparatus/studio_apparatus.png", "pendulum", 1000)
 
     metrics = ["D", "C", "S", "R", "L", "ES", "CS", "CF", "AF"]
     models = [dict(name=row[0], **dict(zip(metrics, row[1:])))
@@ -154,8 +154,8 @@ def main():
                            image=f"assets/images/scene-{i+1:02}.webp"))
     write_json(SITE / "downloads/scenes.json", {"units": "bricks and counts; one count corresponds to one simulated second", "scenes": scenes})
 
-    evidence = read_json(ROOT / "ACL/materials/cases/sources/evidence.json")
-    tool = read_json(ROOT / "ACL/materials/cases/sources/tool_case.json")
+    evidence = read_json(ROOT / "ACL/non_submission/materials/cases/sources/evidence.json")
+    tool = read_json(ROOT / "ACL/non_submission/materials/cases/sources/tool_case.json")
     public_evidence = {
         "description": "Selected original notes and observations used in the project page. Editorial explanations are separate from quoted notes.",
         "question": {"scene": "15", "model": "GPT-6-Astra", "repeat": 2, "budget": 100,
@@ -188,12 +188,12 @@ def main():
         writer.write(f)
     with zipfile.ZipFile(SITE / "downloads/prompts.zip", "w", zipfile.ZIP_DEFLATED) as z:
         for name in ["exploration_prompt.txt", "report_prompt.txt", "discovery_judge.txt"]:
-            candidates = list((ROOT / "ACL/materials/prompts/sources").glob(name))
+            candidates = list((ROOT / "ACL/non_submission/materials/prompts/sources").glob(name))
             if candidates:
                 z.write(candidates[0], name)
         # Actual source naming is preserved inside the archive.
         if len(z.namelist()) < 3:
-            for p in (ROOT / "ACL/materials/prompts/sources").glob("*.txt"):
+            for p in (ROOT / "ACL/non_submission/materials/prompts/sources").glob("*.txt"):
                 if any(k in p.name for k in ("explor", "report", "judg")) and p.name not in z.namelist():
                     z.write(p, p.name)
 
