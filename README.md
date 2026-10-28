@@ -14,7 +14,7 @@ python3 project_page/scripts/serve.py --bind 0.0.0.0 --port 8765
 
 整个 `project_page/` 目录可部署到任意静态托管服务，也支持站点子目录。无需前端编译、API key 或实时模拟后端。GitHub Actions 用 Bash 复制已经生成的静态文件，并合并普通样式与脚本以减少请求。字体、图片、视频和数据均为本地文件。Code 按钮链接到公开 GitHub 仓库：`https://github.com/EnVision-Research/LongChang`。
 
-Paper 暂时也链接到 LongChang GitHub 仓库，待 arXiv 地址确定后，再更新 `index.html` 首屏及 `<noscript>` 中的 Paper 链接。Paper 与 Code 均在新标签页打开网页，不触发文件下载。
+`index.html` 首屏及 `<noscript>` 中的 Paper 链接均指向 `https://arxiv.org/abs/2610.37649`。Paper 与 Code 均在新标签页打开网页，不触发文件下载。
 
 ## 内容
 
@@ -223,4 +223,4 @@ python scripts/package_physics_demos.py --ffmpeg /path/to/ffmpeg
 
 `python -B scripts/verify_anonymity.py --ocr --report /tmp/project-page-anonymity-audit.json` 检查整个目录及 ZIP/GZ 内部、PDF 正文和元数据、图片/视频/字体元数据；OCR 覆盖静态图片及动画/视频的首、中、末帧。身份词从作者区自动读取，检查脚本不保存真实姓名。检查报告保存在发布目录之外。
 
-页头提供 BibTeX 入口，页面底部用代码框和复制按钮展示 `#bibtex-entry`。引用与仓库根目录 `README.md` 保持一致，采用 [StreamMA](https://zhenyangcs.github.io/StreamMA-website/) 的 `@article` 格式，包含论文标题、完整作者、`journal` 和年份；未知 arXiv 编号写为 `xxx`，即 `journal={arXiv preprint arXiv:xxx}`。
+页头提供 BibTeX 入口，页面底部用代码框和复制按钮展示 `#bibtex-entry`。引用与仓库根目录 `README.md` 保持一致，采用 [StreamMA](https://zhenyangcs.github.io/StreamMA-website/) 的 `@article` 格式，包含论文标题、完整作者、`journal` 和年份；arXiv 编号为 `2610.37649`，即 `journal={arXiv preprint arXiv:2610.37649}`。

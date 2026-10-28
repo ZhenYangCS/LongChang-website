@@ -39,10 +39,10 @@ Chromium 限速模拟结果（1366×768，未上线的本地预览）：
 
 这些是受控模拟，不能作为 GitHub Pages 实际访问速度的保证；访客到 GitHub 的网络、服务器压缩、缓存和设备性能都会影响结果。上线后应再从目标访客所在网络实测。长页面默认滚轮翻页；Try it 的 Wheel zoom 开关可启用普通滚轮缩放，选择在基础场景与演化场景间同步并在刷新后保留。全屏始终可直接滚轮缩放，退出后恢复选择。− / + / Fit 按钮、Ctrl/⌘ + 滚轮与手机双指缩放均继续可用。
 
-## 上线前待定内容
+## 论文链接与上线前检查
 
-- `index.html` 与仓库根目录 `README.md` 的 BibTeX 使用相同的 `@article` 格式、完整作者与 2026 年份；arXiv 编号暂写 `xxx`，正式编号确定后同步替换。
-- `Code` 已链接到 `https://github.com/EnVision-Research/LongChang`；`Paper` 暂用同一地址，待 arXiv 地址确定后更新首屏及 `<noscript>` 中的 Paper 链接。
+- `index.html` 与仓库根目录 `README.md` 的 BibTeX 使用相同的 `@article` 格式、完整作者与 2026 年份；arXiv 编号为 `2610.37649`。
+- `Code` 链接到 `https://github.com/EnVision-Research/LongChang`；首屏及 `<noscript>` 中的 `Paper` 链接到 `https://arxiv.org/abs/2610.37649`。
 - 分享卡的 `og:image` 当前使用相对路径。最终域名确定后改为绝对 HTTPS 地址，并补充 `og:url` 和 canonical，便于社交平台识别正式网址。
 - 素材体积仍有增长空间，但发布包已约 670 MiB。以后重新导出视频或添加下载包时，应再次执行打包检查。
 
